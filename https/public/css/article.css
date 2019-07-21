@@ -1,0 +1,13 @@
+.article a {
+    color: #fafafa;
+    text-decoration: underline;
+}
+
+a.article-link {
+    color: #fafafa;
+}
+
+span.article-title a {
+    color: #55b4ff;
+    font-size: 1.4rem;
+}

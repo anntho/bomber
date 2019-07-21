@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | bomber</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="Movies, Trivia, Free Trivia, Free Movie Trivia">
+	<meta name="robots" content="index,follow">
+	<meta name="description" content="Play against the computer and beat your high score.">
+	<link rel="stylesheet" href="/css/materialize.min.css">
+	<link rel="stylesheet" href="/css/loaders.css">
+	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
+</head>
+<body>
+	<% include ./nav %>
+
+	<main>
+		<div class="top-wrapper row">
+			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
+				<div id="gameover" class="gameover">
+					<p class="go">GAME OVER</p>
+					<p>
+						<a id="myscore" class="myscore">LEADERBOARD</a>
+					</p>
+					<i class="material-icons pulse replay">autorenew</i>
+				</div>
+				<!-- start: gamebox -->
+				<div id="gamebox" class="gamebox z-index-4">
+					<div class="stuff">
+						<div class="scontainer">
+							<div class="icon">SCORE</div>
+							<div class="stat text" id="score">0</div>
+						</div>
+			
+						<div class="scontainer">
+							<div class="icon">LIVES</div>
+							<div class="stat text" id="lives">6</div>
+						</div>
+					</div>
+					<br><h6 class="heavy">PROMPTS</h6><br>
+					<div class="prompts">
+						<div class="pcontainer z-index-4">
+							<div class="icon">
+								<i class="material-icons">face</i>
+							</div>
+							<div class="text">
+								<div class="prompt slide" id="prompt-a"></div>
+								<div class="prompt slide" id="prompt-b"></div>
+								<div class="loader" id="loader">
+									<div class="line-scale">
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+										<div></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- start: choices -->
+					<br><h6 class="heavy">CHOICES</h6><br>
+					<div class="buttons-wrapper">
+						<div class="buttons">
+							<div class="bcontainer z-index-4">
+								<div class="icon">
+									<i class="material-icons">filter_1</i>
+								</div>
+								<div class="text button point"></div>
+							</div>
+							<br>
+							<div class="bcontainer z-index-4">
+								<div class="icon">
+									<i class="material-icons">filter_2</i>    
+								</div>
+								<div class="text button point"></div>
+							</div>
+							<br>
+							<div class="bcontainer z-index-4">
+								<div class="icon">
+									<i class="material-icons">filter_3</i>
+								</div>
+								<div class="text button point"></div>
+							</div>
+							<br>
+							<div class="bcontainer z-index-4">
+								<div class="icon">
+									<i class="material-icons">filter_4</i>
+								</div>
+								<div class="text button point"></div>
+							</div>
+							<br>
+						</div>
+					</div> <!-- end: choices -->
+				</div> <!-- end: gamebox -->
+			</div>
+		</div>
+	</main>
+
+	<% include ./footer %>
+
+	<script>
+		const socketString = <%-JSON.stringify(socket)%>;
+		const usernameString = <%-JSON.stringify(username)%>;
+		const userIdString = <%-JSON.stringify(userId)%>;
+	</script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/bomber.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+</body>
+</html>

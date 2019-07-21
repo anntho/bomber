@@ -1,0 +1,64 @@
+<header>
+	<nav>
+		<div class="nav-wrapper">
+			<a href="/" class="brand-logo">moviebomber.org</a>
+			<a href="#" data-target="mobile-demo" class="sidenav-trigger">
+				<i class="material-icons">menu</i>
+			</a>
+
+			<ul class="right">
+				<% if (!user) { %>
+					<li>
+						<a href="/login">sign in</a>
+					</li>
+				<% } else { %>
+					<li>
+						<a id="navUsername" class="dropdown-trigger" href="#" data-target="user"><%-user.username%></a>
+					</li>
+				<% } %>
+			</ul>
+
+			<ul class="right hide-on-med-and-down other">
+				<li><a href="/bomber">bomber</a></li>
+				<li><a href="/classic">classic</a></li>
+				<li><a href="/board">board</a></li>
+				<li><a href="/blog">blog</a></li>
+				<li><a href="/about">about</a></li>
+			</ul>
+
+			<ul class="right hide-on-med-and-down">
+				<li>
+					<input id="navSearch" type="text" placeholder="search">
+				</li>
+			</ul>
+		</div>
+	</nav>
+</header>
+
+<ul id="user" class="dropdown-content">
+	<li><a href="/account/profile"><i class="material-icons">person</i>profile</a></li>
+	<li><a href="/account/preferences"><i class="material-icons">settings</i>settings</a></li>
+	<li class="divider" tabindex="-1"></li>
+	<li><a href="/logout"><i class="material-icons">power_settings_new</i>sign out</a></li>
+</ul>
+
+<ul class="sidenav" id="mobile-demo">
+	<h3>
+		<a>
+			<i class="material-icons">bookmark</i>
+			mb nav.
+		</a>
+	</h3>
+	<% if (!user) { %>
+		<li><a href="/register">Register</a></li>
+		<li><a href="/login">Login</a></li>
+	<% } else { %>
+		<li><a href="/logout">Logout</a></li>
+	<% } %>
+	<li><a href="/">Home</a></li>
+	<li><a href="/bomber">Bomber</a></li>
+	<li><a href="/classic">Classic</a></li>
+	<li><a href="/blog">Blog</a></li>
+	<li><a href="/board">Leaderboard</a></li>
+	<li><a href="/about">About</a></li>
+</ul>

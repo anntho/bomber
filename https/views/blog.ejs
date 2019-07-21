@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | blog</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="movie trivia, trivia, free trivia">
+	<meta name="robots" content="index,follow">
+	<meta name="description" content="Read the latest in movie reviews and articles on the moviebomber.org blog!">
+	<link rel="stylesheet" href="/css/materialize.min.css">
+	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="/css/article.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
+</head>
+<body>
+	<% include ./nav %>
+
+	<main>
+		<div class="top-wrapper row">
+			<div class="col s12 m8 offset-m2 l6 offset-l3">
+				<h3>
+					<a href="/blog">
+						<i class="material-icons">book</i>
+						mb blog.
+					</a>
+				</h3>
+				<% docs.forEach((doc, key) => { %>
+					<div class="post">
+						<% let date1 = String(doc.date).split("G")[0]; %>
+						<% let date2 = date1.substring(0, date1.length - 9); %>
+						<% let articleId = doc.id; %>
+						<% let link = "article/" + articleId %>
+						<p><a class="article-link"><%=date2%></a></p>
+						<p>
+							<span class="article-title"><a href=<%-link%>><%-doc.title%></a></span> 
+							by <span><%=doc.author%></span>
+						</p>
+						<p><%=doc.desc%></p>
+						<p class="divider"></p>             
+					</div>
+				<% }); %>
+			</div>
+		</div>
+	</main>
+
+	<% include ./footer %>
+	
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+input[type=text]:not(.browser-default),
+input[type=email]:not(.browser-default),
+input[type=password]:not(.browser-default) {
+    border-bottom: 1px solid #fafafa;
+    color: #fafafa;
+}

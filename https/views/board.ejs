@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | leaderboard</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="movie trivia, trivia, free trivia">
+	<meta name="robots" content="index,follow">
+	<meta name="description" content="View user highscores on the moviebomber.org leaderboard!">
+	<link rel="stylesheet" href="/css/materialize.min.css">
+	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="/css/board.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
+</head>
+<body>
+	<% include ./nav %>
+
+	<main>
+		<div class="container">
+			<div class="row">
+				<div class="col-sm">
+					<h3>
+						<a href="/board">
+							<i class="material-icons">import_contacts</i>
+							mb leaderboard.
+						</a>
+					</h3>
+					<table id="leaderboard" class="table leaderboard" style="width:100%"></table>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<% include ./footer %>
+
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/jquery.dataTables.min.js"></script>
+	<script>
+		var uriString = window.location.href;
+		var uri = new URL(uriString);
+		var user = uri.searchParams.get('u');
+
+		var data = <%- JSON.stringify(scores) %>
+		$('#leaderboard').DataTable({
+			bLengthChange: false,
+			bSort: true,
+			data: data,
+			columns: [
+				{ title: 'Name', data: 'username' },
+				{ title: 'Score', data: 'score' },
+				{ title: 'Mode', data: 'mode' }
+			],
+			columnDefs: [
+				{ 'className': 'dt-center', 'targets': '_all' }
+			],
+			order: [[1, "desc"]]
+		});
+		if (user) {
+			var table = $('#board1').DataTable();
+			table.search(user).draw();
+		}
+	</script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+</body>
+</html>

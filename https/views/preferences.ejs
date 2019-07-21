@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | <%-user.username%></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex,nofollow">
+	<link rel="stylesheet" href="/css/materialize.min.css">
+	<link rel="stylesheet" href="/css/loaders.css">
+	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="/css/preferences.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
+</head>
+<body>
+	<% include ./nav %>
+
+	<main>
+		<div class="top-wrapper row">
+			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
+				<% if (!user.verified) { %>
+					<div class="row">
+						<div class="col s12">
+							<p class="valign-wrapper">
+								<i class="material-icons">close</i>
+								Please check your email to verify your account
+							</p>
+						</div>
+					</div>
+				<% } %>
+				<br>
+				<div class="row">
+					<div class="col s12">
+						<h5 class="valign-wrapper"><i class="material-icons left">settings</i>Account Preferences</h5>
+					</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col s12 m6">
+						<h5><%-user.username%></h5>
+					</div>
+					<div class="col s12 m6">
+						<a id="editUsername" class="btn-large purple lighten-1 col s12">
+							edit username
+						</a>
+					</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col s12 m6">
+						<h5><%-user.email%></h5>
+					</div>
+					<div class="col s12 m6">
+						<a id="editEmail" class="btn-large purple lighten-1 col s12">
+							edit email
+						</a>
+					</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col s12 m6">
+						<h5>********</h5>
+					</div>
+					<div class="col s12 m6">
+						<a id="editPassword" class="btn-large purple lighten-1 col s12">
+							reset password
+						</a>
+					</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col s12 m6 right">
+						<a id="closeAccount" class="btn-large purple lighten-1 col s12">
+							close account
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<% include ./footer %>
+
+	<script>
+		const socketString = <%-JSON.stringify(socket)%>;
+		const uid = <%-JSON.stringify(user.id)%>;
+	</script>
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/preferences.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+</body>
+</html>
