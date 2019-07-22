@@ -5,7 +5,7 @@ module.exports = {
 		cwd: "/var/www/http/bin",
 		instances: 1,
 		watch: true,
-		max_memory_restart: "1G"
+		max_memory_restart: "1G",
 		env: {
 	  		"NODE_ENV": "development",
 		},
@@ -24,7 +24,7 @@ module.exports = {
 		cwd: "/var/www/https/bin",
 		instances: 1,
 		watch: true,
-		max_memory_restart: "1G"
+		max_memory_restart: "1G",
 		env: {
 	  		"NODE_ENV": "development",
 		},
