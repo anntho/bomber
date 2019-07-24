@@ -43,12 +43,15 @@
 				<canvas id="myChart"></canvas>
 
 				<br>
-				<h5>New Users</h5>
+				<h5 class="valign-wrapper">
+					<i class="material-icons left">import_contacts</i>
+					new users log.
+				</h5>
 				<% if (newUsers) { %>
 					<% newUsers.forEach(u => { %>
-						<p class="valign-wrapper">
-							<i class="material-icons">exposure_plus_1</i>
-							<%-u%>
+						<p class="valign-wrapper newUser">
+							<i class="material-icons left">exposure_plus_1</i>
+							<a href="/@/<%-u%>"><%-u%></a>
 						</p>
 					<% }); %>
 				<% } %>

@@ -28,3 +28,7 @@ a#what {
 canvas {
     max-width: 800px;
 }
+
+.newUser i.material-icons {
+    color: #01d277;
+}
