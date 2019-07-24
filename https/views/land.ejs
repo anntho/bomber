@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="/css/materialize.min.css">
 	<link rel="stylesheet" href="/css/loaders.css">
 	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="/css/land.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
 </head>
@@ -25,18 +26,43 @@
 
 				<div class="row">
 					<div class="input-field col s12">
-						<input value="Jaws" id="first_name2" type="text" class="validate">
+						<input type="text">
 					</div>
-					<a class="col btn-large purple">go</a>
 				</div>
+
+				<div>
+					<span id="response">
+						<span>That's</span>
+						<span>a</span>
+						<span>Great</span>
+						<span>Movie!</span>
+						<a id="what" href="https://www.youtube.com/watch?v=0isvq7-vBqk">I don't get it...</a>
+					</span>
+				</div>
+
+				<canvas id="myChart"></canvas>
+
+				<br>
+				<h5>New Users</h5>
+				<% if (newUsers) { %>
+					<% newUsers.forEach(u => { %>
+						<p class="valign-wrapper">
+							<i class="material-icons">exposure_plus_1</i>
+							<%-u%>
+						</p>
+					<% }); %>
+				<% } %>
 			</div>
 		</div>
 	</main>
 
 	<% include ./footer %>
 
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="/js/Chart.bundle.min.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
+	<script src="/js/land.js"></script>
 	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

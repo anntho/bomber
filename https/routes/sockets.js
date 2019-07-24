@@ -338,7 +338,7 @@ io.on('connection', (socket) => {
 				const foundUser = await procHandler(socketPool, findUserSQL, findUserInputs);
 				
 				if (foundUser && foundUser.length) {
-					error = 'Username already exists';
+					error = 'That username is unavailable, please try a different one';
 					return socket.emit('err', error);
 				} else {
 					// Check if Email Exists
@@ -358,19 +358,33 @@ io.on('connection', (socket) => {
 									return socket.emit('err', error);
 								}
 
-								console.log(hash)
-
 								try {
-									const code = cryptoRandomString({length: 32, type: 'url-safe'});
-									const verification = Buffer.from(`${email}:${code}`).toString('base64');
+									const code = randomString({length: 32, type: 'url-safe'});
+									const encodedVerificationString = Buffer.from(`${email}:${code}`).toString('base64');
 
 									const newUserSQL = 'CALL sp_CreateUser(?, ?, ?, ?)';
-									const newUserInputs = [uname, email, hash, verification];
+									const newUserInputs = [uname, email, hash, code]; // save raw code, but email base64 encoded
 									const newUser = await procHandler(socketPool, newUserSQL, newUserInputs);
-									socket.emit('success');
+
+									if (newUser && 
+										newUser[0] &&
+										newUser[0].verified === 0) {
+											console.log('verified first time user', email)
+											let link = config.socket.host + '/verify?v=' + encodedVerificationString;
+											let body = 'Please click the link below to verify your email address:';
+											body += `<a href="${link}">Click here to verify</a>`;
+											try {
+												await sendEmail(email, 'Please verify your email address', body);
+												socket.emit('success');
+											} catch (err) {
+												socket.emit('err', err);
+											}
+									} else {
+										socket.emit('err', null);
+									}
 								} catch (err) {
 									console.log(err);
-									throw err;
+									socket.emit('err', err);
 								}
 						}));
 					}

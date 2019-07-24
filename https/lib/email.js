@@ -1,5 +1,5 @@
 module.exports = {
-	sendEmail: async (to, subject) => {
+	sendEmail: async (to, subject, text) => {
 		const config = require('../bin/config');
 		const nodemailer = require('nodemailer');
 		const { google } = require('googleapis');
@@ -31,11 +31,11 @@ module.exports = {
 		});
 
 		const mailOptions = {
-			from: config.google.email,
+			from: `The moviebomber.org Team <${config.google.email}>`,
 			to: to,
 			subject: subject,
 			generateTextFromHTML: true,
-			html: '<b>test</b>'
+			html: text
 		};
 
 		smtpTransport.sendMail(mailOptions, (err, response) => {

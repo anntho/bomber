@@ -13,7 +13,7 @@ const Article = require('../models/article');
 
 // MySQL Config
 const pagesPool = mysql.createPool(config.mysql);
-const { procHandler } = require('../lib/sql');
+const { procHandler, procHandler2 } = require('../lib/sql');
 
 // Security
 router.use(helmet());
@@ -37,9 +37,17 @@ router.get('/live', authenticated, (req, res) => {
 	});
 });
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+	let newUsers = [];
+	try {
+		let response = await procHandler(pagesPool, 'CALL sp_GetNewUsers()', null);
+		newUsers = response.map(x => x.username);
+	} catch (err) {
+		console.log(err);
+	}
 	res.render('land', {
-		user: req.session.user || null
+		user: req.session.user || null,
+		newUsers: newUsers || null
 	});
 });
 
@@ -155,6 +163,59 @@ router.get('/privacy', (req, res) => {
 	res.render('privacy', {
 		user: req.session.user || null
 	});
+});
+
+router.get('/verify', async (req, res) => {
+	if (req.session.user &&
+		req.session.user.verified
+	) {
+		console.log('user already verified', req.session.user.email);
+		res.redirect('/account/preferences');
+	} else if (req.query.v) {
+		console.log('request for verification');
+		try {
+			let raw = req.query.v;
+			let ascii = Buffer.from(raw, 'base64').toString('ascii');
+			let email = ascii.split(':')[0];
+			let code = ascii.split(':')[1];
+			let regex = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/;
+			
+			if (code && 
+				code.length === 32 && 
+				email && 
+				email.toUpperCase().match(regex)
+			) {
+				try {
+					let proc = 'CALL sp_VerifyEmail(?, ?)';
+					let inputs = [email, code];
+					let response = await procHandler(pagesPool, proc, inputs);
+					let message = '';
+					console.log(response[0].result)
+
+					if (response && 
+						response[0] && 
+						response[0].result != null
+					) {
+						console.log('worked')
+						res.render('verify', {
+							user: req.session.user || null,
+							status: response[0].result
+						});
+					} else {
+						console.log('here')
+						res.sendStatus(500);
+					}
+				} catch (err) {
+					console.log(err);
+					throw err;
+				}
+			}
+		} catch (err) {
+			res.sendStatus(500);
+		}
+	} else {
+		res.redirect('/');
+	}
 });
 
 module.exports = router;

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | verification</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="movie trivia, trivia, free trivia">
+	<meta name="robots" content="noindex,nofollow">
+	<link rel="stylesheet" href="/css/materialize.min.css">
+	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
+</head>
+<body>
+	<% include ./nav %>
+	<main>
+		<div class="top-wrapper">
+			<h4 class="valign-wrapper">
+				<i class="material-icons left">email</i>
+				email verification page.
+			</h4>
+			<br>
+			<% if (status == 0) { %>
+				<p>This link has already been used. If you believe that this is an error, please contact our support team.</p>
+			<% } else if (status == 1) { %>
+				<p>Success! Your email has been verified!</p>
+			<% } else { %>
+				<p>Invalid link. Please contact our support team.</p>
+			<% } %>
+		</div>
+	</main>
+	<% include ./footer %>
+</body>
+</html>

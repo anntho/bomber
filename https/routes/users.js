@@ -7,10 +7,6 @@ const { procHandler } = require('../lib/sql');
 const usersPool = mysql.createPool(config.mysql);
 const socket = `${config.socket.host}:${config.socket.port}`;
 
-router.get('/verify/' + config.AA + '/:code', (req, res) => {
-	
-});
-
 router.get('/:id', async (req, res) => {
 	let username = req.params.id;
 	let sql = 'CALL sp_UserGrid(?)';

@@ -7,7 +7,7 @@ $(document).ready(async function() {
     });
 
     socket.on('err', function(data) {
-        report('error', 'error', data);
+        report('error', 'error.', data);
     });
 
     async function report(icon, title, text) {
@@ -20,6 +20,16 @@ $(document).ready(async function() {
     }
 
     $('#submit').click(async function() {
+        register();
+    });
+
+    $('input[data-register=true').on('keypress', function(evt) {
+        if (evt.which === 13) {
+            register();
+        }
+    });
+
+    async function register() {
         if (!$('#uname').val()) {
             report('info', 'whoops', 'please include a username');
         } else if (!$('#email').val()) {
@@ -39,5 +49,5 @@ $(document).ready(async function() {
             }
             socket.emit('register', data);
         }
-    });
+    }
 });
