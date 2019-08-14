@@ -8,7 +8,7 @@ module.exports = session({
     resave: true,
     saveUninitialized: false,
     cookie: {
-        maxAge: 18000000
+        maxAge: 3600000
     },
     store: new store(config.mysql)
 });

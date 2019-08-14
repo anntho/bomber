@@ -1,17 +1,15 @@
 /* Copyright 2018, Anthony Pecoraro. All Rights Reserved */
 
 class API {
-	constructor() {
+	constructor(s) {
+		this.socket = s;
 		this.movies = {};
 		this.actors = {};
 		this.keyListMovies = [];
 		this.keyListActors = [];
 		this.valueListMovies = [];
 		this.valueListActors = [];
-		this.urlMovie = '/data/movie/'
-		this.urlCast = '/data/movie/cast/';
-		this.urlCredits = '/data/person/credits/';
-		this.logAPI = true;
+		this.log = false;
 	}
 	shuffle(a) {
 		for (let i = a.length - 1; i > 0; i--) {
@@ -20,35 +18,56 @@ class API {
 		}
 		return a;
 	}
+	async reportError() {
+		await swal({
+			title: 'Whoops!',
+			text: 'An error occured.',
+			icon: 'error',
+			buttons: ['Home', 'Reload Page'],
+			closeOnClickOutside: false
+		})
+		.then((again) => {
+			if (again) {
+				location.reload();
+			} else {
+				location.href = '/';
+			}
+		});
+	}
 	async fillStarters() {
-		if (this.logAPI) {
+		if (this.log) {
 			console.log('fillStarters');
 		}
-		let resMovies = await fetch('/data/movie_list');
-		let resActors = await fetch('/data/actor_list');
-		let dataMovies = await resMovies.json();
-		let dataActors = await resActors.json();
-		this.movies = dataMovies;
-		this.actors = dataActors;
-		this.keyListMovies = this.movies.map(movie => movie.altId);
-		this.keyListActors = this.actors.map(actor => actor.altId);
+		this.socket.emit('starters');
+		return new Promise((res, rej) => {
+			this.socket.on('starters', async (data) => {
+				if (this.log) {
+					console.log('starters received');
+				}
+				this.movies = data.movies;
+				this.actors = data.actors;
+				this.keyListMovies = this.movies.map(movie => movie.altId);
+				this.keyListActors = this.actors.map(actor => actor.altId);
+				res();
+			});
+			this.socket.on('err', () => {
+				rej();
+			});
+		});
 	}
 	getRandomActorsNoReq(n) {
-		if (this.logAPI) {
-			console.log('getRandomActorsNoReq', n);
-		}
 		let tempArray = [];
 		this.shuffle(this.keyListActors);
 		for (let i = 0; i < n; i++) {
 			let actor = this.actors.find(a => a.altId == this.keyListActors[i])
 			tempArray.push(actor.name);
 		}
+		if (this.log) {
+			console.log('getRandomActorsNoReq', n);
+		}
 		return tempArray;
 	}
 	getRandomActors(n, id, castIdList) {
-		if (this.logAPI) {
-			console.log('getRandomActors', n, id, castIdList);
-		}
 		let tempArray = [];
 		this.shuffle(this.keyListActors);
 		this.keyListActors.forEach((a) => {
@@ -57,25 +76,24 @@ class API {
 				tempArray.push(actor.name);
 			}
 		});
+		if (this.log) {
+			console.log('getRandomActors', n, id);
+		}
 		return tempArray;
 	}
 	getRandomMoviesNoReq(n) {
-		if (this.logAPI) {
-			console.log('getRandomMoviesNoReq', n);
-		}
 		let tempArray = [];
 		this.shuffle(this.keyListMovies);
 		for (let i = 0; i < n; i++) {
 			let movie = this.movies.find(m => m.altId == this.keyListMovies[i])
 			tempArray.push(movie.title + ' (' + movie.year + ')');
 		}
-		console.log(tempArray)
+		if (this.log) {
+			console.log('getRandomMoviesNoReq', n);
+		}
 		return tempArray;
 	}
 	getRandomMovies(n, id, creditsIdList) {
-		if (this.logAPI) {
-			console.log('getRandomMovies', n, id, creditsIdList);
-		}
 		let tempArray = [];
 		this.shuffle(this.keyListMovies);
 		this.keyListMovies.forEach(m => {
@@ -84,52 +102,38 @@ class API {
 				tempArray.push(movie.title + ' (' + movie.year + ')');
 			}
 		});
+		if (this.log) {
+			console.log('getRandomMovies', n, id);
+		}
 		return tempArray;
 	}
-	async getMovieById(id) {
-		if (this.logAPI) {
-			console.log('getMovieById', id);
-		}
-		try {
-			let resMovie = await fetch(this.urlMovie + id);
-			return await resMovie.json();
-		} catch (err) {
-			location.reload();
-		}
-	}
-	async getRandomMovie() {
-		if (this.logAPI) {
-			console.log('getRandomMovie');
-		}
-		try {
-			let randMovie = this.keyListMovies[Math.floor(Math.random()*this.keyListMovies.length)];
-			let resMovie = await fetch(this.urlMovie + randMovie);
-			return await resMovie.json();
-		} catch (err) {
-			location.reload();
-		}
-	}
 	async getCast(id) {
-		if (this.logAPI) {
+		if (this.log) {
 			console.log('getCast', id);
 		}
-		try {
-			let resCast = await fetch(this.urlCast + id);
-			return await resCast.json();
-		} catch (err) {
-			location.reload();
-		}
+		this.socket.emit('getCast', id);
+		return new Promise((res, rej) => {
+			this.socket.on('getCast', async (data) => {
+				res(data.cast);
+			});
+			this.socket.on('err', async () => {
+				rej(this.reportError());
+			});
+		});
 	}
 	async getCreditsFromActor(id) {
-		if (this.logAPI) {
+		if (this.log) {
 			console.log('getCreditsFromActor', id);
 		}
-		try {
-			let resCredits = await fetch(this.urlCredits + id);
-			return await resCredits.json();
-		} catch (err) {
-			alert(err)
-		}
+		this.socket.emit('getCredits', id);
+		return new Promise((res, rej) => {
+			this.socket.on('getCredits', async (data) => {
+				res(data.cast);
+			});
+			this.socket.on('err', async () => {
+				rej(this.reportError());
+			});
+		});
 	}
 }
 
@@ -145,7 +149,8 @@ class DOMElements {
 		this.normal = document.getElementById('normal');
 		this.restart = document.getElementById('restart');
 		this.prompts = document.querySelectorAll('.prompt');
-		this.loader = document.getElementById('loader');
+		this.loader = document.getElementById('faceLoader');
+		this.face = document.getElementById('face');
 		this.gamebox = document.querySelector('.gamebox');
 		this.gameover = document.querySelector('.gameover');
 		this.replay = document.querySelector('i.replay');
@@ -166,12 +171,14 @@ class DOMElements {
 		this.prompts.forEach(prompt => {
 			prompt.style.display = 'none';
 		});
+		this.face.style.display = 'none';
 		this.loader.style.display = 'block';
 	}
 	loaderOff() {
 		this.prompts.forEach(prompt => {
 			prompt.style.display = 'flex'
 		});
+		this.face.style.display = 'block';
 		this.loader.style.display = 'none';
 	}
 	setDialouge(a, b) {
@@ -188,12 +195,6 @@ class DOMElements {
 	}
 	updateScoreDisplay(a) {
 		this.correct.textContent = String(a);
-	}
-	newRecord(a, b, c) {
-		let trail = document.getElementById('log-container');
-		let newRec = document.createElement('span');
-		newRec.textContent = a + ' > ' + b + ' > ' + c;
-		//trail.insertBefore(newRec, trail.childNodes[0]);
 	}
 	async animateCorrect() {
 		await swal({
@@ -218,11 +219,10 @@ class Reference {
 		this.type = 'actor';
 		this.reset = false;
 		this.prev = '';
-		this.flowActorGuessingActor = [];
-		this.flowMovieGuessingActor = [];
-		this.flowActorGuessingMovie = [];
-		this.flowMovieGuessingMovie = [];
+		this.usedActors = [];
+		this.usedMovies = [];
 		this.crazy = false;
+		this.package = [];
 	}
 	setNameAndId(a, b) {
 		this.name = a;
@@ -256,15 +256,16 @@ class User {
 }
 
 class GameLogic {
-	constructor(a, b, c, d, e, f, g, h) {
+	constructor(a, b, c, d, e, f, g) {
 		this.api = a;
 		this.dom = b;
 		this.ref = c;
 		this.user = d;
-		this.createRecs = e;
-		this.socket = f;
-		this.username = g;
-		this.userId = h;
+		this.socket = e;
+		this.username = f;
+		this.userId = g;
+		this.start = true;
+		this.log = false;
 	}
 	brackets(str) {
 		return `${str}`;
@@ -273,7 +274,9 @@ class GameLogic {
 		return new Promise(r => setTimeout(r, ms));
 	}
 	async mainUserGuessActor() {
-		console.log('mainUserGuessActor')
+		if (this.log) {
+			console.log('mainUserGuessActor');
+		}
 		let random = 0;
 		let credits = [];
 		let cast = [];
@@ -283,30 +286,29 @@ class GameLogic {
 		let movie = {};
 		let actor = {};
 
-		// Get Credits from Actor
+		// get credits from actor
 		credits = await this.api.getCreditsFromActor(this.ref.id);
 		credits.sort((a, b) => b.vote_count-a.vote_count);
 
 		if (this.ref.crazy) {
-			console.log('crazy mode is on');
 			this.api.shuffle(credits);
 		}
 
-		// Find Unused Movie from Credits
+		// find unused movie
 		credits.forEach((creditObj, index) => {
-			if (!this.ref.flowMovieGuessingActor.find(x => x.id === creditObj.id)) {
+			if (!this.ref.usedMovies.find(x => x.id === creditObj.id)) {
 				freeMovies.push(index);
 			}
 		});
 		movie = {id: credits[freeMovies[0]].id, title: credits[freeMovies[0]].title + ' (' + credits[freeMovies[0]].release_date.substring(0, 4) + ')'}
 
-		// Get Cast from Movie
+		// get cast from movie
 		cast = await this.api.getCast(movie.id);
 
-		// Find Unused Actor from Cast & Create Id List
+		// find unused actor from cast and create id list
 		cast.forEach((castObj, index) => {
 			castIds.push(castObj.id);
-			if (!this.ref.flowActorGuessingActor.find(x => x.id === castObj.id)) {
+			if (!this.ref.usedActors.find(x => x.id === castObj.id)) {
 				freeActors.push(index);
 			}
 		});
@@ -318,27 +320,26 @@ class GameLogic {
 			actor = {id: cast[freeActors[0]].id, name: cast[freeActors[0]].name}
 		}
 
-		if (this.createRecs) {
-			// Create New History Record
-			this.dom.newRecord(this.ref.prev, this.ref.name, 'correct');
-		}
-
-		// Update Prompts
 		this.dom.setDialouge(
 			this.brackets(this.ref.name) + ' was also in ' + this.brackets(movie.title),
 			'Can you name another actor in ' + this.brackets(movie.title) + '?'
 		);
 		
-		// Update Reference
-		this.ref.flowMovieGuessingActor.push(movie);
-		this.ref.flowActorGuessingActor.push(actor);
+		this.ref.usedMovies.push(movie);
+		this.ref.usedActors.push(actor);
 		this.ref.prev = movie.title;
 
-		// Set Buttons
 		await this.setBtnsActor(actor.name, actor.id, castIds);
+
+		if (this.log) {
+			console.log('mainUserGuessActor');
+			console.log(this.ref);
+		}
 	}
 	async mainUserGuessMovie() {
-		console.log('mainUserGuessMovie')
+		if (this.log) {
+			console.log('mainUserGuessMovie');
+		}
 		let random = 0;
 		let cast = [];
 		let credits = [];
@@ -348,29 +349,27 @@ class GameLogic {
 		let actor = {};
 		let movie = {};
 
-		// Find Actor in Cast
+		// find actor in cast
 		cast = await this.api.getCast(this.ref.id);
 		cast.forEach((castObj, index) => {
-			if (!this.ref.flowActorGuessingMovie.find(x => x.id === castObj.id)) {
+			if (!this.ref.usedActors.find(x => x.id === castObj.id)) {
 				freeActors.push(index);
 			}
 		});
 		actor = {id: cast[freeActors[0]].id, name: cast[freeActors[0]].name}
 
-		// Get Credits from Actor
+		// get actor's credits
 		credits = await this.api.getCreditsFromActor(actor.id);
 		credits.sort((a, b) => b.vote_count-a.vote_count);
 
-		// Shuffle Credits if CRAZY
 		if (this.ref.crazy) {
-			console.log('crazy mode is on');
 			this.api.shuffle(credits);
 		}
 
-		// Get movie from actor credits & while in the loop also create id list
+		// get movie from actor credits and create id list
 		credits.forEach((creditObj, index) => {
 			creditsIds.push(creditObj.id);
-			if (!this.ref.flowMovieGuessingMovie.find(x => x.id === creditObj.id)) {
+			if (!this.ref.usedMovies.find(x => x.id === creditObj.id)) {
 				freeMovies.push(index);
 			}
 		});
@@ -382,27 +381,26 @@ class GameLogic {
 			movie = {id: credits[freeMovies[0]].id, title: credits[freeMovies[0]].title + ' (' + credits[freeMovies[0]].release_date.substring(0, 4) + ')'}
 		}
 
-		if (this.createRecs) {
-			// Create New History Record
-			this.dom.newRecord(this.ref.prev, this.ref.name, 'correct');
-		}
-
-		// Update Prompts
 		this.dom.setDialouge(
 			this.brackets(actor.name) + ' was also in ' + this.brackets(this.ref.name),
 			'Can you guess another movie ' + this.brackets(actor.name) + ' was in?'
 		);
 
-		// Update Reference
-		this.ref.flowActorGuessingMovie.push(actor);
-		this.ref.flowMovieGuessingMovie.push(movie);
+		this.ref.usedActors.push(actor);
+		this.ref.usedMovies.push(movie);
 		this.ref.prev = actor.name;
 
-		// Set Buttons
 		await this.setBtnsMovie(movie.title, movie.id, creditsIds);
+
+		if (this.log) {
+			console.log('mainUserGuessMovie');
+			console.log(this.ref);
+		}
 	}
-	async switchToActors(actorName) { // updated
-		console.log('switchToActors', actorName)
+	async switchToActors(actorName) {
+		if (this.log) {
+			console.log('switchToActors', actorName);
+		}
 		let pos = 0;
 		let ipActor = {};
 		let credits = [];
@@ -413,14 +411,13 @@ class GameLogic {
 		let actor = {};
 		let exclusions = [];
 
-		// Get Credits from Actor
+		// get credits from actor
 		ipActor = this.api.actors.find(actor => actor.name === actorName);
 		credits = await this.api.getCreditsFromActor(ipActor.altId);
 		credits.sort((a, b) => b.vote_count-a.vote_count);
 		
-		// Get Movie from Actor Credits
+		// get movie from actor's credits
 		if (this.ref.crazy) {
-			console.log('crazy mode is on');
 			credit = credits[Math.floor(Math.random()*credits.length)];
 		} else {
 			credit = credits[0];
@@ -428,39 +425,52 @@ class GameLogic {
 
 		movie = {id: credit.id, title: credit.title + ' (' + credit.release_date.substring(0, 4) + ')'}
 
-		// Get Cast from Movie
+		// get movie cast
 		cast = await this.api.getCast(movie.id);
 
-		// Remove Input Actor From Cast
+		// remove target from cast
 		pos = cast.map(x => x.id).indexOf(ipActor.altId);
 		cast.splice(pos, 1);
 		castIds = cast.map(x => x.id);
 
-		// Create Exclusions List
+		// create exclusions
 		exclusions = castIds.slice();
 		exclusions.push(ipActor.altId);
 
-		// Get Actor from Cast
+		// get actor from cast
 		actor = {id: cast[0].id, name: cast[0].name}
 
-		// Update Reference
-		this.ref.flowActorGuessingActor.push(actor);
-		this.ref.flowMovieGuessingActor.push(movie);
+		this.ref.usedActors.push(actor);
+		this.ref.usedMovies.push(movie);
 		this.ref.prev = movie.title;
 
-		// Update Prompts
 		this.dom.setDialouge(
 			this.brackets(actorName) + ' was in ' + this.brackets(movie.title),
 			'Can you name another actor in ' + this.brackets(movie.title) + '?'
 		);
 
-		// Set Buttons
 		await this.setBtnsActor(actor.name, actor.id, exclusions);
+
+		if (this.log) {
+			console.log('switchToActors');
+			console.log(this.ref);
+		}
 	}
-	async switchToMovies(movieTitle) { // updated
-		console.log('switchToMovies', movieTitle)
+	async switchToMovies(movieTitle) {
+		if (this.log) {
+			console.log('switchToMovies', movieTitle);
+		}
+		if (this.start) {
+			this.socket.emit('game', {
+				score: null,
+				event: 'start',
+				mode: 'bomber',
+				participants: 1,
+				sid: null
+			});
+			this.start = false;
+		}
 		let pos = 0;
-		let ipMovieId = 0;
 		let ipMovie = {};
 		let actor = {};
 		let movie = {};
@@ -470,32 +480,31 @@ class GameLogic {
 		let creditsIds = [];
 		let exclusions = [];
 
-		// Get Movie & Cast from Input
+		// get movie and cast from input
 		ipMovie = this.api.movies.find(m => (m.title + ' (' + m.year + ')') == movieTitle); // update logic to use data attribute instead of string match
 
 		cast = await this.api.getCast(ipMovie.altId);
 		
-		// Select Actor from Cast
+		// select actor from cast
 		actor = {id: cast[0].id, name: cast[0].name}
 
-		// Get Credits from Actor
+		// get credits from actor
 		credits = await this.api.getCreditsFromActor(actor.id);
 
-		// Remove Input Movie from Credits
+		// remove target movie from credits
 		pos = credits.map(x => x.id).indexOf(ipMovie.altId);
 		credits.splice(pos, 1);
 		credits.forEach((x) => creditsIds.push(x.id));
 
-		// Create List of Movies to Exclude from Random Choices
+		// create list of movies to exclude from random choices
 		exclusions = creditsIds.slice();
 		exclusions.push(ipMovie.altId);
 
-		// Sort Credits by Votes
+		// sort credits by votes
 		credits.sort((a, b) => b.vote_count-a.vote_count);
 
-		// Get Movie from Credits
+		// get movie from credits
 		if (this.ref.crazy) {
-			console.log('crazy mode is on');
 			credit = credits[Math.floor(Math.random()*credits.length)];
 		} else {
 			credit = credits[0];
@@ -503,19 +512,21 @@ class GameLogic {
 
 		movie = {id: credit.id, title: credit.title + ' (' + credit.release_date.substring(0, 4) + ')'}
 
-		// Update Reference
-		this.ref.flowActorGuessingMovie.push(actor);
-		this.ref.flowMovieGuessingMovie.push(movie);
+		this.ref.usedActors.push(actor);
+		this.ref.usedMovies.push(movie);
 		this.ref.prev = actor.name;
 
-		// Update Prompts
 		this.dom.setDialouge(
 			this.brackets(actor.name) + ' was in ' + this.brackets(movieTitle),
 			'Can you guess another movie that ' + this.brackets(actor.name) + ' was in?'
 		);
 
-		// Set Buttons
 		await this.setBtnsMovie(movie.title, movie.id, exclusions);
+
+		if (this.log) {
+			console.log('switchToMovies');
+			console.log(this.ref);
+		}
 	}
 	async userPickActor() {
 		let actors = this.api.getRandomActorsNoReq(4);
@@ -526,13 +537,18 @@ class GameLogic {
 		this.ref.clearBigFour();
 		this.ref.type = 'actor';
 		this.ref.reset = true;
+
+		if (this.log) {
+			console.log('userPickActor');
+			console.log(this.ref);
+		}
 	}
 	async userPickMovie(start) {
 		let movies = this.api.getRandomMoviesNoReq(4);
 		let msgA = 'Send it back by picking a movie from the list below.';
 		let msgB = '';
 		if (start) {
-			msgA = "Let's play movie bomber!";
+			msgA = `Let's play movie bomber!`;
 			msgB = 'You can start it off by picking a movie from the list below.'
 		}
 
@@ -540,11 +556,15 @@ class GameLogic {
 			btn.textContent = movies[key];
 		});
 		this.dom.setDialouge(msgA, msgB);
-		
-		// Udate Reference
+
 		this.ref.clearBigFour();
 		this.ref.type = 'movie';
 		this.ref.reset = true;
+
+		if (this.log) {
+			console.log('userPickMovie');
+			console.log(this.ref);
+		}
 	}
 	async setBtnsActor(name, id, cast) {
 		let randomActors = this.api.getRandomActors(3, id, cast);
@@ -556,7 +576,6 @@ class GameLogic {
 		});
 	}
 	async setBtnsMovie(title, id, credits) {
-		console.log('setBtnsMovie', title, id, credits)
 		let randomMovies = await this.api.getRandomMovies(3, id, credits);
 		randomMovies.push(title);
 		this.api.shuffle(randomMovies);
@@ -565,9 +584,11 @@ class GameLogic {
 			btn.textContent = randomMovies[key];
 		});
 	}
-	async eventDriver(userInput, pressedIdx) {
+	async eventDriver(userInput) {
 		if (this.ref.reset === true) {
-			console.log('reset = true')
+			if (this.log) {
+				console.log('reset: true');
+			}
 			this.dom.loaderOn();
 			if (this.ref.type === 'movie') {
 				await this.switchToMovies(userInput);
@@ -582,9 +603,15 @@ class GameLogic {
 			await this.dom.animateCorrect(this.ref.name);
 
 			this.dom.loaderOn();
-
 			this.user.updateScore();
 			this.dom.updateScoreDisplay(this.user.score);
+			this.ref.package.push({
+				t: (this.ref.type === 'movie') ? 'm' : 'a',
+				f: this.ref.prev,
+				a: this.ref.name,
+				s: this.user.score,
+				r: 1
+			});
 
 			if (this.ref.type === 'actor') {
 				await this.mainUserGuessActor();
@@ -592,7 +619,7 @@ class GameLogic {
 			} else if (this.ref.type === 'movie') {
 				await this.mainUserGuessMovie();
 				this.dom.loaderOff();
-			}  
+			}
 		} else {
 			let idx = 0;
 			this.dom.buttons.forEach((b, i) => {
@@ -606,26 +633,35 @@ class GameLogic {
 			this.user.decreaseLives();
 			this.dom.updateLivesDisplay(this.user.lives);
 
-			if (this.createRecs) {
-				this.dom.newRecord(this.ref.prev, userInput, 'incorrect');
+			this.ref.package.push({
+				t: (this.ref.type === 'movie') ? 'm' : 'a',
+				f: this.ref.prev,
+				a: this.ref.name,
+				s: this.user.score,
+				r: -1
+			});
+
+			if (this.user.lives < 5) { //testing
+				this.user.lives = 0;
+				console.log('test mode is on')
 			}
 
-			this.user.lives = 0; // testing
 			if (this.user.lives < 1) {
 				this.dom.hideGamebox();
-				//await restartGame();
 
 				await swal({
 					title: 'Game Over',
 					closeOnClickOutside: false
 				});
 
-				this.socket.emit('score', {
+				this.socket.emit('game', {
 					score: this.user.score,
-					name: this.userId,
-					mode: 'bomber'
+					event: 'end',
+					mode: 'bomber',
+					participants: 1,
+					sid: this.sid || null,
+					package: this.ref.package
 				});
-
 			} else {
 				if (this.ref.type === 'actor') {
 					await this.userPickMovie();
@@ -639,23 +675,33 @@ class GameLogic {
 	}
 }
 
-
 document.addEventListener('DOMContentLoaded', async () => {
 	let socket = io.connect(socketString);
-	console.log('socket connected')
+	console.log('socket connected');
 
-	// Instantiations
-	let mrAPI = new API();
+	let mrAPI = new API(socket);
 	let mrDom = new DOMElements();
 	let mrRef = new Reference();
 	let mrUser = new User();
-	let mrBomber = new GameLogic(mrAPI, mrDom, mrRef, mrUser, true, socket, usernameString, userIdString);
+	let mrBomber = new GameLogic(
+		mrAPI, 
+		mrDom, 
+		mrRef, 
+		mrUser, 
+		socket, 
+		usernameString, 
+		userIdString
+	);
+	
+	socket.on('game', function(data) {
+		if (!mrBomber.sid) {
+			mrBomber.sid = data;
+		}
+	});
 
-	// First Events
 	await mrAPI.fillStarters();
 	await mrBomber.userPickMovie(true);
 
-	// Listeners
 	mrDom.buttons.forEach((btn, index) => {
 		btn.addEventListener('click', async (evt) => {
 			if (btn.disabled) return false;
@@ -667,10 +713,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	mrDom.replay.addEventListener('click', async (evt) => {
 		mrDom.showGamebox();
-	});
-
-	async function restartGame() {
-		console.log('restarting game')
 		mrBomber = null;
 		mrRef = null;
 		mrUser = null;
@@ -682,10 +724,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		mrDom.updateScoreDisplay(mrUser.score);
 		mrDom.loaderOff();
 		await mrBomber.userPickMovie(true);
-	}
+	});
 });
-
-
 
 window.addEventListener('touchstart', function onTouch() {
 	// we could use a class

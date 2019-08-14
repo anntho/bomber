@@ -171,7 +171,7 @@ nav ul a:hover {
 }
 
 .gamebox i.material-icons {
-	color: #11173b;
+	color: #34385a;
 	background-color: #fafafa;
 }
 
@@ -207,7 +207,6 @@ nav ul a:hover {
 	display: flex;
 	border: 2px solid #fafafa;
 	border-radius: 5px;
-	background-color: #34385a;
 }
 
 .stuff div {
@@ -227,7 +226,7 @@ nav ul a:hover {
 
 .scontainer .icon {
 	padding: 2%;
-	color: #cccccc;
+	color: #fafafa;
 	font-weight: 700;
 	font-size: 12px;
 }
@@ -236,6 +235,7 @@ nav ul a:hover {
 	padding: 2%;
 	font-size: 1.5rem;
 	font-weight: 700;
+	color: #01d277;
 }
 
 
@@ -274,7 +274,7 @@ nav ul a:hover {
 	background-color: #fafafa;
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
-	color: #11173b;
+	color: #34385a;
 	overflow: hidden;
 	display: flex;
 	flex-wrap: wrap;
@@ -316,13 +316,13 @@ nav ul a:hover {
 
 .bcontainer i {
 	background-color: #fff;
-	color: #13172f;
+	color: #34385a;
 }
 
 .hover:hover {
 	font-weight: 700;
 	background-color: #fff;
-	color: #11173b;
+	color: #34385a;
 }
 
 .bcontainer .icon {
@@ -342,7 +342,7 @@ nav ul a:hover {
 	background-color: #fafafa;
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
-	color: #11173b;
+	color: #34385a;
 	height: 50px;
 	display: flex;
 	align-items: center;
@@ -447,7 +447,7 @@ input[type=search]:not(.browser-default) {
 }
 
 .line-scale > div {
-	background-color: #11173b;
+	background-color: #34385a;
 }
 
 /* --------------------------------- */
@@ -487,7 +487,7 @@ a.myscore {
         -webkit-transform: scale(1);
     }
     50% {
-        -webkit-transform: scale(1.1);
+        -webkit-transform: scale(1.9);
     }
     100% {
         -webkit-transform: scale(1);

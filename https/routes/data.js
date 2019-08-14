@@ -8,15 +8,26 @@ const ss = require('string-similarity');
 const config = require('../bin/config');
 const { shuffle } = require('../lib/helpers');
 
-// MySQL Config
+// mysql config
 const dataPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 
-// API Config
+// api config
 const TMDB_KEY = `?api_key=${config.tmdb.key}`;
 const URL_BASE = 'https://api.themoviedb.org/3';
 
-// API Endpoints
+async function checkToken(req, res, next) {
+	console.log(req.query)
+	if (req.query.token &&
+		req.query.token === config.auth.AA) {
+		return next();
+	} else {
+		res.sendStatus(401);
+	}
+}
+
+router.use(checkToken);
+
 router.get('/movie/:movieId', async (req, res) => {
 	let id = req.params.movieId;
 	let uri = URL_BASE + '/movie/' + id + TMDB_KEY;

@@ -47,7 +47,8 @@ router.get('/', async (req, res) => {
 	}
 	res.render('land', {
 		user: req.session.user || null,
-		newUsers: newUsers || null
+		newUsers: newUsers || null,
+		socket: socket
 	});
 });
 
@@ -67,8 +68,17 @@ router.get('/bomber', (req, res) => {
 });
 
 router.get('/classic', (req, res) => {
+	let username = null;
+	let userId = null;
+	if (req.session.user) {
+		username = req.session.user.username;
+		userId = req.session.user.id;
+	}
 	res.render('classic', {
-		user: req.session.user || null
+		user: req.session.user || null,
+		username: username,
+		userId: userId,
+		socket: socket
 	});
 });
 
@@ -166,6 +176,7 @@ router.get('/privacy', (req, res) => {
 });
 
 router.get('/verify', async (req, res) => {
+	console.log('verify route');
 	if (req.session.user &&
 		req.session.user.verified
 	) {

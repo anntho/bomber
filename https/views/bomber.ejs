@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="/css/materialize.min.css">
 	<link rel="stylesheet" href="/css/loaders.css">
 	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="/css/bomber.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
 </head>
@@ -24,7 +25,7 @@
 					<p>
 						<a id="myscore" class="myscore">LEADERBOARD</a>
 					</p>
-					<i class="material-icons pulse replay">autorenew</i>
+					<i id="restartBtn" class="material-icons pulse replay">autorenew</i>
 				</div>
 				<!-- start: gamebox -->
 				<div id="gamebox" class="gamebox z-index-4">
@@ -33,31 +34,28 @@
 							<div class="icon">SCORE</div>
 							<div class="stat text" id="score">0</div>
 						</div>
-			
 						<div class="scontainer">
 							<div class="icon">LIVES</div>
 							<div class="stat text" id="lives">6</div>
 						</div>
 					</div>
-					<br><h6 class="heavy">PROMPTS</h6><br>
+					<% if (user) { %>
+						<h4><%-user.username%></h4>
+					<% } else { %>
+						<br>
+					<% } %>
+					<h6 class="heavy">PROMPTS</h6><br>
 					<div class="prompts">
 						<div class="pcontainer z-index-4">
 							<div class="icon">
-								<i class="material-icons">face</i>
+								<i id="face" class="material-icons">face</i>
+								<i id="faceLoader" class="material-icons" style="display: none;">face</i>
 							</div>
 							<div class="text">
 								<div class="prompt slide" id="prompt-a"></div>
 								<div class="prompt slide" id="prompt-b"></div>
 								<div class="loader" id="loader">
 									<div class="line-scale">
-										<div></div>
-										<div></div>
-										<div></div>
-										<div></div>
-										<div></div>
-										<div></div>
-										<div></div>
-										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>

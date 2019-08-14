@@ -15,7 +15,11 @@ router.get('/:id', async (req, res) => {
 	try {
 		let grid = await procHandler(usersPool, sql, inputs);
 		if (!grid[0]) {
-			res.sendStatus(404);
+			res.render('404', {
+				user: req.session.user || null,
+				socket: socket,
+				username: username
+			});
 		} else {
 			console.log(grid[0]);
 			res.render('profile', {

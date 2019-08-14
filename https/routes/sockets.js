@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const https = require('https');
-const fs = require('fs');
-const path = require('path');
 const mysql = require('mysql');
+const fetch = require('node-fetch');
 const bcrypt = require('bcryptjs');
 const randomString = require('crypto-random-string');
 const { sendEmail } = require('../lib/email');
@@ -11,6 +10,10 @@ const { sendEmail } = require('../lib/email');
 const config = require('../bin/config');
 const session = require('../bin/session');
 const line = '---------------------------------';
+
+// TMDb API
+const TMDB_KEY = `?api_key=${config.tmdb.key}`;
+const URL_BASE = 'https://api.themoviedb.org/3';
 
 // Database Config
 const socketPool = mysql.createPool(config.mysql);
@@ -32,10 +35,89 @@ io.use((socket, next) => {
 });
 
 io.on('connection', (socket) => {
-	console.log('connected on', socket.id);
+	console.log(`connected on ${socket.id} : ${socket.handshake.address}`);
 	if (socket.request.session.user) {
 		console.log('user logged in as', socket.request.session.user.username);
 	}
+
+	socket.on('movieList', async () => {
+		try {
+			let results = await procHandler(socketPool, 'CALL sp_GetAllMovies()', null);
+			socket.emit('movieList', results);
+		} catch (err) {
+			console.log(err);
+			socket.emit('err');
+		}
+	});
+
+	socket.on('actorList', async () => {
+		try {
+			let results = await procHandler(socketPool, 'CALL sp_GetAllActors()', null);
+			socket.emit('actorList', results);
+		} catch (err) {
+			console.log(err);
+			socket.emit('err');
+		}
+	});
+
+	socket.on('starters', async () => {
+		try {
+			let movies = await procHandler(socketPool, 'CALL sp_GetAllMovies()', null);
+			let actors = await procHandler(socketPool, 'CALL sp_GetAllActors()', null);
+			socket.emit('starters', {
+				movies: movies,
+				actors: actors
+			});
+		} catch (err) {
+			console.log(err);
+			socket.emit('err');
+		}
+	});
+
+	socket.on('getMovie', async (id) => {
+		if (!id) {
+			socket.emit('err');
+		} else {
+			try {
+				let uri = URL_BASE + '/movie/' + id + TMDB_KEY;
+				let response = await fetch(uri);
+				let data = await response.json();
+				socket.emit('getMovie', data);
+			} catch (err) {
+				socket.emit('err');
+			}
+		}
+	});
+
+	socket.on('getCast', async (id) => {
+		if (!id) {
+			socket.emit('err');
+		} else {
+			try {
+				let uri = URL_BASE + '/movie/' + id + '/credits' + TMDB_KEY;
+				let response = await fetch(uri);
+				let data = await response.json();
+				socket.emit('getCast', data);
+			} catch (err) {
+				socket.emit('err');
+			}
+		}
+	});
+
+	socket.on('getCredits', async (id) => {
+		if (!id) {
+			socket.emit('err');
+		} else {
+			try {
+				let uri = URL_BASE + '/person/' + id + '/movie_credits' + TMDB_KEY;
+				let response = await fetch(uri);
+				let data = await response.json();
+				socket.emit('getCredits', data);
+			} catch (err) {
+				socket.emit('err');
+			}
+		}
+	});
 
 	// Check Live
 	socket.on('live', async () => {
@@ -62,14 +144,67 @@ io.on('connection', (socket) => {
 		}
 	});
 
+	socket.on('getUsers', async () => {
+		try {
+			let results = await procHandler(socketPool, 'CALL sp_GetAllUsers()', null);
+			socket.emit('getUsers', results);
+		} catch (err) {
+			console.log(err);
+			socket.emit('err');
+		}
+	});
 
+	// echo
+	socket.on('echo', async (data) => {
+		console.log('echo...')
+		socket.emit('echo', data);
+	});
 
+	// save game
+	socket.on('game', async (data) => {
+		console.log('Game data:');
+		console.log(data);
+		console.log(line);
 
+		let userId = null;
 
-	// Save Score
-	socket.on('score', async (data) => {
-		console.log('received')
-		console.log(data)
+		if (socket.request.session &&
+			socket.request.session.user) {
+			console.log(socket.request.session.user.username);
+			console.log(line);
+			userId = socket.request.session.user.id;
+		} else {
+			return false;
+		}
+
+		try {
+			let sid = data.sid || randomString({length: 32});
+			let proc = 'CALL sp_InsertGame(?, ?, ?, ?, ?, ?)';
+			let inputs = [sid, userId, data.score, data.event, data.mode, data.participants];
+			let results = await procHandler(socketPool, proc, inputs);
+			let newRowId = results[0].newRowId;
+
+			if (data.event === 'start') {
+				socket.emit('game', sid);
+			}
+
+			if (results && 
+				results[0] && 
+				data.event === 'end') {
+				try {
+					let proc = 'CALL sp_InsertPackage(?, ?, ?)';
+					let uglyPackage = JSON.stringify(data.package);
+					let inputs = [newRowId, sid, uglyPackage];
+					await procHandler(socketPool, proc, inputs);
+					socket.emit('complete');
+				} catch (err) {
+					console.log(err);
+					socket.emit(err);
+				}
+			}
+		} catch (err) {
+			console.log(err);
+		}
 	});
 
 
@@ -90,7 +225,6 @@ io.on('connection', (socket) => {
 
 		if (data.type === 'username') {
 			let error = '';
-			console.log(user)
 			if (user.changedUsername == 1) {
 				error = 'You are only allowed to edit your username once.';
 				return socket.emit('err', error);

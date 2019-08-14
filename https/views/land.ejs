@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="/css/loaders.css">
 	<link rel="stylesheet" href="/css/mb.css">
 	<link rel="stylesheet" href="/css/land.css">
+	<link rel="stylesheet" href="/css/easy-autocomplete.min.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
 </head>
@@ -22,30 +23,17 @@
 			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
 				<br>
 				<h6>Welcome to moviebomber.org</h6>
-				<h2>Name any movie...</h2>
-
-				<div class="row">
-					<div class="input-field col s12">
-						<input type="text">
-					</div>
-				</div>
-
-				<div>
-					<span id="response">
-						<span>That's</span>
-						<span>a</span>
-						<span>Great</span>
-						<span>Movie!</span>
-						<a id="what" href="https://www.youtube.com/watch?v=0isvq7-vBqk">I don't get it...</a>
-					</span>
-				</div>
-
+				<br>
+				<h4 class="valign-wrapper">
+					<i class="material-icons left">equalizer</i>
+					by the numbers.
+				</h4>
 				<canvas id="myChart"></canvas>
 
 				<br>
 				<h5 class="valign-wrapper">
 					<i class="material-icons left">import_contacts</i>
-					new users log.
+					new users.
 				</h5>
 				<% if (newUsers) { %>
 					<% newUsers.forEach(u => { %>
@@ -61,8 +49,14 @@
 
 	<% include ./footer %>
 
+	<script>
+		var socketString = <%-JSON.stringify(socket)%>;
+	</script>
 	<script src="/js/jquery.slim.min.js"></script>
 	<script src="/js/Chart.bundle.min.js"></script>
+	<script src="/js/jquery.easy-autocomplete.min.js"></script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/nav.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
 	<script src="/js/land.js"></script>
