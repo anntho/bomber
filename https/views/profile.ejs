@@ -33,17 +33,42 @@
 						<span class="title">Joined</span>
 					</div>
 					<div class="col s4">
-						<span id="dateJoined" class="data"><%-new Date(grid.DateJoined).toISOString().split('T')[0];%></span>
+						<span id="dateJoined" class="data"><%-new Date(user.created).toISOString().split('T')[0];%></span>
 					</div>
 				</div>
 				<div class="row valign-wrapper">
 					<div class="col s8">
-						<span class="title">Games Played</span>
+						<span class="title">Rank</span>
 					</div>
 					<div class="col s4">
-						<span id="gamesPlayed" class="data">...</span>
+						<span id="rank" class="data"><%-user.name.toUpperCase()%></span>
 					</div>
 				</div>
+
+				<br><canvas id="userChart"></canvas><br>
+				<h4>Games</h4>
+				<table class="responsive-table">
+        			<thead>
+          				<tr>
+              				<th>Score</th>
+              				<th>Type</th>
+							<th>Date</th>
+							<th>Action</th>
+          				</tr>
+        			</thead>
+					<tbody>
+						<% if (games && games.length) { %>
+							<% games[0].forEach(game => { %>
+								<tr>
+									<td><%-game.score%></td>
+									<td><%-game.mode%></td>
+									<td><%-new Date(game.created).toISOString().split('T')[0];%></td>
+									<td><a href="/game/<%-game.sid%>">view</a></td>
+								</tr>
+							<% }); %>
+						<% } %>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</main>
@@ -52,8 +77,10 @@
 
 	<script>
 		const socketString = <%-JSON.stringify(socket)%>;
+		const chart = <%-JSON.stringify(chart)%>;
 	</script>
-	<script src="/js/jquery.slim.min.js"></script>
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/Chart.bundle.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
 	<script src="/js/profile.js"></script>
 	<script src="/js/materialize.min.js"></script>

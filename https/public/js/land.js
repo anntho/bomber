@@ -1,10 +1,4 @@
 $(document).ready(function() {
-    $('input').keypress(function(evt) {
-        if (evt.which == 13) {
-            $('#response').show();
-        }
-    })
-
     var ctx = $('#myChart');
     var myChart = new Chart(ctx, {
         type: 'bar',

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | trivia</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="Movies, Trivia, Free Trivia, Free Movie Trivia">
+	<meta name="robots" content="index,follow">
+	<meta name="description" content="Classic mode is an arcade style trivia game, where user guesses the actor or actress that appears in the movie displayed.">
+	<link rel="stylesheet" href="/css/loaders.css">
+	<link rel="stylesheet" href="/css/materialize.min.css">
+	<link rel="stylesheet" href="/css/mb.css">
+	<link rel="stylesheet" href="/css/classic.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
+</head>
+<body>
+	<% include ./nav %>
+
+	<main>
+		<div class="top-wrapper row">
+			<div class="content-wrapper col s12 l8 offset-l2 xl6 offset-xl3">
+				<div class="gameover">
+					<p class="go">GAME OVER</p>
+					<i class="material-icons pulse replay">autorenew</i>
+				</div>
+				<div class="gamebox">
+					<div class="stuff">
+						<div class="scontainer">
+							<div class="icon">SCORE</div>
+							<div class="stat text" id="score">0</div>
+						</div>
+						<div class="scontainer">
+							<div class="icon">LIVES</div>
+							<div class="stat text" id="lives">6</div>
+						</div>
+					</div>
+					<br>
+					<div class="movie-title">
+						<div id="title" class="heavy">loading..</div>
+					</div>
+					<br>
+					<div class="pretty-wrapper">
+						<div class="poster-wrapper">
+							<div id="poster" class="image z-depth-4 fade"></div>
+							<div id="loader" class="image z-depth-4 loader">
+								<div class="line-scale">
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+									<div></div>
+								</div>
+							</div>
+						</div>
+						<div class="buttons">
+							<div id="a" class="button waves-effect z-depth point"></div>
+							<div id="b" class="button waves-effect z-depth point"></div>
+							<div id="c" class="button waves-effect z-depth point"></div>
+							<div id="d" class="button waves-effect z-depth point"></div>
+						</div>
+					</div>
+					<br>
+					<h6>Overview</h6>
+					<p class="divider"></p>
+					<p id="overview"></p>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<% include ./footer %>
+	<script>
+		const socketString = <%-JSON.stringify(socket)%>;
+		const usernameString = <%-JSON.stringify(username)%>;
+		const userIdString = <%-JSON.stringify(userId)%>;
+	</script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/classic.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+</body>
+</html>

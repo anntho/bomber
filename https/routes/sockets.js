@@ -178,32 +178,33 @@ io.on('connection', (socket) => {
 		}
 
 		try {
-			let sid = data.sid || randomString({length: 32});
-			let proc = 'CALL sp_InsertGame(?, ?, ?, ?, ?, ?)';
-			let inputs = [sid, userId, data.score, data.event, data.mode, data.participants];
-			let results = await procHandler(socketPool, proc, inputs);
-			let newRowId = results[0].newRowId;
-
-			if (data.event === 'start') {
-				socket.emit('game', sid);
-			}
-
-			if (results && 
-				results[0] && 
-				data.event === 'end') {
-				try {
-					let proc = 'CALL sp_InsertPackage(?, ?, ?)';
-					let uglyPackage = JSON.stringify(data.package);
-					let inputs = [newRowId, sid, uglyPackage];
-					await procHandler(socketPool, proc, inputs);
-					socket.emit('complete');
-				} catch (err) {
-					console.log(err);
-					socket.emit(err);
+			if (!data.sid && data.event === 'start') {
+				let sid = randomString({length: 32});
+				let proc = 'CALL sp_InsertGame(?, ?, ?, ?, ?, ?)';
+				let inputs = [sid, userId, data.score, data.event, data.mode, data.participants];
+				let results = await procHandler(socketPool, proc, inputs);
+				let newRowId = results[0].newRowId;
+				if (newRowId) {
+					socket.emit('game', sid);
 				}
+			} else if (data.sid && data.event === 'end') {
+				let updateProc = 'CALL sp_UpdateGame(?, ?, ?)';
+				let updateInputs = [data.sid, data.event, data.score];
+				await procHandler(socketPool, updateProc, updateInputs);
+
+				if (data.package) {
+					let insertProc = 'CALL sp_InsertPackage(?, ?)';
+					let uglyPackage = JSON.stringify(data.package);
+					let insertInputs = [data.sid, uglyPackage];
+					await procHandler(socketPool, insertProc, insertInputs);
+					socket.emit('complete');
+				}
+			} else {
+				socket.emit('err');
 			}
 		} catch (err) {
 			console.log(err);
+			socket.emit('err');
 		}
 	});
 
@@ -334,7 +335,7 @@ io.on('connection', (socket) => {
 
 		if (updateSession) {
 			// Update Session
-			let updateSessionProc = 'CALL sp_FindUserById(?)';
+			let updateSessionProc = 'CALL sp_GetUserById(?)';
 			let updateSessionInputs = [user.id];
 			let reUser = await procHandler(socketPool, updateSessionProc, updateSessionInputs);
 			console.log('user lookup');
@@ -417,7 +418,7 @@ io.on('connection', (socket) => {
 		console.log(line);
 
 		try {
-			const sql = `CALL sp_findUser(?)`;
+			const sql = `CALL sp_GetUser(?)`;
 			const inputs = [data.username];
 			const user = await procHandler(socketPool, sql, inputs);
 			
@@ -467,18 +468,18 @@ io.on('connection', (socket) => {
 		} else {
 			try {
 				// Check if Username Exists
-				const findUserSQL = `CALL sp_findUser(?)`;
-				const findUserInputs = [uname];
-				const foundUser = await procHandler(socketPool, findUserSQL, findUserInputs);
+				const getUserSQL = `CALL sp_GetUser(?)`;
+				const getUserInputs = [uname];
+				const foundUser = await procHandler(socketPool, getUserSQL, getUserInputs);
 				
 				if (foundUser && foundUser.length) {
 					error = 'That username is unavailable, please try a different one';
 					return socket.emit('err', error);
 				} else {
 					// Check if Email Exists
-					const findEmailSQL = `CALL sp_findUserByEmail(?)`;
-					const findEmailInputs = [email];
-					const foundEmail = await procHandler(socketPool, findEmailSQL, findEmailInputs);
+					const getEmailSQL = `CALL sp_GetUserByEmail(?)`;
+					const getEmailInputs = [email];
+					const foundEmail = await procHandler(socketPool, getEmailSQL, getEmailInputs);
 
 					if (foundEmail && foundEmail.length) {
 						error = 'An account is already registered with that email address';
@@ -496,7 +497,7 @@ io.on('connection', (socket) => {
 									const code = randomString({length: 32, type: 'url-safe'});
 									const encodedVerificationString = Buffer.from(`${email}:${code}`).toString('base64');
 
-									const newUserSQL = 'CALL sp_CreateUser(?, ?, ?, ?)';
+									const newUserSQL = 'CALL sp_InsertUser(?, ?, ?, ?)';
 									const newUserInputs = [uname, email, hash, code]; // save raw code, but email base64 encoded
 									const newUser = await procHandler(socketPool, newUserSQL, newUserInputs);
 
