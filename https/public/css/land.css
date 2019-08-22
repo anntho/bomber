@@ -33,3 +33,7 @@ canvas {
     color: #01d277;
     font-size: 30px;
 }
+
+.newUser a {
+    font-size: 18px;
+}

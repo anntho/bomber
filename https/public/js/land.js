@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    console.log(metrics)
     var ctx = $('#myChart');
     var myChart = new Chart(ctx, {
         type: 'bar',
@@ -6,7 +7,7 @@ $(document).ready(function() {
             labels: ['Bomber', 'Classic', 'Trivia', 'Community', 'Articles'],
             datasets: [{
                 label: 'Totals',
-                data: [12, 19, 3, 1, 6],
+                data: [metrics.bomber, metrics.classic, metrics.trivia, 0, metrics.articles],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',

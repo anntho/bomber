@@ -2,28 +2,11 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const swearjar = require('swearjar');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-
 const config = require('../bin/config');
 const socket = `${config.socket.host}:${config.socket.port}`;
-
-// Mongoose Models
 const Article = require('../models/article');
-
-// MySQL Config
 const pagesPool = mysql.createPool(config.mysql);
 const { procHandler, procHandler2 } = require('../lib/sql');
-
-// Security
-router.use(helmet());
-const limiter = new rateLimit({
-	windowMs: 1*60*1000,
-	max: 2,
-	delayMs: 0
-});
-
-// Authentication Middleware
 const { authenticated } = require('../bin/auth');
 
 router.get('/live', authenticated, (req, res) => {
@@ -39,15 +22,30 @@ router.get('/live', authenticated, (req, res) => {
 
 router.get('/', async (req, res) => {
 	let newUsers = [];
+	let totals = {};
 	try {
-		let response = await procHandler(pagesPool, 'CALL sp_GetNewUsers()', null);
-		newUsers = response.map(x => x.username);
+		let getNewUsers = await procHandler(pagesPool, 'CALL sp_GetNewUsers()', null);
+		let siteMetrics = await procHandler2(pagesPool, 'CALL sp_SiteMetrics()', null);
+		let articles = await Article.find({}).exec();
+		let bomberTotal = siteMetrics[0].find(m => m.mode === 'bomber');
+		let classicTotal = siteMetrics[0].find(m => m.mode === 'classic');
+		let triviaTotal = siteMetrics[0].find(m => m.mode === 'trivia');
+		let usersTotal = siteMetrics[1][0];
+		totals = {
+			bomber: (bomberTotal) ? bomberTotal.total : 0,
+			classic: (classicTotal) ? classicTotal.total : 0,
+			trivia: (triviaTotal) ? triviaTotal.total : 0,
+			articles: articles.length || 0,
+			users: (usersTotal) ? usersTotal.total : 0
+		}
+		newUsers = getNewUsers.map(x => x.username);
 	} catch (err) {
 		console.log(err);
 	}
 	res.render('land', {
 		user: req.session.user || null,
 		newUsers: newUsers || null,
+		metrics: totals,
 		socket: socket
 	});
 });
@@ -75,6 +73,21 @@ router.get('/classic', (req, res) => {
 		userId = req.session.user.id;
 	}
 	res.render('classic', {
+		user: req.session.user || null,
+		username: username,
+		userId: userId,
+		socket: socket
+	});
+});
+
+router.get('/trivia', (req, res) => {
+	let username = null;
+	let userId = null;
+	if (req.session.user) {
+		username = req.session.user.username;
+		userId = req.session.user.id;
+	}
+	res.render('trivia', {
 		user: req.session.user || null,
 		username: username,
 		userId: userId,

@@ -50,7 +50,8 @@
 	<% include ./footer %>
 
 	<script>
-		var socketString = <%-JSON.stringify(socket)%>;
+		const socketString = <%-JSON.stringify(socket)%>;
+		const metrics = <%-JSON.stringify(metrics)%>;
 	</script>
 	<script src="/js/jquery.slim.min.js"></script>
 	<script src="/js/Chart.bundle.min.js"></script>
