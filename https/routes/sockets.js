@@ -119,6 +119,15 @@ io.on('connection', (socket) => {
 		}
 	});
 
+	socket.on('getQuestions', async (id) => {
+		try {
+			let questions = await procHandler(socketPool, 'CALL sp_GetQuestions()', null);
+			socket.emit('getQuestions', questions);
+		} catch (err) {
+			console.log(err);
+		}
+	});
+
 	// Check Live
 	socket.on('live', async () => {
 		if (socket.request.session.user) {
