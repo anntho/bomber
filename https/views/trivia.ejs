@@ -28,16 +28,16 @@
 					<div class="stuff">
 						<div class="scontainer">
 							<div class="icon">SCORE</div>
-							<div class="stat text" id="score">0</div>
+							<div class="stat text" id="score"></div>
 						</div>
 						<div class="scontainer">
 							<div class="icon">LIVES</div>
-							<div class="stat text" id="lives">6</div>
+							<div class="stat text" id="lives"></div>
 						</div>
 					</div>
 					<br>
 					<div class="movie-title">
-						<div id="title" class="heavy">loading..</div>
+						<div id="title" class="heavy"></div>
 					</div>
 					<br>
 					<div class="pretty-wrapper">
@@ -51,10 +51,6 @@
 							<div id="d" class="button waves-effect z-depth point"></div>
 						</div>
 					</div>
-					<br>
-					<h6>Overview</h6>
-					<p class="divider"></p>
-					<p id="overview"></p>
 				</div>
 			</div>
 		</div>
@@ -65,6 +61,7 @@
 		const socketString = <%-JSON.stringify(socket)%>;
 		const usernameString = <%-JSON.stringify(username)%>;
 		const userIdString = <%-JSON.stringify(userId)%>;
+		const questions = <%-JSON.stringify(questions)%>;
 	</script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
 	<script src="/js/jquery.slim.min.js"></script>

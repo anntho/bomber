@@ -80,19 +80,26 @@ router.get('/classic', (req, res) => {
 	});
 });
 
-router.get('/trivia', (req, res) => {
+router.get('/trivia', async (req, res) => {
 	let username = null;
 	let userId = null;
 	if (req.session.user) {
 		username = req.session.user.username;
 		userId = req.session.user.id;
 	}
-	res.render('trivia', {
-		user: req.session.user || null,
-		username: username,
-		userId: userId,
-		socket: socket
-	});
+	try {
+		let questions = await procHandler(pagesPool, 'CALL sp_GetQuestions()', null);
+		res.render('trivia', {
+			user: req.session.user || null,
+			username: username,
+			userId: userId,
+			socket: socket,
+			questions: questions
+		});
+	} catch (err) {
+		console.log(err);
+		res.sendStatus(500);
+	}
 });
 
 router.get('/login', (req, res) => {
