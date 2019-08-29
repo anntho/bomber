@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="/css/loaders.css">
 	<link rel="stylesheet" href="/css/materialize.min.css">
 	<link rel="stylesheet" href="/css/mb.css">
-	<link rel="stylesheet" href="/css/classic.css">
+	<link rel="stylesheet" href="/css/trivia.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700">
 </head>
@@ -19,13 +19,26 @@
 
 	<main>
 		<div class="top-wrapper row">
-			<div class="content-wrapper col s12 l8 offset-l2 xl6 offset-xl3">
-				<div class="gameover">
-					<p class="go">GAME OVER</p>
-					<i class="material-icons pulse replay">autorenew</i>
+			<div class="content-wrapper col s12">
+
+				<div id="gameover" class="gameover row">
+					<div class="col s12">
+						<span class="go">game over</span>
+					</div>
+					<div class="col s12">
+						<span class="go">score: <span id="finalScore"></span></span>
+					</div>
+					<div class="col s12">
+						<p>
+							<a id="restart" class="waves-effect waves-light btn">
+								<i class="material-icons left">autorenew</i>play again
+							</a>
+						</p>
+					</div>
 				</div>
-				<div class="gamebox">
-					<div class="stuff">
+
+				<div id="gamebox" class="gamebox">
+					<div class="stuff mb-3">
 						<div class="scontainer">
 							<div class="icon">SCORE</div>
 							<div class="stat text" id="score"></div>
@@ -35,20 +48,27 @@
 							<div class="stat text" id="lives"></div>
 						</div>
 					</div>
-					<br>
-					<div class="movie-title">
+
+					<div class="movie-title mb-3">
 						<div id="title" class="heavy"></div>
 					</div>
-					<br>
-					<div class="pretty-wrapper">
-						<div class="poster-wrapper">
-							<div id="question" class="image"></div>
-						</div>
-						<div class="buttons">
-							<div id="a" class="button waves-effect z-depth point"></div>
-							<div id="b" class="button waves-effect z-depth point"></div>
-							<div id="c" class="button waves-effect z-depth point"></div>
-							<div id="d" class="button waves-effect z-depth point"></div>
+
+					<div id="question" class="mb-3"></div>
+
+					<div class="buttons">
+						<div class="row">
+							<div class="col s12 m6">
+								<div id="a" class="button waves-effect z-depth point"></div>
+							</div>
+							<div class="col s12 m6">
+								<div id="b" class="button waves-effect z-depth point"></div>
+							</div>
+							<div class="col s12 m6">
+								<div id="c" class="button waves-effect z-depth point"></div>
+							</div>
+							<div class="col s12 m6">
+								<div id="d" class="button waves-effect z-depth point"></div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -57,6 +77,7 @@
 	</main>
 
 	<% include ./footer %>
+
 	<script>
 		const socketString = <%-JSON.stringify(socket)%>;
 		const usernameString = <%-JSON.stringify(username)%>;

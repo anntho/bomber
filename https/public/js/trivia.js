@@ -13,8 +13,8 @@ $(document).ready(function() {
     }
 
     function setDisplay(question) {
-        document.getElementById('question').textContent = question.question;
-        document.getElementById('title').textContent = (currentIndex + 1) + '/' + questions.length;
+        $('#question').text(question.question);
+        $('#title').text((currentIndex + 1) + '/' + questions.length);
         var list = [];
         list.push(question.correct);
         list.push(question.incorrectFirst);
@@ -28,8 +28,8 @@ $(document).ready(function() {
     }
     
     function load() {
-        document.getElementById('score').textContent = score;
-        document.getElementById('lives').textContent = lives;
+        $('#score').text(score);
+        $('#lives').text(lives);
         var question = questions[currentIndex];
         setDisplay(question);
         currentIndex = currentIndex + 1;
@@ -43,9 +43,12 @@ $(document).ready(function() {
         } else {
             lives = lives - 1;
             if (lives === 0) {
+                result('Incorrect', 'error');
+                $('#finalScore').text(score);
                 document.getElementById('lives').textContent = lives;
-                alert('game over');
-            } else {
+                $('#gamebox').hide();
+                $('#gameover').show();
+            } else if (lives > 0) {
                 result('Incorrect', 'error');
             }
         }
@@ -62,6 +65,16 @@ $(document).ready(function() {
     }
 
     load();
+
+    $('#restart').click(function() {
+        lives = 6;
+        score = 0;
+        currentIndex = 0;
+        $('#lives').text(lives);
+        $('#score').text(score);
+        $('#gameover').hide();
+        $('#gamebox').show();
+    });
 
     document.querySelectorAll('.button').forEach(function(btn) {
         btn.addEventListener('click', function() {
