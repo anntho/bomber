@@ -8,6 +8,20 @@ body, html {
 	background-color: #212331;
 }
 
+.mb-purple-text { color: #c63493 !important }
+.mb-neon-blue-text { color: #00CED1 !important }
+.mb-orange-text { color: #ef8321 !important } 
+.mb-green-text { color: #1ed760 !important }
+.mb-grey-blue-text { color: #5f727f !important }
+.mb-grey-blue-light-text { color: #99a9b5 !important }
+
+.mb-purple { background-color: #c63493 !important }
+.mb-neon-blue { background-color: #00CED1 !important }
+.mb-orange { background-color: #ef8321 !important } 
+.mb-green { background-color: #1ed760 !important }
+.mb-grey-blue { background-color: #5f727f !important }
+.mb-grey-blue-light { background-color: #99a9b5 !important }
+
 main {
 	min-height: -moz-calc(100% - 56px);
 	min-height: -webkit-calc(100% - 56px);
@@ -16,6 +30,10 @@ main {
 }
 
 footer.page-footer {
+	background-color: #181828;
+}
+
+.page-footer .footer-copyright {
 	background-color: #181828;
 }
 
@@ -120,7 +138,7 @@ nav ul a {
 }
 
 nav ul a:hover {
-	font-weight: 700;
+	background-color: rgba(0, 0, 0, 0);
 }
 
 .sidenav {
@@ -163,10 +181,6 @@ nav ul a:hover {
 
 .dropdown-content li > a {
 	color: #fafafa;
-}
-
-.dropdown-content li:hover {
-	color: 
 }
 
 .content-wrapper {

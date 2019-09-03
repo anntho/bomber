@@ -1,6 +1,5 @@
 h5 i.material-icons {
     padding-right: 15px;
-    color: #9e9e9e;
 }
 
 input[type=password]:not(.browser-default),
@@ -15,4 +14,9 @@ input[type=email]:not(.browser-default) {
 
 .btn-large {
     max-width: 300px;
+}
+
+h5 a:hover {
+    color: #00CED1 !important;
+    cursor: pointer !important;
 }

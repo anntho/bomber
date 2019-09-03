@@ -8,41 +8,46 @@ $(document).ready(async function() {
 		report('error', 'Error', data);
 	});
 
-	socket.on('success', function(data) {
-		if (data && data.location) {
-			window.location.href = data;
-		} else if (data && data.username) {
-			swal.stopLoading();
-    		swal.close();
-    		$('#navUsername').text(data.username);
-    		document.title = 'moviebomber.org | ' + data.username;
-    		report('success', 'success');
-		} else {
-			swal.stopLoading();
-    		swal.close();
-    		report('success', 'success', data);
-		}
+	function sweetalert(icon, title, text, content, buttons, button) {
+		return swal({
+			icon: icon,
+			title: title,
+			text: text,
+			content: content,
+			buttons: buttons,
+			closeOnClickOutside: false
+		});
+	}
+
+	socket.on('editUsername', function(data) {
+		swal.stopLoading();
+		swal.close();
+		$('#navUsername').text(data.username);
+		document.title = 'moviebomber.org | ' + data.username;
+		sweetalert('success', 'success', null, null, [false, true]);
 	});
 
 	$('#editUsername').click(function() {
-		swal({
-			text: 'Enter a new username',
-			content: 'input',
-			buttons: true
-		}).then(name => {
+		sweetalert(
+			null,
+			'enter a new username',
+			'you can only do this once',
+			'input',
+			['Cancel', 'Submit']
+		).then(name => {
 			if (!name) {
 				swal.stopLoading();
-    			swal.close();
+				swal.close();
 			} else {
-				var checkInvalid = /[^0-9a-z_]/gi;
-				if (name.match(checkInvalid)) {
-					return swal('Invalid username format');
+				var invalid = /[^0-9a-z_]/gi;
+				if (name.match(invalid)) {
+					sweetalert('error', 'error', 'invalid name format', null, [false, true]);
 				} else if (name.length < 5 || name.length > 15 ) {
-					return swal('Username must be between 5 and 15 characters long');
+					sweetalert('error', 'username must be between 5 and 15 characters long', null, [false, true]);
 				} else {
-					socket.emit('updateUser', {
+					console.log(name);
+					socket.emit('editUsername', {
 						id: uid,
-						type: 'username',
 						username: name
 					});
 				}
@@ -51,27 +56,25 @@ $(document).ready(async function() {
 	});
 
 	$('#editEmail').click(function() {
-		swal({
-			text: 'Enter a new email',
-			content: 'input',
-			button: {
-				text: 'Save',
-		    	closeModal: false,
-		  	},
-		}).then(email => {
+		sweetalert(
+			null,
+			'Enter a new email address',
+			'Please ensure that you have access to this account',
+			'input',
+			['Cancel', 'Submit']
+		).then(email => {
 			if (!email) {
 				swal.stopLoading();
     			swal.close();
 			} else {
 				var regex = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/;
-				if (email.toUpperCase().match(regex)) {
-					socket.emit('updateUser', {
+				if (!email.toUpperCase().match(regex)) {
+					sweetalert('error', 'Invalid email format', null, [false, true]);
+				} else {
+					socket.emit('editEmail', {
 						id: uid,
-						type: 'email',
 						email: email
 					});
-				} else {
-					return swal('Invalid format');
 				}
 			}
 		});
@@ -115,13 +118,4 @@ $(document).ready(async function() {
 		  	}
 		});
 	})
-
-	function report(icon, title, text) {
-		return swal({
-			icon: icon,
-			title: title,
-			text: text,
-			closeOnClickOutside: false
-		});
-	}
 });

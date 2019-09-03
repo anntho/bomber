@@ -217,32 +217,22 @@ io.on('connection', (socket) => {
 		}
 	});
 
-
-	// Preferences
-	socket.on('updateUser', async (data) => {
-		if (!data) {
-			return socket.emit('err', 'Empty Request');
-		}
-		if (!socket.request.session) {
-			return socket.emit('err');
-		}
-		if (data.id !== socket.request.session.user.id) {
+	socket.on('editUsername', async (data) => {
+		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
 			return socket.emit('err');
 		}
 
 		let user = socket.request.session.user;
 		let updateSession = false;
+		let error = '';
 
-		if (data.type === 'username') {
-			let error = '';
-			if (user.changedUsername == 1) {
-				error = 'You are only allowed to edit your username once.';
-				return socket.emit('err', error);
-			}
+		if (user.changedUsername == 1) {
+			error = 'You are only allowed to edit your username once';
+			socket.emit('err', error);
+		} else {
 			let username = data.username.trim();
-			let usernameRegex = /[^0-9a-z_]/gi;
-			let failures = username.match(usernameRegex);
-			if (failures) {
+			let regex = /[^0-9a-z_]/gi;
+			if (username.match(regex)) {
 				error = 'Username must contain only alphanumeric characters';
 				socket.emit('err', error);
 			} else {
@@ -253,7 +243,7 @@ io.on('connection', (socket) => {
 					let updateUsernameProc = 'CALL sp_UpdateUsername(?, ?)';
 					let updateUsernameInputs = [username, user.id];
 					try {
-						let response = await procHandler(socketPool, updateUsernameProc, updateUsernameInputs);
+						await procHandler(socketPool, updateUsernameProc, updateUsernameInputs);
 						updateSession = true;
 						socket.emit('success', {
 							username: username
@@ -268,24 +258,65 @@ io.on('connection', (socket) => {
 			}
 		}
 
-		if (data.type === 'email') {
-			let error = '';
-			let email = data.email.trim();
-			let updateEmailProc = 'CALL sp_UpdateEmail(?, ?)';
-			let updateEmailInputs = [email, user.id];
-			try {
-				let response = await procHandler(socketPool, updateEmailProc, updateEmailInputs);
-				updateSession = true;
-				socket.emit('success', {
-					email: email
-				});
-			} catch (err) {
-				console.log(err);
-				console.log(line);
-				socket.emit('err');
+		if (updateSession) {
+			let updateSessionProc = 'CALL sp_GetUserById(?)';
+			let updateSessionInputs = [user.id];
+			let reUser = await procHandler(socketPool, updateSessionProc, updateSessionInputs);
+			if (reUser && reUser[0]) {
+				console.log('saving session');
+				socket.request.session.user.username = reUser[0].username;
+				socket.request.session.user.changedUsername = reUser[0].changedUsername;
+				socket.request.session.save();
+				console.log('updated session');
+				console.log(socket.request.session.user);
 			}
 		}
+	});
 
+	socket.on('editEmail', async (data) => {
+		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
+			return socket.emit('err');
+		}
+
+		let user = socket.request.session.user;
+		let updateSession = false;
+		let error = '';
+
+		let email = data.email.trim();
+		let updateEmailProc = 'CALL sp_UpdateEmail(?, ?)';
+		let updateEmailInputs = [email, user.id];
+
+		try {
+			await procHandler(socketPool, updateEmailProc, updateEmailInputs);
+			updateSession = true;
+			socket.emit('success', {
+				email: email
+			});
+		} catch (err) {
+			console.log(err);
+			console.log(line);
+			socket.emit('err');
+		}
+
+		if (updateSession) {
+			// Update Session
+			let updateSessionProc = 'CALL sp_GetUserById(?)';
+			let updateSessionInputs = [user.id];
+			let reUser = await procHandler(socketPool, updateSessionProc, updateSessionInputs);
+			console.log('user lookup');
+			console.log(reUser[0]);
+			if (reUser && reUser[0]) {
+				console.log('saving session');
+				socket.request.session.user.username = reUser[0].username;
+				socket.request.session.user.changedUsername = reUser[0].changedUsername;
+				socket.request.session.save();
+				console.log('updated session');
+				console.log(socket.request.session.user);
+			}
+		}
+	})
+
+	socket.on('updateUser', async (data) => {
 		if (data.type === 'password') {
 			let error = '';
 			let currentPassword = data.passwords[0];
@@ -336,10 +367,6 @@ io.on('connection', (socket) => {
 	                }
 	            });
 			}
-		}
-
-		if (data.type === 'close') {
-			console.log('close')
 		}
 
 		if (updateSession) {
