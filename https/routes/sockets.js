@@ -5,8 +5,12 @@ const mysql = require('mysql');
 const fetch = require('node-fetch');
 const bcrypt = require('bcryptjs');
 const randomString = require('crypto-random-string');
-const { sendEmail } = require('../lib/email');
 
+// Libraries
+const { sendEmail } = require('../lib/email');
+const preferences = require('../lib/preferences');
+
+// Bin
 const config = require('../bin/config');
 const session = require('../bin/session');
 const line = '---------------------------------';
@@ -217,177 +221,23 @@ io.on('connection', (socket) => {
 		}
 	});
 
+
+	// Prefereces
 	socket.on('editUsername', async (data) => {
-		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
-			return socket.emit('err');
-		}
-
-		let user = socket.request.session.user;
-		let updateSession = false;
-		let error = '';
-
-		if (user.changedUsername == 1) {
-			error = 'You are only allowed to edit your username once';
-			socket.emit('err', error);
-		} else {
-			let username = data.username.trim();
-			let regex = /[^0-9a-z_]/gi;
-			if (username.match(regex)) {
-				error = 'Username must contain only alphanumeric characters';
-				socket.emit('err', error);
-			} else {
-				if (username.length > 15) {
-					error = 'Username must be 15 characters or less';
-					socket.emit('err', error);
-				} else {
-					let updateUsernameProc = 'CALL sp_UpdateUsername(?, ?)';
-					let updateUsernameInputs = [username, user.id];
-					try {
-						await procHandler(socketPool, updateUsernameProc, updateUsernameInputs);
-						updateSession = true;
-						socket.emit('success', {
-							username: username
-						});
-					} catch (err) {
-						console.log(err);
-						console.log(line);
-						error = 'An error occured';
-						socket.emit('err', error);
-					}
-				}
-			}
-		}
-
-		if (updateSession) {
-			let updateSessionProc = 'CALL sp_GetUserById(?)';
-			let updateSessionInputs = [user.id];
-			let reUser = await procHandler(socketPool, updateSessionProc, updateSessionInputs);
-			if (reUser && reUser[0]) {
-				console.log('saving session');
-				socket.request.session.user.username = reUser[0].username;
-				socket.request.session.user.changedUsername = reUser[0].changedUsername;
-				socket.request.session.save();
-				console.log('updated session');
-				console.log(socket.request.session.user);
-			}
-		}
+		await preferences.editUsername(data, socket);
 	});
 
 	socket.on('editEmail', async (data) => {
-		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
-			return socket.emit('err');
-		}
-
-		let user = socket.request.session.user;
-		let updateSession = false;
-		let error = '';
-
-		let email = data.email.trim();
-		let updateEmailProc = 'CALL sp_UpdateEmail(?, ?)';
-		let updateEmailInputs = [email, user.id];
-
-		try {
-			await procHandler(socketPool, updateEmailProc, updateEmailInputs);
-			updateSession = true;
-			socket.emit('success', {
-				email: email
-			});
-		} catch (err) {
-			console.log(err);
-			console.log(line);
-			socket.emit('err');
-		}
-
-		if (updateSession) {
-			// Update Session
-			let updateSessionProc = 'CALL sp_GetUserById(?)';
-			let updateSessionInputs = [user.id];
-			let reUser = await procHandler(socketPool, updateSessionProc, updateSessionInputs);
-			console.log('user lookup');
-			console.log(reUser[0]);
-			if (reUser && reUser[0]) {
-				console.log('saving session');
-				socket.request.session.user.username = reUser[0].username;
-				socket.request.session.user.changedUsername = reUser[0].changedUsername;
-				socket.request.session.save();
-				console.log('updated session');
-				console.log(socket.request.session.user);
-			}
-		}
-	})
-
-	socket.on('updateUser', async (data) => {
-		if (data.type === 'password') {
-			let error = '';
-			let currentPassword = data.passwords[0];
-			let newPassword = data.passwords[1];
-			let confirmNewPassword = data.passwords[2];
-
-			if (newPassword !== confirmNewPassword) {
-				socket.emit('err', 'Passwords do not match');
-			} else if (currentPassword === newPassword) {
-				socket.emit('err', 'Please choose a new password');
-			} else {
-				bcrypt.compare(currentPassword, user.password, (err, match) => {
-	                if (err) {
-	                	console.log(err);
-	                	socket.emit('err');
-	                } else {
-	                	if (!match) {
-	                		socket.emit('err', 'Incorrect password');
-	               		} else {
-	                		console.log('match')
-	                		// hash new password
-	                		bcrypt.genSalt(10, (err, salt) => 
-								bcrypt.hash(newPassword, salt, async (err, hash) => {
-									if (err) {
-										console.log(err);
-										return socket.emit('err');
-									}
-
-									console.log(hash);
-
-									let updatePasswordProc = 'CALL sp_UpdatePassword(?, ?)';
-									let updatePasswordInputs = [hash, user.id];
-
-									try {
-										let response = await procHandler(socketPool, updatePasswordProc, updatePasswordInputs);
-										updateSession = true;
-										socket.emit('success', {
-											redirect: true,
-											location: '/logout'
-										});
-									} catch (err) {
-										console.log(err);
-										console.log(line);
-										socket.emit('err');
-									}
-							}));
-	                    }
-	                }
-	            });
-			}
-		}
-
-		if (updateSession) {
-			// Update Session
-			let updateSessionProc = 'CALL sp_GetUserById(?)';
-			let updateSessionInputs = [user.id];
-			let reUser = await procHandler(socketPool, updateSessionProc, updateSessionInputs);
-			console.log('user lookup');
-			console.log(reUser[0]);
-			if (reUser && reUser[0]) {
-				console.log('saving session');
-				socket.request.session.user.username = reUser[0].username;
-				socket.request.session.user.changedUsername = reUser[0].changedUsername;
-				socket.request.session.save();
-				console.log('updated session');
-				console.log(socket.request.session.user);
-			}
-		}
+		await preferences.editEmail(data, socket);
 	});
 
+	socket.on('editPassword', async (data) => {
+		await preferences.editPassword(data, socket);
+	});
 
+	socket.on('checkPassword', async (data) => {
+		await preferences.checkPassword(data, socket);
+	});
 
 	// Create or Join Game
 	socket.on('find', async (data) => {

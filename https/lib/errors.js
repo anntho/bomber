@@ -1,4 +1,5 @@
 const createError = require('http-errors');
+const { sendEmail } = require('./email');
 
 module.exports = {
 	catch404: (req, res, next) => {
@@ -16,7 +17,19 @@ module.exports = {
 			res.render('error');
 		}
 	},
-	reportError: () => {
-		
+	reportError: async (env, file, line, err, email) => {
+		const reportEmail = 'anthony@moviebomber.org';
+		let content = '';
+		content += '<p>moviebomber.org | Error Report: </p>';
+		content += `<p>Env: ${env} | File: ${file} | Line: ${line}</p>`;
+		content += err;
+
+		if (email) {
+			await sendEmail(
+				reportEmail,
+				`Error`,
+				content
+			);
+		}
 	}
 }

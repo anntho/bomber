@@ -1,14 +1,19 @@
 $(document).ready(async function() {
 	let socket = io.connect(socketString);
-	console.log('connected');
 
 	socket.on('err', function(data) {
-		console.log(data);
-		console.log('err');
-		report('error', 'Error', data);
+		sweetalert('error', 'Whoops!', data, null, [false, true]);
 	});
 
-	function sweetalert(icon, title, text, content, buttons, button) {
+	socket.on('editUsername', function(data) {
+		sweetalertReload();
+	});
+
+	socket.on('editEmail', function() {
+		sweetalertReload();
+	});
+
+	function sweetalert(icon, title, text, content, buttons) {
 		return swal({
 			icon: icon,
 			title: title,
@@ -19,19 +24,22 @@ $(document).ready(async function() {
 		});
 	}
 
-	socket.on('editUsername', function(data) {
-		swal.stopLoading();
-		swal.close();
-		$('#navUsername').text(data.username);
-		document.title = 'moviebomber.org | ' + data.username;
-		sweetalert('success', 'success', null, null, [false, true]);
-	});
+	function sweetalertReload() {
+		return swal({
+			icon: 'success',
+			title: 'Success',
+			button: true,
+			closeOnClickOutside: false
+		}).then(function() {
+			location.reload(true);
+		});
+	}
 
 	$('#editUsername').click(function() {
 		sweetalert(
 			null,
-			'enter a new username',
-			'you can only do this once',
+			'Edit Username',
+			'Please enter a new username (you can only do this once)',
 			'input',
 			['Cancel', 'Submit']
 		).then(name => {
@@ -54,12 +62,12 @@ $(document).ready(async function() {
 			}
 		});
 	});
-
+  
 	$('#editEmail').click(function() {
 		sweetalert(
 			null,
-			'Enter a new email address',
-			'Please ensure that you have access to this account',
+			'Edit Email Address',
+			'Please enter a new email address and ensure that you have access to that account.',
 			'input',
 			['Cancel', 'Submit']
 		).then(email => {
@@ -80,42 +88,89 @@ $(document).ready(async function() {
 		});
 	});
 
-	$('#savePassword').click(function() {
-		if (!$('#currentPassword').val() ||
-			!$('#newPassword').val() ||
-			!$('#confirmNewPassword')) {
-			report('warning', 'Missing Fields', 'Please enter all password fields');
-		} else {
-			let email = $('#editEmail').val();
-			email = email.trim();
-			socket.emit('updateUser', {
-				id: uid,
-				type: 'password',
-				passwords: [
-					$('#currentPassword').val(),
-					$('#newPassword').val(),
-					$('#confirmNewPassword').val()
-				]
-			});
-		}
+	$('#editPassword').click(function() {
+		swal({
+			title: 'Change Password',
+			text: 'Please enter your current password',
+			content: {
+				element: 'input',
+				attributes: {
+					placeholder: 'Type your password',
+					type: 'password',
+				}
+			}
+		}).then(function(password) {
+			if (password) {
+				checkPassword(password).then(function() {
+					var el = document.createElement('form');
+					el.id = 'newPasswordForm';
+					var childOne = document.createElement('input');
+					childOne.type = 'text';
+					childOne.placeholder = 'New Password';
+					var childTwo = document.createElement('input');
+					childTwo.type = 'text';
+					childTwo.placeholder = 'Confirm New Password';
+
+					el.appendChild(childOne);
+					el.appendChild(childTwo);
+
+					$('#newPasswordForm').submit(function(evt) {
+						console.log('submitting')
+						evt.preventDefault();
+				
+						console.log('form submitted')
+					}) 
+
+					swal({
+						title: 'form',
+						content: el
+					}).then(function() {
+						$('#newPasswordForm').submit();
+					});
+
+
+
+				}).catch(function(err) {
+					console.log('no match')
+				});
+			}
+		})
 	});
 
-	$('#closeAccount').click(function() {
-		swal({
-			title: "Are you sure?",
-			text: "Once deleted, you will not be able to recover your account!",
-			icon: "warning",
-			buttons: true
-		})
-		.then((willDelete) => {
-			if (willDelete) {
-				socket.emit('updateUser', {
-					id: uid,
-					type: 'close'
-				});
-		  	} else {
-				swal("Your account is safe!");
-		  	}
+	function checkPassword(password) {
+		return new Promise(function(res, rej) {
+			console.log('emitting')
+			socket.emit('checkPassword', {
+				id: uid,
+				password: password
+			});
+			socket.on('checkPassword', function(data) {
+				console.log('receiving')
+				if (data) {
+					res();
+				} else {
+					rej();
+				}
+			});
 		});
-	})
+	}
+
+	// $('#closeAccount').click(function() {
+	// 	swal({
+	// 		title: "Are you sure?",
+	// 		text: "Once deleted, you will not be able to recover your account!",
+	// 		icon: "warning",
+	// 		buttons: true
+	// 	})
+	// 	.then((willDelete) => {
+	// 		if (willDelete) {
+	// 			socket.emit('updateUser', {
+	// 				id: uid,
+	// 				type: 'close'
+	// 			});
+	// 	  	} else {
+	// 			swal("Your account is safe!");
+	// 	  	}
+	// 	});
+	// })
 });

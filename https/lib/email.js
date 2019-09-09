@@ -1,5 +1,6 @@
 module.exports = {
 	sendEmail: async (to, subject, text) => {
+		console.log(`new email >> ${to}`);
 		const config = require('../bin/config');
 		const nodemailer = require('nodemailer');
 		const { google } = require('googleapis');

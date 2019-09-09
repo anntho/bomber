@@ -31,15 +31,15 @@ $(document).ready(async function() {
 
     async function register() {
         if (!$('#uname').val()) {
-            report('info', 'whoops', 'please include a username');
+            report('info', 'Whoops!', 'Please include a username');
         } else if (!$('#email').val()) {
-            report('info', 'whoops', 'please include an email address');
+            report('info', 'Whoops!', 'Please include an email address');
         } else if (!$('#password').val()) {
-            report('info', 'whoops', 'please include a password');
+            report('info', 'Whoops!', 'Please include a password');
         } else if (!$('#password2').val()) {
-            report('info', 'whoops', 'please verify your password');
+            report('info', 'Whoops!', 'Please verify your password');
         } else if ($('#password').val() !== $('#password2').val()) {
-            report('info', 'whoops', 'passwords do not match');
+            report('info', 'Whoops!', 'Passwords do not match');
         } else {
             var data = {
                 uname: $('#uname').val(),
