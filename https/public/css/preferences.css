@@ -25,3 +25,7 @@ h5 a:hover {
     color: #00CED1 !important;
     cursor: pointer !important;
 }
+
+.edit-label {
+    font-size: .8rem;
+}

@@ -36,31 +36,32 @@ $(document).ready(async function() {
 	}
 
 	$('#editUsername').click(function() {
-		sweetalert(
-			null,
-			'Edit Username',
-			'Please enter a new username (you can only do this once)',
-			'input',
-			['Cancel', 'Submit']
-		).then(name => {
-			if (!name) {
-				swal.stopLoading();
-				swal.close();
-			} else {
-				var invalid = /[^0-9a-z_]/gi;
-				if (name.match(invalid)) {
-					sweetalert('error', 'error', 'invalid name format', null, [false, true]);
-				} else if (name.length < 5 || name.length > 15 ) {
-					sweetalert('error', 'username must be between 5 and 15 characters long', null, [false, true]);
-				} else {
-					console.log(name);
-					socket.emit('editUsername', {
-						id: uid,
-						username: name
-					});
-				}
-			}
-		});
+		$('#eUsernameForm').toggle();
+		// sweetalert(
+		// 	null,
+		// 	'Edit Username',
+		// 	'Please enter a new username (you can only do this once)',
+		// 	'input',
+		// 	['Cancel', 'Submit']
+		// ).then(name => {
+		// 	if (!name) {
+		// 		swal.stopLoading();
+		// 		swal.close();
+		// 	} else {
+		// 		var invalid = /[^0-9a-z_]/gi;
+		// 		if (name.match(invalid)) {
+		// 			sweetalert('error', 'Error', 'Invalid name format', null, [false, true]);
+		// 		} else if (name.length < 5 || name.length > 15 ) {
+		// 			sweetalert('error', 'Error', 'Usernames must be between 5 and 15 characters long', null, [false, true]);
+		// 		} else {
+		// 			console.log(name);
+		// 			socket.emit('editUsername', {
+		// 				id: uid,
+		// 				username: name
+		// 			});
+		// 		}
+		// 	}
+		// });
 	});
   
 	$('#editEmail').click(function() {
@@ -88,53 +89,10 @@ $(document).ready(async function() {
 		});
 	});
 
+
+
 	$('#editPassword').click(function() {
-		swal({
-			title: 'Change Password',
-			text: 'Please enter your current password',
-			content: {
-				element: 'input',
-				attributes: {
-					placeholder: 'Type your password',
-					type: 'password',
-				}
-			}
-		}).then(function(password) {
-			if (password) {
-				checkPassword(password).then(function() {
-					var el = document.createElement('form');
-					el.id = 'newPasswordForm';
-					var childOne = document.createElement('input');
-					childOne.type = 'text';
-					childOne.placeholder = 'New Password';
-					var childTwo = document.createElement('input');
-					childTwo.type = 'text';
-					childTwo.placeholder = 'Confirm New Password';
 
-					el.appendChild(childOne);
-					el.appendChild(childTwo);
-
-					$('#newPasswordForm').submit(function(evt) {
-						console.log('submitting')
-						evt.preventDefault();
-				
-						console.log('form submitted')
-					}) 
-
-					swal({
-						title: 'form',
-						content: el
-					}).then(function() {
-						$('#newPasswordForm').submit();
-					});
-
-
-
-				}).catch(function(err) {
-					console.log('no match')
-				});
-			}
-		})
 	});
 
 	function checkPassword(password) {
