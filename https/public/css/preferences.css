@@ -6,7 +6,6 @@ input[type=password]:not(.browser-default),
 input[type=text]:not(.browser-default),
 input[type=email]:not(.browser-default) {
     padding: 5px;
-    color: #000;
 }
 
 .asterisk {
@@ -28,4 +27,16 @@ h5 a:hover {
 
 .edit-label {
     font-size: .8rem;
+}
+
+.collapsible,
+.collapsible-header,
+.collapsible-body {
+    border: 1px solid #1d282f;
+}
+
+.collapsible-header {
+    font-size: 22px;
+    font-weight: 300;
+    color: #425265;
 }
