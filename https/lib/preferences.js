@@ -65,7 +65,7 @@ module.exports = {
                         // });
                     } catch (err) {
                         socket.emit('err');
-                        reportError(process.env, file, '67', err, true);
+                        reportError(file, '67', err, true);
                     }
             }));
         }
@@ -79,20 +79,30 @@ module.exports = {
 		let user = socket.request.session.user;
 		let updateSession = false;
         let error = '';
+        let code = 1;
 
 		if (user.changedUsername == 1) {
-			error = 'You are only allowed to edit your username once';
-			socket.emit('err', error);
+			error = 'You are only allowed to edit your username once.';
+			socket.emit('err', {
+                code: code,
+                error: error
+            });
 		} else {
 			let username = data.username.trim();
 			let regex = /[^0-9a-z_]/gi;
 			if (username.match(regex)) {
-				error = 'Username must contain only alphanumeric characters';
-				socket.emit('err', error);
+				error = 'Username must contain only alphanumeric characters.';
+				socket.emit('err', {
+                    code: code,
+                    error: error
+                });
 			} else {
 				if (username.length > 15) {
-					error = 'Username must be 15 characters or less';
-					socket.emit('err', error);
+					error = 'Username must be 15 characters or less.';
+					socket.emit('err', {
+                        code: code,
+                        error: error
+                    });
 				} else {
 					let updateUsernameProc = 'CALL sp_UpdateUsername(?, ?)';
 					let updateUsernameInputs = [username, user.id];
@@ -104,10 +114,12 @@ module.exports = {
 							username: username
 						});
 					} catch (err) {
-						console.log(err);
-						console.log(line);
-						error = 'An error occured';
-						socket.emit('err', error);
+						reportError(file, '117', err, true);
+						error = 'We encountered an issue processing your request.';
+						socket.emit('err', {
+                            code: code,
+                            error: error
+                        });
 					}
 				}
 			}
@@ -124,7 +136,8 @@ module.exports = {
 
 		let user = socket.request.session.user;
 		let updateSession = false;
-		let error = '';
+        let error = '';
+        let code = 2;
 
 		let email = data.email.trim();
 		let updateEmailProc = 'CALL sp_UpdateEmail(?, ?)';
@@ -147,9 +160,12 @@ module.exports = {
 				email: email
 			});
 		} catch (err) {
-			console.log(err);
-			console.log(line);
-			socket.emit('err');
+			reportError(file, '163', err, true);
+            error = 'We encountered an issue processing your request.';
+			socket.emit('err', {
+                code: code,
+                error: error
+            });
 		}
 
 		if (updateSession) {

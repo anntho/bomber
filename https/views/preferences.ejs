@@ -47,7 +47,15 @@
 									<span class="mb-grey-blue-light-text"><%-user.username%></span>
 								</div>
 								<div class="collapsible-body">
-									<input type="text" id="editUsername" class="validate" minlength="5" maxlength="15">
+									<p class="mb-grey-blue-light-text">You can only edit your username once, so choose wisely!</p>
+									<div class="row">
+										<div class="col s10">
+											<input type="text" id="username" class="validate" minlength="5" maxlength="15">
+										</div>
+										<div class="col s2">
+											<a id="editUsername" class="btn">submit</a>
+										</div>
+									</div>
 								</div>
 							</li>
 						</ul>
@@ -62,7 +70,15 @@
 									<span class="mb-grey-blue-light-text"><%-user.email%></span>
 								</div>
 								<div class="collapsible-body">
-									<input type="email" id="editEmail">
+									<p class="mb-grey-blue-light-text">Please enter a new email address and ensure that you have access to that account.</p>
+									<div class="row">
+										<div class="col s10">
+											<input type="email" id="email" maxlength="40">
+										</div>
+										<div class="col s2">
+											<a id="editEmail" class="btn">submit</a>
+										</div>
+									</div>
 								</div>
 							</li>
 						</ul>
@@ -74,10 +90,24 @@
 							<li>
 								<div class="collapsible-header valign-wrapper">
 									<i class="material-icons left">keyboard_arrow_down</i>
-									<span class="mb-grey-blue-light-text">password *****</span>
+									<span class="mb-grey-blue-light-text">Change Password</span>
 								</div>
 								<div class="collapsible-body">
-									<input type="password" id="editPassword">
+									<p class="mb-grey-blue-light-text">Please complete the form below to change your password.</p>
+									<div class="row">
+										<div class="col s8">
+											<input type="password" id="currentPassword" placeholder="Type your current password">
+										</div>
+										<div class="col s8">
+											<input type="password" id="newPassword" placeholder="Type a new password">
+										</div>
+										<div class="col s8">
+											<input type="password" id="newPasswordConfirm" placeholder="Confirm your new password">
+										</div>
+										<div class="col s2">
+											<a class="btn">Submit</a>
+										</div>
+									</div>
 								</div>
 							</li>
 						</ul>
@@ -89,10 +119,11 @@
 							<li>
 								<div class="collapsible-header valign-wrapper">
 									<i class="material-icons left">highlight_off</i>
-									<span class="mb-grey-blue-light-text">delete account</span>
+									<span class="mb-grey-blue-light-text">Delete Account</span>
 								</div>
 								<div class="collapsible-body">
-									<a class="btn">delete</a>
+									<p class="mb-grey-blue-light-text">Are you sure you want to delete your account? If you're sure, confirm by clicking the button below.</p>
+									<a id="confirmDeleteAccount" class="btn mb-dark-red">Confirm</a>
 								</div>
 							</li>
 						</ul>

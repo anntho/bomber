@@ -7,7 +7,7 @@ $(document).ready(async function() {
     });
 
     socket.on('err', function(data) {
-        report('error', 'error.', data);
+        report('error', 'Whoops!', data.error);
     });
 
     async function report(icon, title, text) {

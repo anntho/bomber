@@ -2,7 +2,7 @@ $(document).ready(async function() {
     var socket = io.connect(socketString);
 
     socket.on('err', function(data) {
-        report('error', 'Error', data);
+        report('error', 'Whoops!', data.error);
     });
 
     socket.on('success', function() {

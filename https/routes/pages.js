@@ -8,6 +8,8 @@ const Article = require('../models/article');
 const pagesPool = mysql.createPool(config.mysql);
 const { procHandler, procHandler2 } = require('../lib/sql');
 const { authenticated } = require('../bin/auth');
+const { reportError } = require('../lib/errors');
+const file = 'routes/pages.js';
 
 router.get('/live', authenticated, (req, res) => {
 	if (!req.session.user) {
@@ -197,9 +199,7 @@ router.get('/privacy', (req, res) => {
 
 router.get('/verify', async (req, res) => {
 	console.log('verify route');
-	if (req.session.user &&
-		req.session.user.verified
-	) {
+	if (req.session.user && req.session.user.verified) {
 		console.log('user already verified', req.session.user.email);
 		res.redirect('/account/preferences');
 	} else if (req.query.v) {
@@ -210,38 +210,30 @@ router.get('/verify', async (req, res) => {
 			let email = ascii.split(':')[0];
 			let code = ascii.split(':')[1];
 			let regex = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/;
+			let regexMatch = email.toUpperCase().match(regex);
 			
-			if (code && 
-				code.length === 32 && 
-				email && 
-				email.toUpperCase().match(regex)
-			) {
+			if (code && code.length === 32 && email && regexMatch) {
 				try {
 					let proc = 'CALL sp_VerifyEmail(?, ?)';
 					let inputs = [email, code];
 					let response = await procHandler(pagesPool, proc, inputs);
-					let message = '';
-					console.log(response[0].result)
 
-					if (response && 
-						response[0] && 
-						response[0].result != null
-					) {
-						console.log('worked')
+					if (response && response[0] && response[0].result != null) {
 						res.render('verify', {
 							user: req.session.user || null,
 							status: response[0].result
 						});
 					} else {
-						console.log('here')
+						console.log('check error')
+						console.log(response)
 						res.sendStatus(500);
 					}
 				} catch (err) {
-					console.log(err);
 					throw err;
 				}
 			}
 		} catch (err) {
+			reportError(file, '234', err, true);
 			res.sendStatus(500);
 		}
 	} else {

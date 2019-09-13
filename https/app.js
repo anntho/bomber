@@ -5,7 +5,7 @@ const logger = require('morgan');
 const compression = require('compression');
 const favicon = require('serve-favicon');
 const flash = require('connect-flash');
-const helmet = require('helmet')
+const helmet = require('helmet');
 
 app.use(compression());
 app.use(helmet());
