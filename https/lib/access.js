@@ -74,6 +74,7 @@ module.exports = {
                                         console.log('verified first time user', email);
                                         let link = config.socket.host + '/verify?v=' + encodedVerificationString;
                                         let body = 'Please click the link below to verify your email address:';
+                                        body += '<br>';
                                         body += `<a href="${link}">Click here to verify</a>`;
                                         try {
                                             await sendEmail(email, 'Please verify your email address', body);
@@ -98,8 +99,7 @@ module.exports = {
 		}
     },
     login: async (data, socket) => {
-		console.log('login requested', data.username);
-		console.log(line);
+		console.log('login requested >>', data.username);
 
 		try {
 			const sql = `CALL sp_GetUser(?)`;
@@ -111,13 +111,13 @@ module.exports = {
             } else {
                 bcrypt.compare(data.password, user[0].password, (err, match) => {
                     if (err) {
-                        reportError(process.env, file, '113', err, true);
+                        reportError(file, '114', err, true);
                         socket.emit('err', {error: err});
                     } else {
                     	if (match) {
 	                    	socket.request.session.user = user[0];
 	                    	socket.request.session.save();
-	                    	console.log(socket.request.session);
+	                    	//console.log(socket.request.session);
 	                        socket.emit('success');
 	                    } else {
 	                        socket.emit('err', {error: 'Incorrect password'});
@@ -126,7 +126,7 @@ module.exports = {
                 });
             }
 		} catch (err) {
-            reportError(process.env, file, '127', err, true);
+            reportError(file, '129', err, true);
             socket.emit('err', {error: err});
 		}
     }

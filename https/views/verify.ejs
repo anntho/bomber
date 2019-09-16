@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>moviebomber.org | verification</title>
+	<title>moviebomber.org | verify</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="keywords" content="movie trivia, trivia, free trivia">
@@ -14,19 +14,22 @@
 <body>
 	<% include ./nav %>
 	<main>
-		<div class="top-wrapper">
-			<h4 class="valign-wrapper">
-				<i class="material-icons left">email</i>
-				email verification page.
-			</h4>
-			<br>
-			<% if (status == 0) { %>
-				<p>This link has already been used. If you believe that this is an error, please contact our support team.</p>
-			<% } else if (status == 1) { %>
-				<p>Success! Your email has been verified!</p>
-			<% } else { %>
-				<p>Invalid link. Please contact our support team.</p>
-			<% } %>
+		<div class="top-wrapper row">
+			<div class="col s12 m8 offset-m2 l6 offset-l3">
+				<h4 class="valign-wrapper">
+					<i class="material-icons left">email</i>
+					Email Verification
+				</h4>
+				<br>
+				<% console.log(status)	%>
+				<% if (status == 0) { %>
+					<p>This link has already been used. If you believe that this is an error, please contact our support team.</p>
+				<% } else if (status == 1) { %>
+					<p>Success! Your email has been verified!</p>
+				<% } else { %>
+					<p>Whoops! It looks like this link is invalid. If you believe that this is an error, please contact our support team.</p>
+				<% } %>
+			</div>
 		</div>
 	</main>
 	<% include ./footer %>

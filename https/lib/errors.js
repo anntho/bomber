@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const { sendEmail } = require('./email');
+const fs = require('fs');
 
 module.exports = {
 	catch404: (req, res, next) => {
@@ -10,6 +11,7 @@ module.exports = {
 		res.locals.error = req.app.get('env') === 'development' ? err : {};
 
 		if (err.status == 404) {
+			//let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 			res.status(404);
 			res.render('404');
 		} else {

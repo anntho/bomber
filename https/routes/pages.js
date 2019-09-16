@@ -217,15 +217,16 @@ router.get('/verify', async (req, res) => {
 					let proc = 'CALL sp_VerifyEmail(?, ?)';
 					let inputs = [email, code];
 					let response = await procHandler(pagesPool, proc, inputs);
+					//console.log('verification response');
+					//console.log(response);
 
-					if (response && response[0] && response[0].result != null) {
+					if (response && response[0]) {
 						res.render('verify', {
 							user: req.session.user || null,
 							status: response[0].result
 						});
 					} else {
-						console.log('check error')
-						console.log(response)
+						reportError(file, '227', response, true);
 						res.sendStatus(500);
 					}
 				} catch (err) {

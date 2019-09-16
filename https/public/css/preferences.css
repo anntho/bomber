@@ -40,3 +40,13 @@ h5 a:hover {
     font-weight: 300;
     color: #425265;
 }
+
+.alert {
+    background-color: #FFEB3B;
+    color: #0F171E;
+}
+
+i.alert-icon {
+    font-size: 15px;
+    cursor: pointer;
+}
