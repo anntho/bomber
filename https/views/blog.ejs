@@ -22,7 +22,7 @@
 				<h3>
 					<a href="/blog">
 						<i class="material-icons">book</i>
-						mb blog.
+						mb blog
 					</a>
 				</h3>
 				<% docs.forEach((doc, key) => { %>
@@ -39,7 +39,7 @@
 							by <span><%=doc.author%></span>
 						</p>
 						<p><%=doc.desc%></p>
-						<p class="divider"></p>             
+						<p class="divider"></p>          
 					</div>
 				<% }); %>
 			</div>
@@ -48,7 +48,14 @@
 
 	<% include ./footer %>
 	
+	<script>
+		var socketString = <%-JSON.stringify(socket)%>;
+	</script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="/js/nav.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

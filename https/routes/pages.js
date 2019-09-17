@@ -143,7 +143,8 @@ router.get('/board', async (req, res) => {
 		let results = await procHandler(pagesPool, 'CALL sp_GetAllScores', null);
 		res.render('board', {
 			user: req.session.user || null,
-			scores: results
+			scores: results,
+			socket: socket
 		});
 	} catch (err) {
 		console.log(err);
@@ -159,7 +160,8 @@ router.get('/blog', (req, res) => {
 		} else {
 			res.render('blog', {
 				user: req.session.user || null,
-				docs: docs
+				docs: docs,
+				socket: socket
 			});
 		}
 	})
@@ -181,19 +183,22 @@ router.get('/article/:id', (req, res) => {
 
 router.get('/about', (req, res) => {
 	res.render('about', {
-		user: req.session.user || null
+		user: req.session.user || null,
+		socket: socket
 	});
 });
 
 router.get('/terms', (req, res) => {
 	res.render('terms', {
-		user: req.session.user || null
+		user: req.session.user || null,
+		socket: socket
 	});
 });
 
 router.get('/privacy', (req, res) => {
 	res.render('privacy', {
-		user: req.session.user || null
+		user: req.session.user || null,
+		socket: socket
 	});
 });
 

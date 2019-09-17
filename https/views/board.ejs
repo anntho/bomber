@@ -22,8 +22,8 @@
 				<div class="col-sm">
 					<h3>
 						<a href="/board">
-							<i class="material-icons">import_contacts</i>
-							mb leaderboard.
+							<i class="material-icons">star</i>
+							mb leaderboard
 						</a>
 					</h3>
 					<table id="leaderboard" class="table leaderboard" style="width:100%"></table>
@@ -37,6 +37,7 @@
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/jquery.dataTables.min.js"></script>
 	<script>
+		var socketString = <%-JSON.stringify(socket)%>;
 		var uriString = window.location.href;
 		var uri = new URL(uriString);
 		var user = uri.searchParams.get('u');
@@ -61,7 +62,10 @@
 			table.search(user).draw();
 		}
 	</script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/nav.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

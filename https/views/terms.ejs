@@ -20,8 +20,8 @@
 			<div class="col s12 m8 offset-m2 l6 offset-l3">
 				<h3>
 					<a href="/terms">
-						<i class="material-icons">priority_high</i>
-						Terms of Use.
+						<i class="material-icons">gavel</i>
+						Terms of Use
 					</a>
 				</h3>
 				<h6>Introduction</h6>
@@ -40,7 +40,14 @@
 
 	<% include ./footer %>
 
-	<script type="text/javascript" src="/js/materialize.min.js"></script>
-	<script type="text/javascript" src="/js/init.js"></script>
+	<script>
+		var socketString = <%-JSON.stringify(socket)%>;
+	</script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

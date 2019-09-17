@@ -1,6 +1,5 @@
 $(document).ready(async function() {
 	var socket = io.connect(socketString);
-	console.log('nav socket connected');
 
 	let users = [];
 	socket.emit('getUsers');
@@ -8,7 +7,7 @@ $(document).ready(async function() {
 		users = data.map(x => x.username);
 	});
 
-	$('#navSearch').on('keyup', function(evt) {
+	$('#navSearch').on('keypress', function(evt) {
 		if (evt.keyCode == 13) {
 			if (!$('#navSearch').val()) {
 				swal({
