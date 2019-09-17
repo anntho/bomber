@@ -104,8 +104,8 @@ io.on('connection', (socket) => {
 		await preferences.editPassword(data, socket);
 	});
 
-	socket.on('checkPassword', async (data) => {
-		await preferences.checkPassword(data, socket);
+	socket.on('deleteAccount', async (data) => {
+		await preferences.deleteAccount(data, socket);
 	});
 
 	// ===================================================

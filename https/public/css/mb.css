@@ -25,6 +25,12 @@ body, html {
 .mb-grey-blue { background-color: #5f727f !important }
 .mb-grey-blue-light { background-color: #99a9b5 !important }
 
+::-webkit-input-placeholder { color: #1d282f; }
+::-moz-placeholder { color: #1d282f; }
+:-ms-input-placeholder { color: #1d282f; }
+::-ms-input-placeholder { color: #1d282f; }
+::placeholder { color: #1d282f; }
+
 main {
 	min-height: -moz-calc(100% - 56px);
 	min-height: -webkit-calc(100% - 56px);

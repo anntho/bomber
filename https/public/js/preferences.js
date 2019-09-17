@@ -5,6 +5,8 @@ $(document).ready(async function() {
 		sweetalert('error', 'Whoops!', data.error, null, [false, true]);
 		if (data.code === 1) {
 			$('#username').addClass('invalid');
+		} else if (data.code === 2) {
+			console.log('email error')
 		}
 	});
 
@@ -16,6 +18,14 @@ $(document).ready(async function() {
 		sweetalertReload();
 	});
 
+	socket.on('editEmail', function() {
+		sweetalertLogout();
+	});
+
+	socket.on('deleteAccount', function() {
+		sweetalertLogout();
+	});
+
 	function sweetalert(icon, title, text, content, buttons) {
 		return swal({
 			icon: icon,
@@ -24,6 +34,17 @@ $(document).ready(async function() {
 			content: content,
 			buttons: buttons,
 			closeOnClickOutside: false
+		});
+	}
+
+	function sweetalertLogout() {
+		return swal({
+			icon: 'success',
+			title: 'Success',
+			button: true,
+			closeOnClickOutside: false
+		}).then(function() {
+			location.href = '/logout';
 		});
 	}
 
@@ -90,46 +111,41 @@ $(document).ready(async function() {
 		}
 	});
 
-
-
+	// ==========================================================================
+	// Password
+	// ==========================================================================
 	$('#editPassword').click(function() {
-
+		if ($('#cpass').val() && $('#npass').val() && $('#npassc').val()) {
+			socket.emit('editPassword', {
+				id: uid, 
+				current: $('#cpass').val(), 
+				new: $('#npass').val(), 
+				confirm: $('#npassc').val()
+			});
+			$('.pw').each(function() {
+				$(this).val('');
+			});
+		}
 	});
 
-	function checkPassword(password) {
-		return new Promise(function(res, rej) {
-			console.log('emitting')
-			socket.emit('checkPassword', {
-				id: uid,
-				password: password
-			});
-			socket.on('checkPassword', function(data) {
-				console.log('receiving')
-				if (data) {
-					res();
-				} else {
-					rej();
-				}
-			});
+	// ==========================================================================
+	// Delete Account 
+	// ==========================================================================
+	$('#deleteAccount').click(function() {
+		swal({
+			title: 'Are you sure?',
+			text: 'Once deleted, you will not be able to recover your account!',
+			icon: 'warning',
+			buttons: true
+		})
+		.then((proceed) => {
+			if (proceed) {
+				socket.emit('deleteAccount', {
+					id: uid
+				});
+		  	} else {
+				swal('Your account is safe!');
+		  	}
 		});
-	}
-
-	// $('#closeAccount').click(function() {
-	// 	swal({
-	// 		title: "Are you sure?",
-	// 		text: "Once deleted, you will not be able to recover your account!",
-	// 		icon: "warning",
-	// 		buttons: true
-	// 	})
-	// 	.then((willDelete) => {
-	// 		if (willDelete) {
-	// 			socket.emit('updateUser', {
-	// 				id: uid,
-	// 				type: 'close'
-	// 			});
-	// 	  	} else {
-	// 			swal("Your account is safe!");
-	// 	  	}
-	// 	});
-	// })
+	})
 });

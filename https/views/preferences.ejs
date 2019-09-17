@@ -49,7 +49,7 @@
 									<p class="mb-grey-blue-light-text">You can only edit your username once, so choose wisely!</p>
 									<div class="row">
 										<div class="col s10">
-											<input type="text" id="username" class="validate" minlength="5" maxlength="15">
+											<input type="text" id="username" class="validate" minlength="5" maxlength="15" placeholder="Type a new username">
 										</div>
 										<div class="col s2">
 											<a id="editUsername" class="btn">submit</a>
@@ -72,7 +72,7 @@
 									<p class="mb-grey-blue-light-text">Please enter a new email address and ensure that you have access to that account.</p>
 									<div class="row">
 										<div class="col s10">
-											<input type="email" id="email" maxlength="40">
+											<input type="email" id="email" maxlength="40" placeholder="Type your email address">
 										</div>
 										<div class="col s2">
 											<a id="editEmail" class="btn">submit</a>
@@ -95,16 +95,16 @@
 									<p class="mb-grey-blue-light-text">Please complete the form below to change your password.</p>
 									<div class="row">
 										<div class="col s8">
-											<input type="password" id="currentPassword" placeholder="Type your current password">
+											<input type="password" class="pw" id="cpass" placeholder="Type your current password">
 										</div>
 										<div class="col s8">
-											<input type="password" id="newPassword" placeholder="Type a new password">
+											<input type="password" class="pw" id="npass" placeholder="Type a new password">
 										</div>
 										<div class="col s8">
-											<input type="password" id="newPasswordConfirm" placeholder="Confirm your new password">
+											<input type="password" class="pw" id="npassc" placeholder="Confirm your new password">
 										</div>
 										<div class="col s2">
-											<a class="btn">Submit</a>
+											<a class="btn" id="editPassword">Submit</a>
 										</div>
 									</div>
 								</div>
@@ -122,7 +122,7 @@
 								</div>
 								<div class="collapsible-body">
 									<p class="mb-grey-blue-light-text">Are you sure you want to delete your account? If you're sure, confirm by clicking the button below.</p>
-									<a id="confirmDeleteAccount" class="btn mb-dark-red">Confirm</a>
+									<a id="deleteAccount" class="btn mb-dark-red">Confirm</a>
 								</div>
 							</li>
 						</ul>

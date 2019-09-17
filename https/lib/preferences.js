@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const config = require('../bin/config');
 const bcrypt = require('bcryptjs');
+const geoip = require('geoip-lite');
 const preferencesPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const us = require('./updateSession');
@@ -9,72 +10,41 @@ const { reportError } = require('./errors');
 
 const line = '---------------------------------';
 const file = 'lib/preferences.js';
+const generic = 'We encountered an issue processing your request. Please contact our support team.';
+
+async function emailAlertHTML(ip, username, code, description) {
+    const now = new Date();
+    const dateString = now.toString();
+    const geo = geoip.lookup(ip);
+    const location = `${geo.city}, ${geo.region}`;
+    const resetLink = '/reset';
+
+    let content = `<p><h5>moviebomber.org | Automated Account Alerts</h5></p>`;
+    content += `<p><h4>Hey there ${username},</h4></p>`;
+    content += `<p>You are receiving this email due to a recent change on your account.</p>`;
+    content += `<p>Change Description: ${description}</p>`;
+    content += `<p>Date/Time: ${dateString}</p>`;
+    content += `<p>IP Address (Location): ${ip} (${location})</p>`;
+    content += `<p>If you beleive that this is a mistake, you can reply directly to this email.</p>`;
+    
+    if (code === 3) {
+        content += `<p><a href="${resetLink}">Reset your password</a></p>`;
+    }
+
+    if (code === 4) {
+        content += `<p><h2>We're sorry to see you go!</h2></p>`;
+    }
+
+    return content;
+}
 
 module.exports = {
-    checkPassword: async (data, socket) => {
-		if (!data || !data.password || !socket.request.session || data.id !== socket.request.session.user.id) {
-            console.log('err on backend')
-			return socket.emit('err');
-        }
-        let user = socket.request.session.user;
-        bcrypt.compare(data.password, user.password, (err, match) => {
-            if (err) {
-                console.log(err);
-                socket.emit('err');
-            } else {
-                if (match) {
-                    socket.emit('checkPassword', true);
-                } else {
-                    socket.emit('checkPassword', false);
-                }
-            }
-        });
-    },
-    editPassword: async (data, socket) => {
-        console.log(data);
-		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
-			return socket.emit('err');
-		}
-
-        let error = '';
-        let currentPassword = data.passwords[0];
-        let newPassword = data.passwords[1];
-        let confirmNewPassword = data.passwords[2];
-    
-        if (newPassword !== confirmNewPassword) {
-            return socket.emit('err', 'Passwords do not match');
-        } else if (currentPassword === newPassword) {
-            return socket.emit('err', 'Please choose a new password');
-        } else {
-            bcrypt.genSalt(10, (err, salt) =>
-                bcrypt.hash(newPassword, salt, async (err, hash) => {
-                    if (err) {
-                        console.log(err);
-                        return socket.emit('err');
-                    }
-                    console.log(hash);
-                    let updatePasswordProc = 'CALL sp_UpdatePasswordd(?, ?)';
-                    let updatePasswordInputs = [hash, user.id];
-                    try {
-                        console.log('going to update password')
-                        let response = await procHandler(socketPool, updatePasswordProc, updatePasswordInputs);
-                        // updateSession = true;
-                        // socket.emit('success', {
-                        //     redirect: true,
-                        //     location: '/logout'
-                        // });
-                    } catch (err) {
-                        socket.emit('err');
-                        reportError(file, '67', err, true);
-                    }
-            }));
-        }
-    },
     editUsername: async (data, socket) => {
-        console.log(data);
 		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
 			return socket.emit('err');
-		}
+        }
+        
+        console.log(data);
 
 		let user = socket.request.session.user;
 		let updateSession = false;
@@ -114,11 +84,10 @@ module.exports = {
 							username: username
 						});
 					} catch (err) {
-						reportError(file, '117', err, true);
-						error = 'We encountered an issue processing your request.';
+						reportError(file, '80', err, true);
 						socket.emit('err', {
                             code: code,
-                            error: error
+                            error: generic
                         });
 					}
 				}
@@ -132,7 +101,9 @@ module.exports = {
     editEmail: async (data, socket) => {
 		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
 			return socket.emit('err');
-		}
+        }
+        
+        console.log(data);
 
 		let user = socket.request.session.user;
 		let updateSession = false;
@@ -160,16 +131,107 @@ module.exports = {
 				email: email
 			});
 		} catch (err) {
-			reportError(file, '163', err, true);
-            error = 'We encountered an issue processing your request.';
+			reportError(file, '127', err, true);
 			socket.emit('err', {
                 code: code,
-                error: error
+                error: generic
             });
 		}
 
 		if (updateSession) {
 			await us.updateSession(user.id, socket);
 		}
+    },
+    editPassword: async (data, socket) => {
+		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
+			return socket.emit('err');
+        }
+        
+        console.log(data);
+
+        let user = socket.request.session.user;
+		let updateSession = false;
+        let error = '';
+        let code = 3;
+
+        let currentPassword = data.current;
+        let newPassword = data.new;
+        let confirmNewPassword = data.confirm;
+
+        try {
+            let checkCurrentPassword = await bcrypt.compare(currentPassword, user.password);
+            console.log('checking current password >> ', checkCurrentPassword);
+
+            if (!checkCurrentPassword) {
+                error = 'Current password is incorrect';
+                return socket.emit('err', {code: code, error: error});
+            } else if (newPassword !== confirmNewPassword) {
+                error = 'Passwords do not match';
+                return socket.emit('err', {code: code, error: error});
+            } else if (currentPassword === newPassword) {
+                error = 'Your new password cannot be the same as your old password';
+                return socket.emit('err', {code: code, error: error});
+            } else {
+                try {
+                    const salt = await bcrypt.genSaltSync(10);
+                    const hash = await bcrypt.hashSync(newPassword, salt);
+                    const proc = 'CALL sp_UpdatePassword(?, ?)';
+                    const inputs = [hash, user.id];
+
+                    await procHandler(preferencesPool, proc, inputs);
+
+                    updateSession = true;
+                    socket.emit('editPassword');
+
+                    // send alert email
+                    let desciption = 'Password Reset';
+                    let ipAddress = socket.handshake.address.split(':')[3];
+                    let html = await emailAlertHTML(ipAddress, user.username, code, desciption);
+                    await sendEmail(user.email, desciption, html);
+                } catch (err) {
+                    reportError(file, '198', err, true);
+                    return socket.emit('err', {code: code, error: generic});
+                }
+            }
+
+            if (updateSession) {
+                await us.updateSession(user.id, socket);
+            }
+        } catch (err) {
+            reportError(file, '203', err, true);
+            return socket.emit('err', {code: code, error: generic});
+        }
+    },
+    deleteAccount: async (data, socket) => {
+		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
+			return socket.emit('err');
+        }
+        
+        console.log(data);
+
+        let user = socket.request.session.user;
+		let updateSession = false;
+        let code = 4;
+
+        try {
+            const proc = 'CALL sp_DeleteAccount(?)';
+            const inputs = [user.id];
+            await procHandler(preferencesPool, proc, inputs);
+
+            socket.emit('deleteAccount');
+
+            // send alert email
+            let desciption = 'Account Deleted';
+            let ipAddress = socket.handshake.address.split(':')[3];
+            let html = await emailAlertHTML(ipAddress, user.username, code, desciption);
+            await sendEmail(user.email, 'Sorry to see you go!', html);
+
+            if (updateSession) {
+                await us.updateSession(user.id, socket);
+            }
+        } catch (err) {
+            reportError(file, '239', err, true);
+            socket.emit('err', {code: code, error: generic});
+        }
     }
 }

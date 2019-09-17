@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const config = require('../bin/config');
 const bcrypt = require('bcryptjs');
+const geoip = require('geoip-lite');
 const randomString = require('crypto-random-string');
 const accessPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
@@ -9,6 +10,26 @@ const { reportError } = require('./errors');
 
 const line = '---------------------------------';
 const file = 'lib/access.js';
+const generic = 'We encountered an issue processing your request. Please contact our support team.';
+
+async function emailAlertHTML(ip, username, verification) {
+    const now = new Date();
+    const dateString = now.toString();
+    const geo = geoip.lookup(ip);
+	const location = `${geo.city}, ${geo.region}`;
+	const link = config.socket.host + '/verify?v=' + verification;
+
+    let content = `<p><h5>moviebomber.org | Automated Account Alerts</h5></p>`;
+    content += `<p><h4>Hey there ${username},</h4></p>`;
+	content += '<p>Please click the link below to verify your email address:</p>';
+	content += `<p><a href="${link}">Click here to verify</a></p>`;
+
+	content += `<ul style="font-size: 10px;"><li>Date/Time: ${dateString}</li>`;
+	content += `<li>IP Address (Location): ${ip} (${location})</li>`;
+	content += `</ul>`;
+
+    return content;
+}
 
 module.exports = {
     register: async (data, socket) => {
@@ -51,50 +72,34 @@ module.exports = {
 					if (foundEmail && foundEmail.length) {
 						errorMessage = 'An account is already registered with that email address.';
 						return socket.emit('err', {
-                            error: errorMessage
-                        });
+							error: errorMessage
+						});
 					} else {
-						bcrypt.genSalt(10, (err, salt) => 
-							bcrypt.hash(password, salt, async (err, hash) => {
-								if (err) {
-                                    reportError(file, '60', err, true);
-									errorMessage = 'An error occured processing your request.';
-									return socket.emit('err', {error: errorMessage});
-								}
+						try {
+							const salt = await bcrypt.genSaltSync(10);
+							const hash = await bcrypt.hashSync(password, salt);
+							const code = randomString({length: 32, type: 'url-safe'});
+							const encodedVerificationString = Buffer.from(`${email}:${code}`).toString('base64');
+							const newUserSQL = 'CALL sp_InsertUser(?, ?, ?, ?)';
+							const newUserInputs = [uname, email, hash, code]; // save raw code, but email base64 encoded
+							const newUser = await procHandler(accessPool, newUserSQL, newUserInputs);
 
-								try {
-									const code = randomString({length: 32, type: 'url-safe'});
-									const encodedVerificationString = Buffer.from(`${email}:${code}`).toString('base64');
-
-									const newUserSQL = 'CALL sp_InsertUser(?, ?, ?, ?)';
-									const newUserInputs = [uname, email, hash, code]; // save raw code, but email base64 encoded
-									const newUser = await procHandler(accessPool, newUserSQL, newUserInputs);
-
-									if (newUser && newUser[0]) {
-                                        console.log('verified first time user', email);
-                                        let link = config.socket.host + '/verify?v=' + encodedVerificationString;
-                                        let body = 'Please click the link below to verify your email address:';
-                                        body += '<br>';
-                                        body += `<a href="${link}">Click here to verify</a>`;
-                                        try {
-                                            await sendEmail(email, 'Please verify your email address', body);
-                                            socket.emit('success');
-                                        } catch (err) {
-                                            reportError(file, '82', err, true);
-                                            socket.emit('err', {error: err});
-                                        }
-									} else {
-                                        console.log('failed')
-                                    }
-								} catch (err) {
-									reportError(file, '87', err, true);
-									socket.emit('err', {error: err});
-								}
-						}));
+							if (newUser && newUser[0]) {
+								console.log('verified first time user', email);
+								let ipAddress = socket.handshake.address.split(':')[3];
+								let html = await emailAlertHTML(ipAddress, uname, encodedVerificationString);
+								await sendEmail(email, 'Please verify your email address', html);
+								socket.emit('success');
+							}
+						} catch (err) {
+							reportError(file, '97', err, true);
+							return socket.emit('err', {error: generic});
+						}
 					}
 				}
 			} catch (err) {
-				reportError(process.env, file, '94', err, true);
+				reportError(file, '102', err, true);
+				return socket.emit('err', {error: generic});
 			}
 		}
     },
@@ -111,7 +116,7 @@ module.exports = {
             } else {
                 bcrypt.compare(data.password, user[0].password, (err, match) => {
                     if (err) {
-                        reportError(file, '114', err, true);
+                        reportError(file, '119', err, true);
                         socket.emit('err', {error: err});
                     } else {
                     	if (match) {
@@ -126,7 +131,7 @@ module.exports = {
                 });
             }
 		} catch (err) {
-            reportError(file, '129', err, true);
+            reportError(file, '134', err, true);
             socket.emit('err', {error: err});
 		}
     }
