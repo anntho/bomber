@@ -3,7 +3,8 @@ body, html {
 	padding: 0;
 	margin: 0;
 	font-size: 14px;
-	font-family: 'Roboto', sans-serif;
+	font-family: "Fira Mono", "Andale Mono", "Consolas", monospace;
+	/* font-family: 'Roboto', sans-serif; */
 	color: #fafafa;
 	background-color: #0F171E;
 }
