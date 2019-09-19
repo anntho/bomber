@@ -47,6 +47,7 @@ app.use(function(req, res, next) {
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
 	res.locals.error = req.flash('error');
+	res.locals.env = process.env.NODE_ENV;
 	res.locals.socket = socket;
 	res.locals.user = false;
 	res.locals.username = '';
