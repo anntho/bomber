@@ -13,6 +13,7 @@ app.use(helmet());
 const config = require('./bin/config');
 const session = require('./bin/session');
 const { catch404, errorHandler } = require('./lib/errors');
+const socket = `${config.socket.host}:${config.socket.port}`;
 
 // MongoDB Connection to Atlas
 const mongoose = require('mongoose');
@@ -46,6 +47,10 @@ app.use(function(req, res, next) {
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
 	res.locals.error = req.flash('error');
+	res.locals.socket = socket;
+	res.locals.user = false;
+	res.locals.username = '';
+	res.locals.userId = '';
 	next();
 });
 

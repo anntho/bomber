@@ -3,6 +3,7 @@ const config = require('../bin/config');
 const bcrypt = require('bcryptjs');
 const geoip = require('geoip-lite');
 const randomString = require('crypto-random-string');
+const swearjar = require('swearjar');
 const accessPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const { sendEmail } = require('./email');

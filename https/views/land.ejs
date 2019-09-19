@@ -35,8 +35,8 @@
 					<i class="material-icons left">people</i>
 					new users
 				</h4>
-				<% if (newUsers) { %>
-					<% newUsers.forEach(u => { %>
+				<% if (metrics.newUsers) { %>
+					<% metrics.newUsers.forEach(u => { %>
 						<p class="valign-wrapper newUser">
 							<i class="material-icons left">exposure_plus_1</i>
 							<a href="/@/<%-u%>"><%-u%></a>

@@ -21,12 +21,12 @@
 			<div class="col s12 m8 offset-m2 l6 offset-l3">
 				<br>
 				<div class="article">
-					<p><%=doc.title%></p>
-					<% let date1 = String(doc.date).split("G")[0]; %>
+					<p><%=article.title%></p>
+					<% let date1 = String(article.date).split("G")[0]; %>
 					<% let date2 = date1.substring(0, date1.length - 9); %>
-					<p><span class="article-date"><%=date2%></span>| by <span><%=doc.author%></span></p>
+					<p><span class="article-date"><%=date2%></span>| by <span><%=article.author%></span></p>
 					<p class="divider"></p>
-					<p id="a-content" class="prose"><%-doc.content%></p>
+					<p id="a-content" class="prose"><%-article.content%></p>
 				</div>
 				<br>
 				<a class="back waves-effect waves-light btn-large purple" href="/blog">
