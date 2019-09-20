@@ -3,10 +3,10 @@ body, html {
 	padding: 0;
 	margin: 0;
 	font-size: 14px;
-	font-family: "Fira Mono", "Andale Mono", "Consolas", monospace;
+	font-family: 'Montserrat', sans-serif;
 	/* font-family: 'Roboto', sans-serif; */
 	color: #fafafa;
-	background-color: #0F171E;
+	background-color: #212331;
 }
 
 .mb-deep-grey { background-color: #425265 !important }
@@ -40,11 +40,11 @@ main {
 }
 
 footer.page-footer {
-	background-color: #1b2530;
+	background-color: #181828;
 }
 
 .page-footer .footer-copyright {
-	background-color: #1b2530;
+	background-color: #181828;
 }
 
 h1, h2, h3, h4 {
@@ -131,7 +131,7 @@ img#tmdb {
 }
 
 nav {
-	background-color: #0F171E;
+	background-color: #212331;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	max-width: 1600px;
