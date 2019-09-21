@@ -1,0 +1,67 @@
+nav {
+	background-color: #212331;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	max-width: 1600px;
+	margin: 0 auto;
+}
+
+nav .brand-logo {
+	font-size: 1.5rem;
+	color: #fafafa;
+}
+
+nav a {
+	color: #cccccc;
+}
+
+nav ul a {
+	color: #cccccc;
+}
+
+nav ul a:hover {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.sidenav {
+	background-color: #1b2530;
+}
+
+.sidenav li > a {
+	color: #fafafa;
+}
+
+.sidenav .nav-image {
+	background-image: url(/images/wick.jpg);
+	background-position: top;
+	background-size: cover;
+	height: 100px;
+	width: 100%;
+}
+
+ul.sidenav:not(.browser-default) > li {
+	list-style-type: hiragana;
+}
+
+ul.sidenav:not(.browser-default) {
+	padding-left: 40px;
+}
+
+.dropdown-content {
+	background-color: #1b2530;
+}
+
+.dropdown-content li > a {
+	color: #fafafa;
+}
+
+.dropdown-content li:hover {
+	background-color: #243341;
+}
+
+/* Media Queries --- Mobile First */
+@media (min-width: 601px) {
+	nav .brand-logo {
+	    padding-left: 5%;
+	}
+}

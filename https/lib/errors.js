@@ -11,9 +11,9 @@ module.exports = {
 		res.locals.error = req.app.get('env') === 'development' ? err : {};
 
 		if (err.status == 404) {
-			//let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-			res.status(404);
-			res.render('404');
+			res.render('404', {
+				file: null
+			});
 		} else {
 			res.status(err.status || 500);
 			res.render('error');

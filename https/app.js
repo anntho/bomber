@@ -49,6 +49,7 @@ app.use(function(req, res, next) {
 	res.locals.error = req.flash('error');
 	res.locals.env = process.env.NODE_ENV;
 	res.locals.socket = socket;
+	res.locals.game = false;
 	res.locals.user = false;
 	res.locals.username = '';
 	res.locals.userId = '';
