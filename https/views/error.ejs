@@ -1,3 +1,29 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | Error</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="movie trivia, trivia, free trivia">
+	<% include ./robots %>
+	<% include ./styles %>
+	<% include ./fonts %>
+</head>
+<body>
+	<main>
+		<div class="top-wrapper">
+			<h1>Error</h1>
+            <h3>moviebomber.org</h3>
+            <% if (env.includes('dev')) { %>
+			    <span><%= message %></span>
+                <span><%= error.status %></span>
+                <pre><%= error.stack %></pre>
+            <% } %>
+			<a href="/" class="waves-effect waves-light btn-large purple lighten-1">
+				<i class="material-icons left">house</i>
+				home
+			</a>
+		</div>
+	</main>
+</body>
+</html>

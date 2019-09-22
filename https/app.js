@@ -20,12 +20,12 @@ const mongoose = require('mongoose');
 mongoose.connect(config.atlas.URI, {useNewUrlParser: true});
 
 // Require Routes
-const dataRoute = require('./routes/data');
-const pagesRoute = require('./routes/pages');
-const socketsRoute = require('./routes/sockets');
-const usersRoute = require('./routes/users');
-const accountsRoute = require('./routes/accounts');
-const gamesRoute = require('./routes/games');
+const dataRouter = require('./routes/data');
+const pagesRouter = require('./routes/pages');
+const socketsRouter = require('./routes/sockets');
+const usersRouter = require('./routes/users');
+const accountsRouter = require('./routes/accounts');
+const gamesRouter = require('./routes/games');
 
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -47,10 +47,11 @@ app.use(function(req, res, next) {
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
 	res.locals.error = req.flash('error');
-	res.locals.env = process.env.NODE_ENV;
+	res.locals.env = process.env.NODE_ENV || 'development';
 	res.locals.socket = socket;
 	res.locals.game = false;
 	res.locals.user = false;
+	res.locals.file = '';
 	res.locals.username = '';
 	res.locals.userId = '';
 	next();
@@ -63,12 +64,12 @@ app.use(favicon(path.join(__dirname, 'public/icon', 'favicon.png')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Attach Routes
-app.use('/', pagesRoute);
-app.use('/game', gamesRoute);
-app.use('/data', dataRoute);
-app.use('/sockets', socketsRoute);
-app.use('/@', usersRoute);
-app.use('/account', accountsRoute);
+app.use('/', pagesRouter);
+app.use('/game', gamesRouter);
+app.use('/data', dataRouter);
+app.use('/sockets', socketsRouter);
+app.use('/@', usersRouter);
+app.use('/account', accountsRouter);
 
 // Error Handling
 app.use(catch404);

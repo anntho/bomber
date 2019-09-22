@@ -10,10 +10,13 @@ module.exports = {
 		res.locals.message = err.message;
 		res.locals.error = req.app.get('env') === 'development' ? err : {};
 
+		// console.log('error handler');
+		// console.log(1, res.locals.message);
+		// console.log(2, res.locals.error.status);
+		// console.log(3, res.locals.error.stack);
+
 		if (err.status == 404) {
-			res.render('404', {
-				file: null
-			});
+			res.render('404');
 		} else {
 			res.status(err.status || 500);
 			res.render('error');
