@@ -24,7 +24,7 @@
 					<i id="restartBtn" class="material-icons pulse replay">autorenew</i>
 				</div>
 				<!-- start: gamebox -->
-				<div id="gamebox" class="gamebox z-index-4">
+				<div id="gbox" class="gbox z-index-4">
 					<div class="stuff">
 						<div class="scontainer">
 							<div class="icon">SCORE</div>
@@ -35,12 +35,14 @@
 							<div class="stat text" id="lives">6</div>
 						</div>
 					</div>
-					<% if (user) { %>
-						<h4><%-user.username%></h4>
-					<% } else { %>
-						<br>
-					<% } %>
-					<h6 class="heavy">Prompts</h6><br>
+					<div class="ubox">
+						<% if (user) { %>
+							<h5><%-user.username%></h5>
+						<% } else { %>
+							<h5>Player 1</h5>
+							<span>Rank: Visitor (uncredited)</span>
+						<% } %>
+					</div>
 					<div class="prompts">
 						<div class="pcontainer z-index-4">
 							<div class="icon">
@@ -54,34 +56,22 @@
 						</div>
 					</div>
 					<!-- start: choices -->
-					<br><h6 class="heavy">Choices</h6><br>
+					<br>
 					<div class="buttons-wrapper">
 						<div class="buttons">
-							<div class="bcontainer z-index-4">
-								<div class="icon">
-									<i class="material-icons">filter_1</i>
-								</div>
+							<div class="bbox z-index-4">
 								<div class="text button point"></div>
 							</div>
 							<br>
-							<div class="bcontainer z-index-4">
-								<div class="icon">
-									<i class="material-icons">filter_2</i>    
-								</div>
+							<div class="bbox z-index-4">
 								<div class="text button point"></div>
 							</div>
 							<br>
-							<div class="bcontainer z-index-4">
-								<div class="icon">
-									<i class="material-icons">filter_3</i>
-								</div>
+							<div class="bbox z-index-4">
 								<div class="text button point"></div>
 							</div>
 							<br>
-							<div class="bcontainer z-index-4">
-								<div class="icon">
-									<i class="material-icons">filter_4</i>
-								</div>
+							<div class="bbox z-index-4">
 								<div class="text button point"></div>
 							</div>
 							<br>

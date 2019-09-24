@@ -4,3 +4,8 @@ input[type=password]:not(.browser-default) {
     border-bottom: 1px solid #fafafa;
     color: #fafafa;
 }
+
+.register {
+    max-width: 500px;
+    margin: 0 auto;
+}

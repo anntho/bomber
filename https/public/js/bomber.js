@@ -151,7 +151,7 @@ class DOMElements {
 		this.prompts = document.querySelectorAll('.prompt');
 		this.loader = document.getElementById('faceLoader');
 		this.face = document.getElementById('face');
-		this.gamebox = document.querySelector('.gamebox');
+		this.gamebox = document.querySelector('.gbox');
 		this.gameover = document.querySelector('.gameover');
 		this.replay = document.querySelector('i.replay');
 		this.myscore = document.getElementById('myscore');
