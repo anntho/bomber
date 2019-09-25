@@ -10,7 +10,7 @@ $(document).ready(async function() {
     let ref = {};
     let package = [];
     let sid = '';
-    let log = true;
+    let log = false;
 
     socket.on('game', function(data) {
         if (log) {
@@ -18,6 +18,8 @@ $(document).ready(async function() {
         }
         sid = data;
     });
+
+    loaderOn();
 
     await fillStarters();
     await loadMovie(movieIds[currentIndex]);
@@ -96,11 +98,12 @@ $(document).ready(async function() {
 	}
 
     async function loadMovie(id) {
+        console.log('loading movie')
         loaderOn();
         let movie = movies.find(movie => movie.altId == id);
-        let url = `url(https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster})`;
+        let url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster}`;
 
-        setPosterAndTitle(url, movie.title, movie.year);
+        await setPosterAndTitle(url, movie.title, movie.year);
         loaderOff();
 
         ref.movie = movie.title + ' (' + movie.year + ')';
@@ -133,7 +136,6 @@ $(document).ready(async function() {
     async function gameOver() {
         hideGamebox();
         restartGame();
-
     }
 
     async function guessLogic(guess) {
@@ -232,23 +234,31 @@ $(document).ready(async function() {
         $('.gameover').css('display', 'none');
     }
 
-    function setPosterAndTitle(url, title, year) {
-        $('#poster').css('background-image', url);
-        $('#loader').css('display', 'none');
-        $('#title').text(`${title} (${year})`);
+    async function setPosterAndTitle(url, title, year) {
+        console.log('setPosterAndTitle', url, title, year);
+        return new Promise(function(res, rej) {
+            $('#poster').attr('src', url);
+            $('#poster').on('load', function() {
+                $('#loader').css('display', 'none');
+                $('#title').text(`${title} (${year})`);
+                res();
+            });
+        });
     }
 
     function loaderOn() {
+        console.log('loaderOn');
         $('#loader').css('display', 'block');
         $('#poster').css('display', 'none');
     }
 
     function loaderOff() {
+        console.log('loaderOff');
         $('#loader').css('display', 'none');
         $('#poster').css('display', 'block');
-        //let elm = document.getElementById('poster');
-        //let newone = elm.cloneNode(true);
-        //elm.parentNode.replaceChild(newone, elm);
+        let elm = document.getElementById('poster');
+        let newone = elm.cloneNode(true);
+        elm.parentNode.replaceChild(newone, elm);
     }
 });
 

@@ -27,7 +27,7 @@
 						<div class="col s12">
 							<div class="row mb-0">
 								<div class="col s6 postbox">
-									<div id="poster" class="poster z-depth-4"></div>
+									<img id="poster" class="poster z-depth-4 fade">
 									<div id="loader" class="loader z-depth-4"></div>
 								</div>
 								<div class="col s6">
@@ -62,7 +62,7 @@
 		const userIdString = <%-JSON.stringify(userId)%>;
 	</script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
-	<script src="/js/jquery.slim.min.js"></script>
+	<script src="/js/jquery.min.js"></script>
 	<script src="/js/nav.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
