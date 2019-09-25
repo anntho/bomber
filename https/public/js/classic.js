@@ -246,9 +246,9 @@ $(document).ready(async function() {
     function loaderOff() {
         $('#loader').css('display', 'none');
         $('#poster').css('display', 'block');
-        let elm = document.getElementById('poster');
-        let newone = elm.cloneNode(true);
-        elm.parentNode.replaceChild(newone, elm);
+        //let elm = document.getElementById('poster');
+        //let newone = elm.cloneNode(true);
+        //elm.parentNode.replaceChild(newone, elm);
     }
 });
 

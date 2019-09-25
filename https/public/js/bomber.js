@@ -151,21 +151,21 @@ class DOMElements {
 		this.prompts = document.querySelectorAll('.prompt');
 		this.loader = document.getElementById('faceLoader');
 		this.face = document.getElementById('face');
-		this.gamebox = document.querySelector('.gbox');
-		this.gameover = document.querySelector('.gameover');
-		this.replay = document.querySelector('i.replay');
-		this.myscore = document.getElementById('myscore');
+		this.board = document.getElementById('board');
+		this.go = document.getElementById('go');
+		this.restart = document.getElementById('restart');
+		this.myscore = document.getElementById('fscore');
 	}
 	async wait(ms) {
 		return new Promise(r => setTimeout(r, ms));
 	}
-	hideGamebox() {
-		this.gamebox.style.display = 'none';
-		this.gameover.style.display = 'block';
+	hideBoard() {
+		this.board.style.display = 'none';
+		this.go.style.display = 'block';
 	}
-	showGamebox() {
-		this.gamebox.style.display = 'block';
-		this.gameover.style.display = 'none';
+	showBoard() {
+		this.board.style.display = 'block';
+		this.go.style.display = 'none';
 	}
 	loaderOn() {
 		this.prompts.forEach(prompt => {
@@ -647,7 +647,7 @@ class GameLogic {
 			}
 
 			if (this.user.lives < 1) {
-				this.dom.hideGamebox();
+				this.dom.hideBoard();
 
 				await swal({
 					title: 'Game Over',
@@ -677,8 +677,7 @@ class GameLogic {
 
 document.addEventListener('DOMContentLoaded', async () => {
 	let socket = io.connect(socketString);
-	console.log('socket connected');
-
+	console.log('Welcome to moviebomber.org');
 	let mrAPI = new API(socket);
 	let mrDom = new DOMElements();
 	let mrRef = new Reference();
@@ -711,8 +710,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		});
 	});
 
-	mrDom.replay.addEventListener('click', async (evt) => {
-		mrDom.showGamebox();
+	mrDom.restart.addEventListener('click', async (evt) => {
+		mrDom.showBoard();
 		mrBomber = null;
 		mrRef = null;
 		mrUser = null;

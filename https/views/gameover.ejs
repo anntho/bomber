@@ -1,0 +1,27 @@
+<div id="go" class="gcontainer">
+    <h5>Game Over</h5>
+    <div class="row">
+        <div class="col s12">
+            <h5>Final Score: <span id="fscore"></span></h5>
+            <h5>Current Rank: <span id="frank"></span></h5>
+        </div>
+    </div>
+    <div class="row gomessage">
+        <div class="col s12">
+            <% if (user) { %>
+                <p>Thanks for playing, <%-user.username%></p>
+                <p>Check out your score on the leaderboard.</p>
+            <% } else { %>
+                <p>Thanks for playing!</p>
+                <p>If you want to see your score on the leaderboard, as well as track past games you can sign up for a free account using the link below.</p>
+                <p><a href="/register">Click here to register.</a></p>
+            <% } %>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+            <a id="restart" class="waves-effect waves-light btn mb-deep-grey">Play again</a>
+            <a href="/board" class="waves-effect waves-light btn grey">Leaderboard</a>
+        </div>
+    </div>
+</div>

@@ -1,50 +1,37 @@
-.gbox {
+#go {
+	display: none;
+}
+
+.gcontainer {
 	max-width: 650px;
 	margin: 0 auto;
 	margin-top: 5%;
 	padding: 3%;
 }
 
-.stuff {
-	display: flex;
+.gcontainer .gomessage {
+	font-size: .8rem;
+}
+
+.scontainer {
 	border: 2px solid #fafafa;
 	border-radius: 5px;
 }
 
-.stuff div {
-	flex-basis: 50%;
-}
-
-.scontainer {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.scontainer div {
-	flex-basis: 50%;
-	text-align: center;
-}
-
-.scontainer .icon {
-	padding: 2%;
+.scontainer .label {
+	height: 100%;
 	color: #fafafa;
 	font-weight: 700;
 	font-size: 12px;
 }
 
-.scontainer .text {
-	padding: 2%;
+.scontainer .stat {
 	font-size: 1.5rem;
 	font-weight: 700;
 	color: #c1cbff;
 }
 
-.ubox {
-	margin-bottom: 4%;
-}
-
-.pcontainer {
+.pbox {
 	background-color: #fafafa;
 	border: 1px solid #c1cbff;
 	border-radius: 3px;
@@ -53,7 +40,7 @@
 	height: 110px;
 }
 
-.pcontainer .icon {
+.pbox .icon {
 	flex-basis: 20%;
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
@@ -62,7 +49,7 @@
 	align-items: center;
 }
 
-.pcontainer .text {
+.pbox .text {
 	flex-basis: 80%;
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
@@ -74,8 +61,17 @@
 	font-size: .9rem;
 }
 
-.pcontainer .text .prompt {
+.pbox .text .prompt {
 	flex-basis: 100%;
+}
+
+.bcontainer {
+	display: flex;
+}
+
+.bcontainer .buttons {
+	flex-basis: 100%;
+	display: inline-grid;
 }
 
 .bbox {
@@ -95,40 +91,14 @@
 	align-items: center;
 }
 
-.buttons-wrapper {
-	display: flex;
-}
 
-.buttons-wrapper .buttons {
-	flex-basis: 100%;
-	display: inline-grid;
-}
+
+
 
 
 .z-depth {
 	-webkit-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-}
-
-.gameover {
-    display: none;
-    margin-top: 5%;
-    height: 400px;
-    text-align: center;
-}
-
-.gameover form {
-	border: 1px solid #009688;
-    border-radius: 5px;
-    padding: 2%;
-}
-
-.gameover .row form.col {
-	padding: 3%;
-}
-
-.gameover .row {
-	margin-bottom: 0;
 }
 
 .slide {

@@ -1,0 +1,9 @@
+<div id="nametag" class="row ucontainer">
+    <% if (user) { %>
+        <div class="col s12"><span><%-user.username%></span></div>
+        <div class="col s12"><span>Rank: <%-user.name%></span></div>
+    <% } else { %>
+        <div class="col s12"><span>Player 1</span></div>
+        <div class="col s12"><span>Rank: Visitor <a href="/register">(uncredited)</a></span></div>
+    <% } %>
+</div>

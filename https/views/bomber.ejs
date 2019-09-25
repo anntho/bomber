@@ -12,39 +12,32 @@
 </head>
 <body>
 	<% include ./nav %>
-
 	<main>
 		<div class="top-wrapper row">
 			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
-				<div id="gameover" class="gameover">
-					<p class="go">Game Over</p>
-					<p>
-						<a id="myscore" class="myscore">LEADERBOARD</a>
-					</p>
-					<i id="restartBtn" class="material-icons pulse replay">autorenew</i>
-				</div>
-				<!-- start: gamebox -->
-				<div id="gbox" class="gbox z-index-4">
-					<div class="stuff">
-						<div class="scontainer">
+				<% include ./gameover %>
+				<div id="board" class="gcontainer z-index-4">
+					<div class="scontainer">
+						<div class="sbox">
 							<div class="icon">SCORE</div>
 							<div class="stat text" id="score">0</div>
 						</div>
-						<div class="scontainer">
+						<div class="sbox">
 							<div class="icon">LIVES</div>
 							<div class="stat text" id="lives">6</div>
 						</div>
 					</div>
-					<div class="ubox">
+					<div id="nametag" class="ucontainer">
 						<% if (user) { %>
 							<h5><%-user.username%></h5>
+							<span>Rank: <%-user.name%></span>
 						<% } else { %>
 							<h5>Player 1</h5>
-							<span>Rank: Visitor (uncredited)</span>
+							<span>Rank: Visitor <a href="/register">(uncredited)</a></span>
 						<% } %>
 					</div>
-					<div class="prompts">
-						<div class="pcontainer z-index-4">
+					<div id="prompts" class="pcontainer">
+						<div class="pbox z-index-4">
 							<div class="icon">
 								<i id="face" class="material-icons">face</i>
 								<i id="faceLoader" class="material-icons" style="display: none;">face</i>
@@ -55,9 +48,8 @@
 							</div>
 						</div>
 					</div>
-					<!-- start: choices -->
 					<br>
-					<div class="buttons-wrapper">
+					<div class="bcontainer">
 						<div class="buttons">
 							<div class="bbox z-index-4">
 								<div class="text button point"></div>
@@ -76,18 +68,17 @@
 							</div>
 							<br>
 						</div>
-					</div> <!-- end: choices -->
-				</div> <!-- end: gamebox -->
+					</div>
+				</div>
 			</div>
 		</div>
 	</main>
-
 	<% include ./footer %>
 
 	<script>
-		const socketString = <%-JSON.stringify(socket)%>;
-		const usernameString = <%-JSON.stringify(username)%>;
-		const userIdString = <%-JSON.stringify(userId)%>;
+		let socketString = <%-JSON.stringify(socket)%>;
+		let usernameString = <%-JSON.stringify(username)%>;
+		let userIdString = <%-JSON.stringify(userId)%>;
 	</script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
 	<script src="/js/jquery.slim.min.js"></script>

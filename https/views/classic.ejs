@@ -12,61 +12,44 @@
 </head>
 <body>
 	<% include ./nav %>
-
 	<main>
 		<div class="top-wrapper row">
 			<div class="content-wrapper col s12 l8 offset-l2 xl6 offset-xl3">
-				<div class="gameover">
-					<p class="go">GAME OVER</p>
-					<p><a id="myscore" class="myscore">LEADERBOARD</a></p>
-					<i class="material-icons pulse replay">autorenew</i>
-				</div>
-				<div class="gamebox">
-					<div class="stuff">
-						<div class="scontainer">
-							<div class="icon">SCORE</div>
-							<div class="stat text" id="score">0</div>
+				<% include ./gameover %>
+				<div id="board" class="gcontainer">
+					<% include ./stats %>
+					<% include ./nametag %>
+
+					<div class="row">
+						<div class="col s12">
+							<p id="title"></p>
 						</div>
-						<div class="scontainer">
-							<div class="icon">LIVES</div>
-							<div class="stat text" id="lives">6</div>
-						</div>
-					</div>
-					<br>
-					<div class="movie-title">
-						<div id="title" class="heavy">loading..</div>
-					</div>
-					<br>
-					<div class="pretty-wrapper">
-						<div class="poster-wrapper">
-							<div id="poster" class="image z-depth-4 fade"></div>
-							<div id="loader" class="image z-depth-4 loader">
-								<div class="line-scale">
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
+						<div class="col s12">
+							<div class="row mb-0">
+								<div class="col s6 postbox">
+									<div id="poster" class="poster z-depth-4"></div>
+									<div id="loader" class="loader z-depth-4"></div>
+								</div>
+								<div class="col s6">
+									<div class="row">
+										<div class="col s12 butbox valign-wrapper"><div id="a" class="button waves-effect z-depth point"></div></div>
+										<div class="col s12 butbox valign-wrapper"><div id="b" class="button waves-effect z-depth point"></div></div>
+										<div class="col s12 butbox valign-wrapper"><div id="c" class="button waves-effect z-depth point"></div></div>
+										<div class="col s12 butbox valign-wrapper"><div id="d" class="button waves-effect z-depth point"></div></div>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="buttons">
-							<div id="a" class="button waves-effect z-depth point"></div>
-							<div id="b" class="button waves-effect z-depth point"></div>
-							<div id="c" class="button waves-effect z-depth point"></div>
-							<div id="d" class="button waves-effect z-depth point"></div>
+					</div>
+
+					<div class="row ocontainer">
+						<div class="col s12">
+							<span>Overview</span>
+						</div>
+						<div class="col s12">
+							<p id="overview" class="text"></p>
 						</div>
 					</div>
-					<br>
-					<h6>Overview</h6>
-					<p class="divider"></p>
-					<p id="overview"></p>
 				</div>
 			</div>
 		</div>

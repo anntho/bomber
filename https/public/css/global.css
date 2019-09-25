@@ -12,6 +12,11 @@ a {
 	color: #fafafa;
 }
 
+.btn,
+.btn-large {
+	font-weight: 700;
+}
+
 .point {
 	cursor: pointer !important;
 }
@@ -21,6 +26,10 @@ main {
 	min-height: -webkit-calc(100% - 56px);
 	min-height: -o-calc(100% - 56px);
 	min-height: calc(100% - 56px);
+}
+
+.mb-0 {
+	margin-bottom: 0 !important;
 }
 
 .mb-3 {
