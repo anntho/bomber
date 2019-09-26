@@ -98,7 +98,6 @@ $(document).ready(async function() {
 	}
 
     async function loadMovie(id) {
-        console.log('loading movie')
         loaderOn();
         let movie = movies.find(movie => movie.altId == id);
         let url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster}`;
@@ -235,7 +234,7 @@ $(document).ready(async function() {
     }
 
     async function setPosterAndTitle(url, title, year) {
-        console.log('setPosterAndTitle', url, title, year);
+        if (log) console.log('setPosterAndTitle', url, title, year);
         return new Promise(function(res, rej) {
             $('#poster').attr('src', url);
             $('#poster').on('load', function() {
@@ -247,13 +246,13 @@ $(document).ready(async function() {
     }
 
     function loaderOn() {
-        console.log('loaderOn');
+        if (log) console.log('loaderOn');
         $('#loader').css('display', 'block');
         $('#poster').css('display', 'none');
     }
 
     function loaderOff() {
-        console.log('loaderOff');
+        if (log) console.log('loaderOff');
         $('#loader').css('display', 'none');
         $('#poster').css('display', 'block');
         let elm = document.getElementById('poster');

@@ -17,26 +17,9 @@
 			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
 				<% include ./gameover %>
 				<div id="board" class="gcontainer z-index-4">
-					<div class="scontainer">
-						<div class="sbox">
-							<div class="icon">SCORE</div>
-							<div class="stat text" id="score">0</div>
-						</div>
-						<div class="sbox">
-							<div class="icon">LIVES</div>
-							<div class="stat text" id="lives">6</div>
-						</div>
-					</div>
-					<div id="nametag" class="ucontainer">
-						<% if (user) { %>
-							<h5><%-user.username%></h5>
-							<span>Rank: <%-user.name%></span>
-						<% } else { %>
-							<h5>Player 1</h5>
-							<span>Rank: Visitor <a href="/register">(uncredited)</a></span>
-						<% } %>
-					</div>
-					<div id="prompts" class="pcontainer">
+					<% include ./stats %>
+					<% include ./nametag %>
+					<div id="prompts" class="row pcontainer">
 						<div class="pbox z-index-4">
 							<div class="icon">
 								<i id="face" class="material-icons">face</i>
@@ -48,8 +31,7 @@
 							</div>
 						</div>
 					</div>
-					<br>
-					<div class="bcontainer">
+					<div class="row bcontainer">
 						<div class="buttons">
 							<div class="bbox z-index-4">
 								<div class="text button point"></div>
