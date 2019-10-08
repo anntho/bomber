@@ -2,7 +2,6 @@ const mysql = require('mysql');
 const config = require('../bin/config');
 const updateSessionPool = mysql.createPool(config.mysql);
 const { procHandler } = require('./sql');
-const users = require('./updateSession');
 
 module.exports = {
     updateSession: async (id, socket) => {
@@ -10,12 +9,17 @@ module.exports = {
         const inputs = [id];
         const result = await procHandler(updateSessionPool, proc, inputs);
         if (result && result[0]) {
-            console.log('saving session');
-            socket.request.session.user.username = result[0].username;
-            socket.request.session.user.changedUsername = result[0].changedUsername;
+            socket.request.session.user = result[0];
             socket.request.session.save();
-            console.log('updated session');
-            console.log(socket.request.session.user);
+        }
+    },
+    updateSessionHTTP: async (request) => {
+        const proc = 'CALL sp_GetUserById(?)';
+        const inputs = [request.session.user.id];
+        const result = await procHandler(updateSessionPool, proc, inputs);
+        if (result && result[0]) {
+            request.session.user = result[0];
+            request.session.save();
         }
     }
 }

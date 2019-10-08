@@ -3,27 +3,21 @@ const router = express.Router();
 const config = require('../bin/config');
 const mysql = require('mysql');
 const { procHandler, procHandler2 } = require('../lib/sql');
-
 const gamePool = mysql.createPool(config.mysql);
-const socket = `${config.socket.host}:${config.socket.port}`;
+const { setUser } = require('../bin/auth');
 
-router.get('/:sid', async (req, res) => {
+router.get('/:sid', setUser, async (req, res) => {
 	try {
         let sid = req.params.sid;
         console.log(`looking for game ${sid}`);
         let gameProc = 'CALL moviebomber.sp_GetGameBySid(?)';
 		let game = await procHandler2(gamePool, gameProc, [sid]);
 		if (!game[0] || !game[1]) {
-			res.render('404', {
-				user: req.session.user || null,
-				socket: socket
-			});
+			res.locals.file = '404';
+			res.render(res.locals.file);
 		} else {
-			res.render('game', {
-				user: req.session.user || null,
-                socket: socket,
-                game: game
-			});
+			res.locals.game = game;
+			res.render('game');
 		}
 	} catch (err) {
 		console.log(err);

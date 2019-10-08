@@ -2,18 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
+const { setUser } = require('../bin/auth');
 const file = 'routes/pages.js';
 
-function setUser(req, res, next) {
-	if (req.session.user) {
-		res.locals.user = true;
-		res.locals.username = req.session.user.username;
-		res.locals.userId = req.session.user.id;
-	}
-	next();
-}
 
-router.get('/', async (req, res) => {
+
+router.get('/', setUser, async (req, res) => {
 	try {
 		res.locals.metrics = await pages.siteMetrics();
 		res.locals.file = 'land';
@@ -24,7 +18,7 @@ router.get('/', async (req, res) => {
 	}
 });
 
-router.get('/board', async (req, res) => {
+router.get('/board', setUser, async (req, res) => {
 	try {
 		res.locals.scores = await pages.getScores();
 		res.locals.file = 'board';
@@ -35,7 +29,7 @@ router.get('/board', async (req, res) => {
 	}
 });
 
-router.get('/blog', async (req, res) => {
+router.get('/blog', setUser, async (req, res) => {
 	try {
 		res.locals.articles = await pages.getArticles();
 		res.locals.file = 'blog';
@@ -46,7 +40,7 @@ router.get('/blog', async (req, res) => {
 	}
 });
 
-router.get('/trivia', async (req, res) => {
+router.get('/trivia', setUser, async (req, res) => {
 	try {
 		res.locals.questions = await pages.getQuestions();
 		res.locals.file = 'trivia';
@@ -58,7 +52,7 @@ router.get('/trivia', async (req, res) => {
 	}
 });
 
-router.get('/article/:id', async (req, res) => {
+router.get('/article/:id', setUser, async (req, res) => {
 	try {
 		res.locals.article = await pages.getArticle(req.params.id);
 		res.locals.file = 'article';
@@ -120,12 +114,12 @@ router.get('/register', (req, res) => {
 	}
 });
 
-router.get('/verify', async (req, res) => {
+router.get('/verify', setUser, async (req, res) => {
 	if (req.session.user && req.session.user.verified) {
 		res.redirect('/account/preferences');
 	} else if (req.query.v) {
 		try {
-			res.locals.result = await pages.verifyEmail(req.query.v);
+			res.locals.status = await pages.verifyEmail(req.query.v);
 			res.locals.file = 'verify';
 			res.render(res.locals.file);
 		} catch (err) {

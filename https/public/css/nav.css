@@ -28,7 +28,11 @@ nav ul a:hover {
 }
 
 .sidenav li > a {
-	color: #fafafa;
+	color: #b6b6ef;
+}
+
+.sidenav li > a:hover {
+	background-color: transparent;
 }
 
 .sidenav .nav-image {
@@ -48,7 +52,7 @@ ul.sidenav:not(.browser-default) {
 }
 
 .dropdown-content {
-	background-color: #1b2530;
+	background-color: #212331;
 }
 
 .dropdown-content li > a {
@@ -56,7 +60,7 @@ ul.sidenav:not(.browser-default) {
 }
 
 .dropdown-content li:hover {
-	background-color: #243341;
+	background-color: transparent;
 }
 
 /* Media Queries --- Mobile First */

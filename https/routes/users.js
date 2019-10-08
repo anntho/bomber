@@ -3,11 +3,12 @@ const router = express.Router();
 const config = require('../bin/config');
 const mysql = require('mysql');
 const { procHandler, procHandler2 } = require('../lib/sql');
+const { setUser } = require('../bin/auth');
 
 const usersPool = mysql.createPool(config.mysql);
 const socket = `${config.socket.host}:${config.socket.port}`;
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', [setUser], async (req, res) => {
 	let username = req.params.id;
 	let userProc = 'CALL moviebomber.sp_GetUser(?)';
 	let userInputs = [username];
@@ -15,11 +16,8 @@ router.get('/:id', async (req, res) => {
 	try {
 		let user = await procHandler(usersPool, userProc, userInputs);
 		if (!user[0]) {
-			res.render('404', {
-				user: req.session.user || null,
-				socket: socket,
-				username: username
-			});
+			res.locals.file = '404';
+			res.render(res.locals.file);
 		} else {
 			let gamesProc = 'CALL moviebomber.sp_GetUserGames(?)';
 			let games = await procHandler2(usersPool, gamesProc, userInputs);
@@ -34,15 +32,11 @@ router.get('/:id', async (req, res) => {
 				bomber: (bomber) ? bomber.total : null,
 				trivia: (trivia) ? trivia.total : null
 			};
-
-			res.render('profile', {
-				user: req.session.user || null,
-				socket: socket,
-				username: username,
-				user: user[0],
-				games: games,
-				chart: chart
-			});
+			res.locals.file = 'profile';
+			res.locals.games = games;
+			res.locals.chart = chart;
+			res.locals.mbUser = user[0];
+			res.render(res.locals.file);
 			
 		}
 	} catch (err) {

@@ -13,8 +13,8 @@
 .mb-grey-blue { background-color: #5f727f !important }
 .mb-grey-blue-light { background-color: #99a9b5 !important }
 
-::-webkit-input-placeholder { color: #1d282f; }
-::-moz-placeholder { color: #1d282f; }
-:-ms-input-placeholder { color: #1d282f; }
-::-ms-input-placeholder { color: #1d282f; }
-::placeholder { color: #1d282f; }
+::-webkit-input-placeholder { color: #717171; }
+::-moz-placeholder { color: #717171; }
+:-ms-input-placeholder { color: #717171; }
+::-ms-input-placeholder { color: #717171; }
+::placeholder { color: #717171; }

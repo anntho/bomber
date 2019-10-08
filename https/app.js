@@ -54,6 +54,7 @@ app.use(function(req, res, next) {
 	res.locals.file = '';
 	res.locals.username = '';
 	res.locals.userId = '';
+	res.locals.email = '';
 	next();
 });
 

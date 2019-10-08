@@ -79,7 +79,7 @@ module.exports = {
 						try {
 							const salt = await bcrypt.genSaltSync(10);
 							const hash = await bcrypt.hashSync(password, salt);
-							const code = randomString({length: 32, type: 'url-safe'});
+							const code = randomString({length: 32, type: 'alphabetic'});
 							const encodedVerificationString = Buffer.from(`${email}:${code}`).toString('base64');
 							const newUserSQL = 'CALL sp_InsertUser(?, ?, ?, ?)';
 							const newUserInputs = [uname, email, hash, code]; // save raw code, but email base64 encoded

@@ -14,7 +14,7 @@
 }
 
 .butbox {
-	height: 56.25px;
+	height: 60px;
 }
 
 .button {
@@ -22,7 +22,7 @@
     padding: 10px;
 	border: 1px solid #fafafa;
 	border-radius: 3px;
-    color: #c1cbff;
+    color: #fafafa;
 }
 
 .ocontainer .text {

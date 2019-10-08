@@ -32,7 +32,7 @@ h5 a:hover {
 .collapsible,
 .collapsible-header,
 .collapsible-body {
-    border: 1px solid #1d282f;
+    border: 1px solid #fff;
 }
 
 .collapsible-header {
@@ -40,12 +40,11 @@ h5 a:hover {
 	overflow: auto;
     font-size: 22px;
     font-weight: 300;
-    color: #425265;
 }
 
 .alert {
-    background-color: #FFEB3B;
-    color: #0F171E;
+    background-color: #2b2c3c;
+    color: #ab7779;
 }
 
 i.alert-icon {

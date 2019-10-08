@@ -5,7 +5,6 @@
 .gcontainer {
 	max-width: 650px;
 	margin: 0 auto;
-	margin-top: 5%;
 	padding: 3%;
 }
 
@@ -14,21 +13,11 @@
 }
 
 .scontainer {
-	border: 2px solid #fafafa;
-	border-radius: 5px;
-}
-
-.scontainer .label {
-	height: 100%;
-	color: #fafafa;
-	font-weight: 700;
-	font-size: 12px;
-}
-
-.scontainer .stat {
 	font-size: 1.5rem;
-	font-weight: 700;
-	color: #c1cbff;
+}
+
+.sborder	{
+	padding-right: 15px;
 }
 
 .pbox {
@@ -85,7 +74,7 @@
 	padding-left: 20px;
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
-	color: #a4aeff;
+	color: #fafafa;
 	height: 50px;
 	display: flex;
 	align-items: center;

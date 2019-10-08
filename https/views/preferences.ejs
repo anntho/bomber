@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>moviebomber.org | <%-user.username%></title>
+	<title>moviebomber.org | <%-username%></title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
@@ -12,9 +12,9 @@
 	<% include ./nav %>
 
 	<main>
-		<% if (!user.verified) { %>
+		<% if (!verified) { %>
 			<div id="valert" class="row alert">
-				<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
+				<div class="content-wrapper col s12 m10 offset-m1 xl6 offset-xl3">
 					<p class="valign-wrapper">
 						<i class="material-icons left alert-icon">close</i>
 						Please check your inbox to verify your email address
@@ -23,11 +23,11 @@
 			</div>
 		<% } %>
 		<div class="top-wrapper row">
-			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
+			<div class="content-wrapper col s12 m10 offset-m1 xl6 offset-xl3">
 				<div class="row">
 					<div class="col s12">
 						<h5 class="valign-wrapper">
-							<i class="material-icons mb-orange-text left">settings</i>
+							<i class="material-icons left mb-green-text">settings</i>
 							Account Preferences
 						</h5>
 					</div>
@@ -39,15 +39,16 @@
 							<li>
 								<div class="collapsible-header valign-wrapper">
 									<i class="material-icons left">keyboard_arrow_down</i>
-									<span class="mb-grey-blue-light-text"><%-user.username%></span>
+									<span class="mb-grey-blue-light-text"><%-username%></span>
 								</div>
 								<div class="collapsible-body">
 									<p class="mb-grey-blue-light-text">You can only edit your username once, so choose wisely!</p>
 									<div class="row">
-										<div class="col s10">
+										<div class="col s12">
 											<input type="text" id="username" class="validate" minlength="5" maxlength="15" placeholder="Type a new username">
 										</div>
 										<div class="col s2">
+											<br>
 											<a id="editUsername" class="btn">submit</a>
 										</div>
 									</div>
@@ -62,15 +63,16 @@
 							<li>
 								<div class="collapsible-header valign-wrapper">
 									<i class="material-icons left">keyboard_arrow_down</i>
-									<span class="mb-grey-blue-light-text"><%-user.email%></span>
+									<span class="mb-grey-blue-light-text"><%-email%></span>
 								</div>
 								<div class="collapsible-body">
 									<p class="mb-grey-blue-light-text">Please enter a new email address and ensure that you have access to that account.</p>
 									<div class="row">
-										<div class="col s10">
+										<div class="col s12">
 											<input type="email" id="email" maxlength="40" placeholder="Type your email address">
 										</div>
 										<div class="col s2">
+											<br>
 											<a id="editEmail" class="btn">submit</a>
 										</div>
 									</div>
@@ -90,16 +92,17 @@
 								<div class="collapsible-body">
 									<p class="mb-grey-blue-light-text">Please complete the form below to change your password.</p>
 									<div class="row">
-										<div class="col s8">
+										<div class="col s12">
 											<input type="password" class="pw" id="cpass" placeholder="Type your current password">
 										</div>
-										<div class="col s8">
+										<div class="col s12">
 											<input type="password" class="pw" id="npass" placeholder="Type a new password">
 										</div>
-										<div class="col s8">
+										<div class="col s12">
 											<input type="password" class="pw" id="npassc" placeholder="Confirm your new password">
 										</div>
 										<div class="col s2">
+											<br>
 											<a class="btn" id="editPassword">Submit</a>
 										</div>
 									</div>
@@ -131,8 +134,9 @@
 	<% include ./footer %>
 
 	<script>
-		const socketString = <%-JSON.stringify(socket)%>;
-		const uid = <%-JSON.stringify(user.id)%>;
+		let socketString = <%-JSON.stringify(socket)%>;
+		let usernameString = <%-JSON.stringify(username)%>;
+		let userIdString = <%-JSON.stringify(userId)%>;
 	</script>
 	<script src="/js/jquery.slim.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>

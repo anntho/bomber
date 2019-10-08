@@ -72,8 +72,9 @@ module.exports = {
             let code = ascii.split(':')[1];
             let regex = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/;
             let regexMatch = email.toUpperCase().match(regex);
-            
+            console.log('verification request', code, email);
             if (code && code.length === 32 && email && regexMatch) {
+                console.log('matched')
                 const proc = 'CALL sp_VerifyEmail(?, ?)';
                 const inputs = [email, code];
                 const response = await procHandler(pagesPool, proc, inputs);

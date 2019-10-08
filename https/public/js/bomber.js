@@ -155,6 +155,7 @@ class DOMElements {
 		this.go = document.getElementById('go');
 		this.restart = document.getElementById('restart');
 		this.myscore = document.getElementById('fscore');
+		this.rank = document.getElementById('frank');
 	}
 	async wait(ms) {
 		return new Promise(r => setTimeout(r, ms));
@@ -654,8 +655,11 @@ class GameLogic {
 					closeOnClickOutside: false
 				});
 
+				this.dom.myscore.textContent(this.user.score);
+				this.dom.frank.textContent = 'Visitor';
+
 				this.socket.emit('game', {
-					score: this.user.score,
+					score: this.user.score || 0,
 					event: 'end',
 					mode: 'bomber',
 					participants: 1,

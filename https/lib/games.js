@@ -4,6 +4,7 @@ const gamesPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const { sendEmail } = require('./email');
 const { reportError } = require('./errors');
+const randomString = require('crypto-random-string');
 
 const line = '---------------------------------';
 const file = 'lib/games.js';
@@ -107,7 +108,7 @@ module.exports = {
 				let sid = randomString({length: 32});
 				let proc = 'CALL sp_InsertGame(?, ?, ?, ?, ?, ?)';
 				let inputs = [sid, userId, data.score, data.event, data.mode, data.participants];
-				let results = await procHandler(socketPool, proc, inputs);
+				let results = await procHandler(gamesPool, proc, inputs);
 				let newRowId = results[0].newRowId;
 				if (newRowId) {
 					socket.emit('game', sid);
