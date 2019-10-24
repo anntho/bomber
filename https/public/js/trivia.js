@@ -51,15 +51,16 @@ $(document).ready(function() {
                 $('#gamebox').hide();
                 $('#gameover').show();
             } else if (lives > 0) {
-                result('Incorrect', 'error');
+                result('Incorrect', 'error', questions[i].correct);
             }
         }
     }
 
-    function result(title, icon) {
+    function result(title, icon, text) {
         return swal({
             title: title,
             icon: icon,
+            text: text,
             closeOnClickOutside: false
         }).then(function() {
             load();
