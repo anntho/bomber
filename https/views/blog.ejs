@@ -12,33 +12,33 @@
 </head>
 <body>
 	<% include ./nav %>
-
 	<main>
 		<div class="top-wrapper row">
-			<div class="col s12 m8 offset-m2 l6 offset-l3">
-				<h3>
-					<a href="/blog" class="valign-wrapper">
-						<i class="material-icons left mb-green-text">book</i>
-						blog
-					</a>
-				</h3>
-				<% articles.forEach((doc, key) => { %>
-					<div class="post">
+			<div class="content-wrapper">
+				<div class="sub-wrapper">
+					<h4>
+						<a href="/blog" class="valign-wrapper">
+							<i class="material-icons left mb-orange-text">book</i>
+							blog
+						</a>
+					</h4>
+					<br>
+					<% articles.forEach((doc, key) => { %>
 						<% let date1 = String(doc.date).split("G")[0]; %>
 						<% let date2 = date1.substring(0, date1.length - 9); %>
 						<% let articleId = doc.id; %>
 						<% let link = "article/" + articleId %>
-						<p><a class="article-link"><%=date2%></a></p>
-						<p>
-							<span class="article-title">
-								<a href=<%-link%>><%-doc.title%></a>
-							</span> 
-							by <span><%=doc.author%></span>
-						</p>
-						<p><%=doc.desc%></p>
-						<p class="divider"></p>          
-					</div>
-				<% }); %>
+						
+						<a href="<%-link%>">
+							<div class="article">
+								<div class="info-wrapper">
+									<span><%=date2%> by <%=doc.author%></span>
+								</div>
+								<div class="title-wrapper"><%=doc.title%></div>
+							</div>
+						</a>
+					<% }); %>
+				</div>
 			</div>
 		</div>
 	</main>

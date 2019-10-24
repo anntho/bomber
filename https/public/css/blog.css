@@ -1,0 +1,23 @@
+.article {
+    background-color: #607d8b;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 4%;
+    height: 100px;
+}
+
+.article div {
+    display: flex;
+    align-items: center;
+    flex-basis: 100%;
+    padding-left: 2%;
+}
+
+.info-wrapper {
+    background-color: #798b94;
+    font-size: .9rem;
+}
+
+.title-wrapper {
+    font-size: 1.5rem;
+}
