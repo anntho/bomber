@@ -30,4 +30,17 @@ label {
 input[type=search]:not(.browser-default) {
     width: auto;
     margin-left: 10px;
+    border-radius: 0;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+input[type=search]:not(.browser-default):focus:not([readonly])+label {
+    color: #607D8B;
+}
+
+input[type=search]:not(.browser-default):focus:not([readonly]) {
+    border-bottom: 1px solid #607D8B;
+    -webkit-box-shadow: 0 1px 0 0 #607D8B;
+    box-shadow: 0 1px 0 0 #607D8B;
 }

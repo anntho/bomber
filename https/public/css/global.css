@@ -12,6 +12,11 @@ a {
 	color: #fafafa;
 }
 
+input {
+	border-radius: 0;
+	-webkit-appearance: none;
+}
+
 .btn,
 .btn-large {
 	font-weight: 700;
@@ -19,6 +24,10 @@ a {
 
 .point {
 	cursor: pointer !important;
+}
+
+.heavy {
+	font-weight: 700;
 }
 
 main {
