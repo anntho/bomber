@@ -34,7 +34,7 @@ async function emailAlertHTML(ip, username, verification) {
 
 module.exports = {
     register: async (data, socket) => {
-        console.log('new user');
+        console.log('new user request:');
 		console.log(data);
 		console.log(line);
 
@@ -54,6 +54,12 @@ module.exports = {
 			return socket.emit('err', {
                 error: errorMessage
             });
+		} else if (swearjar.profane(uname)) {
+			console.log('profanity detected');
+			errorMessage = 'Username is unavailable';
+			return socket.emit('err', {
+				error: errorMessage
+			});
 		} else {
 			try {
 				const getUserSQL = `CALL sp_GetUser(?)`;
