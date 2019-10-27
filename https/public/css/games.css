@@ -8,14 +8,14 @@
 	padding: 3%;
 }
 
-.gcontainer .gomessage {
-	font-size: .8rem;
-}
-
 .sborder	{
     padding-right: 15px;
     font-weight: 700;
     letter-spacing: 1px;
+}
+
+.swal-text {
+    font-weight: 700;
 }
 
 .ucontainer {

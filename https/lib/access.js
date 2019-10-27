@@ -55,7 +55,6 @@ module.exports = {
                 error: errorMessage
             });
 		} else if (swearjar.profane(uname)) {
-			console.log('profanity detected');
 			errorMessage = 'Username is unavailable';
 			return socket.emit('err', {
 				error: errorMessage

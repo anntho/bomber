@@ -1,16 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var sidenav = document.querySelectorAll('.sidenav');
-    var sidenavInstances = M.Sidenav.init(sidenav);
+    let sidenav = document.querySelectorAll('.sidenav');
+    let sidenavInstances = M.Sidenav.init(sidenav);
 
-    var collapsible = document.querySelectorAll('.collapsible');
-    var collapsableInstances = M.Collapsible.init(collapsible);
+    let collapsible = document.querySelectorAll('.collapsible');
+    let collapsableInstances = M.Collapsible.init(collapsible);
 
-    var dropdown = document.querySelectorAll('.dropdown-trigger');
-    var dropdownInstances = M.Dropdown.init(dropdown, {
+    let dropdown = document.querySelectorAll('.dropdown-trigger');
+    let dropdownInstances = M.Dropdown.init(dropdown, {
         hover: false
     });
 
-    var modal = document.querySelectorAll('.modal');
-    var modalInstances = M.Modal.init(modal);
+    let modal = document.querySelectorAll('.modal');
+    let modalInstances = M.Modal.init(modal);
+
+    let select = document.querySelectorAll('select');
+    let selectInstances = M.FormSelect.init(select);
 });
 

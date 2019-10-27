@@ -10,19 +10,48 @@ $(document).ready(async function() {
     let ref = {};
     let package = [];
     let sid = '';
-    let log = false;
+    let log = true;
+    let timer = null;
+    let counter = 10;
+    let interval = 1000;
+
+    function step() {
+        counter--;
+        $('#timer').text(counter);
+        if (counter === 0) {
+            if (log) console.log('time up');
+            resetTimer();
+            guessLogic(null);
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        timer = null;
+        counter = 10;
+        $('#timer').text(counter);
+    }
+
+    function startTimer() {
+        if (timer !== null) return;
+        if (log) console.log('starting timer');
+        timer = setInterval(step, interval);
+    }
+
+    function stopTimer() {
+        if (log) console.log('stopping timer');
+        resetTimer();
+    }
 
     socket.on('game', function(data) {
-        if (log) {
-            console.log('sid received', data);
-        }
+        if (log) console.log('sid received', data);
         sid = data;
     });
 
     loaderOn();
 
     await fillStarters();
-    await loadMovie(movieIds[currentIndex]);
+    await loadMovie(movieIds[currentIndex], true);
 
     function shuffle(a) {
         for (let i = a.length - 1; i > 0; i--) {
@@ -30,6 +59,15 @@ $(document).ready(async function() {
             [a[i], a[j]] = [a[j], a[i]];
         }
         return a;
+    }
+
+    async function feedback(icon, title, text) {
+        return await swal({
+            icon: icon,
+            title: title,
+            text: text,
+            closeOnClickOutside: false
+        });
     }
 
     async function reportError() {
@@ -97,7 +135,7 @@ $(document).ready(async function() {
 		});
 	}
 
-    async function loadMovie(id) {
+    async function loadMovie(id, initial) {
         loaderOn();
         let movie = movies.find(movie => movie.altId == id);
         let url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster}`;
@@ -130,11 +168,10 @@ $(document).ready(async function() {
         $('.button').each(function(index) {
             $(this).text(list[index]);
         });
-    }
 
-    async function gameOver() {
-        hideGamebox();
-        restartGame();
+        if (!initial) {
+            startTimer();
+        }
     }
 
     async function guessLogic(guess) {
@@ -148,11 +185,17 @@ $(document).ready(async function() {
             });
             score++;
             $('#score').text(score);
-            await swal({
-                icon: 'success',
-                text: 'Correct!',
-                closeOnClickOutside: false
+            await feedback('success', 'Correct!');
+        } else if (guess == null) {
+            package.push({
+                m: ref.movie,
+                g: 'none',
+                s: score,
+                r: -1
             });
+            lives--;
+            $('#lives').text(lives);
+            await feedback('error', 'Out of time!', `The correct answer was ${correct}`);
         } else {
             package.push({
                 m: ref.movie,
@@ -162,35 +205,17 @@ $(document).ready(async function() {
             });
             lives--;
             $('#lives').text(lives);
-            await swal({
-                icon: 'error',
-                text: `The correct answer was ${correct}`,
-                closeOnClickOutside: false
-            });
+            await feedback('error', 'Incorrect', `The correct answer was ${correct}`);
         }
+
         if (log) {
             console.log(ref.movie);
             console.log('guess: ' + guess, 'correct: ' + correct);
             console.log(package);
         }
-    }
 
-    $('.button').click(async function() {
-        if ($('.button').prop('disabled')) {
-            return false;
-        }
-        $('.button').prop('disabled', true);
-        if (currentIndex == 0) {
-            socket.emit('game', {
-			    score: score || 0,
-				event: 'start',
-				mode: 'classic',
-				participants: 1,
-				sid: null
-			});
-        }
-        await guessLogic($(this).text(), $(this));
         if (lives < 1 || currentIndex == movieIds.length) {
+            if (log) console.log('game over');
             socket.emit('game', {
 				score: score,
 				event: 'end',
@@ -201,8 +226,26 @@ $(document).ready(async function() {
 			});
             await gameOver();
         } else {
-            await loadMovie(movieIds[currentIndex]);
+            await loadMovie(movieIds[currentIndex], false);
         }
+    }
+
+    $('.button').click(async function() {
+        if ($('.button').prop('disabled')) {
+            return false;
+        }
+        $('.button').prop('disabled', true);
+        stopTimer();
+        if (currentIndex == 0) {
+            socket.emit('game', {
+			    score: score || 0,
+				event: 'start',
+				mode: 'classic',
+				participants: 1,
+				sid: null
+			});
+        }
+        await guessLogic($(this).text());
         $('.button').prop('disabled', false);
     });
 
@@ -218,19 +261,24 @@ $(document).ready(async function() {
         correct = '';
         package = [];
         ref = {};
-        loadMovie(movieIds[currentIndex]);
+        loadMovie(movieIds[currentIndex], true);
         $('#score').text(score);
         $('#lives').text(lives);
     }
 
+    async function gameOver() {
+        hideGamebox();
+        restartGame();
+    }
+
     function hideGamebox() {
-        $('.gamebox').css('display', 'none');
-        $('.gameover').css('display', 'block');
+        $('#board').css('display', 'none');
+        $('#go').css('display', 'block');
     }
 
     function showGamebox() {
-        $('.gamebox').css('display', 'block');
-        $('.gameover').css('display', 'none');
+        $('#board').css('display', 'block');
+        $('#go').css('display', 'none');
     }
 
     async function setPosterAndTitle(url, title, year) {
