@@ -27,7 +27,8 @@
 }
 
 .prompts-container .text .prompt {
-	flex-basis: 100%;
+    flex-basis: 100%;
+    padding-left: 1%;
 }
 
 .button-wrapper {
@@ -42,12 +43,9 @@
     align-items: center;
     display: flex;
 	flex-basis: 80%;
-	height: 50px;
+    height: 50px;
+    padding-left: 1%;
 }
-
-
-
-
 
 #faceLoader {
     animation: spinPulse 1s infinite ease-in-out;
