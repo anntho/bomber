@@ -11,7 +11,7 @@ $(document).ready(async function() {
     let ref = {};
     let package = [];
     let sid = '';
-    let log = true;
+    let log = false;
     let timer = null;
     let counter = 10;
     let interval = 1000;
