@@ -19,6 +19,11 @@ td {
     margin-top: 20px;
 }
 
+.leaderboard {
+    font-size: .8rem;
+    font-weight: 500;
+}
+
 .leaderboard a {
     color: #fafafa;
 }

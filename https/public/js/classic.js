@@ -16,21 +16,32 @@ $(document).ready(async function() {
     let counter = 10;
     let interval = 1000;
 
+    loaderOn();
+
+    await fillStarters();
+    await loadMovie(movieIds[currentIndex], true);
+
+    socket.on('game', function(data) {
+        if (log) console.log('sid received', data);
+        sid = data;
+    });
+
+    function shuffle(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
     function step() {
         counter--;
         $('#timer').text(counter);
         if (counter === 0) {
             if (log) console.log('time up');
             resetTimer();
-            guessLogic(null);
+            logic(null);
         }
-    }
-
-    function resetTimer() {
-        clearInterval(timer);
-        timer = null;
-        counter = 10;
-        $('#timer').text(counter);
     }
 
     function startTimer() {
@@ -44,22 +55,11 @@ $(document).ready(async function() {
         resetTimer();
     }
 
-    socket.on('game', function(data) {
-        if (log) console.log('sid received', data);
-        sid = data;
-    });
-
-    loaderOn();
-
-    await fillStarters();
-    await loadMovie(movieIds[currentIndex], true);
-
-    function shuffle(a) {
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
+    function resetTimer() {
+        clearInterval(timer);
+        timer = null;
+        counter = 10;
+        $('#timer').text(counter);
     }
 
     async function feedback(icon, title, text) {
@@ -154,7 +154,7 @@ $(document).ready(async function() {
         cast.forEach(c => {
             names.push(c.name);
         });
-        let index = Math.floor(Math.random() * 5);
+        let index = Math.floor(Math.random() * 3);
         let actor = names[index];
         correct = actor;
         let list = [];
@@ -175,7 +175,19 @@ $(document).ready(async function() {
         }
     }
 
-    async function guessLogic(guess) {
+    async function setPosterAndTitle(url, title, year) {
+        if (log) console.log('setPosterAndTitle', url, title, year);
+        return new Promise(function(res, rej) {
+            $('#poster').attr('src', url);
+            $('#poster').on('load', function() {
+                $('#loader').css('display', 'none');
+                $('#title').text(`${title} (${year})`);
+                res();
+            });
+        });
+    }
+
+    async function logic(guess) {
         currentIndex++;
         let c = null;
         
@@ -233,7 +245,8 @@ $(document).ready(async function() {
         }
 
         if (c) {
-            await feedback('success', 'Streak Bonus!', '+' + streak);
+            let text = `${streak} in a row (+${c})`;
+            await feedback('success', 'Streak Bonus!', text);
         }
     }
 
@@ -278,11 +291,12 @@ $(document).ready(async function() {
 				sid: null
 			});
         }
-        await guessLogic($(this).text());
+        await logic($(this).text());
         $('.button').prop('disabled', false);
     });
 
     $('#restart').click(async function() {
+        restartGame();
         showGamebox();
     });
 
@@ -299,9 +313,8 @@ $(document).ready(async function() {
     }
 
     async function gameOver() {
-        hideGamebox();
-        restartGame();
         $('#finalScore').text(score);
+        hideGamebox();
     }
 
     function hideGamebox() {
@@ -312,18 +325,6 @@ $(document).ready(async function() {
     function showGamebox() {
         $('#board').css('display', 'block');
         $('#go').css('display', 'none');
-    }
-
-    async function setPosterAndTitle(url, title, year) {
-        if (log) console.log('setPosterAndTitle', url, title, year);
-        return new Promise(function(res, rej) {
-            $('#poster').attr('src', url);
-            $('#poster').on('load', function() {
-                $('#loader').css('display', 'none');
-                $('#title').text(`${title} (${year})`);
-                res();
-            });
-        });
     }
 
     function loaderOn() {
