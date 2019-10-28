@@ -3,6 +3,7 @@ $(document).ready(async function() {
     let currentIndex = 0;
     let score = 0;
     let lives = 6;
+    let streak = 0;
     let actors = [];
     let movies = [];
     let movieIds = [];
@@ -176,37 +177,23 @@ $(document).ready(async function() {
 
     async function guessLogic(guess) {
         currentIndex++;
+        let c = null;
+        
         if (guess == correct) {
-            package.push({
-                m: ref.movie,
-                g: guess,
-                s: score,
-                r: 1
-            });
-            score++;
-            $('#score').text(score);
+            updatePackage(ref.movie, guess, score, 1);
+            c = calculator(true);
             await feedback('success', 'Correct!');
         } else if (guess == null) {
-            package.push({
-                m: ref.movie,
-                g: 'none',
-                s: score,
-                r: -1
-            });
-            lives--;
-            $('#lives').text(lives);
+            updatePackage(ref.movie, 'none', score, -1);
+            c = calculator(false);
             await feedback('error', 'Out of time!', `The correct answer was ${correct}`);
         } else {
-            package.push({
-                m: ref.movie,
-                g: guess,
-                s: score,
-                r: -1
-            });
-            lives--;
-            $('#lives').text(lives);
+            updatePackage(ref.movie, guess, score, -1);
+            c = calculator(false);
             await feedback('error', 'Incorrect', `The correct answer was ${correct}`);
         }
+
+        await updateStatsDisplay(c);
 
         if (log) {
             console.log(ref.movie);
@@ -228,6 +215,52 @@ $(document).ready(async function() {
         } else {
             await loadMovie(movieIds[currentIndex], false);
         }
+    }
+
+    function updatePackage(m, g, s, r) {
+        package.push({m: m, g: g, s: s, r: r});
+    }
+
+    async function updateStatsDisplay(c) {
+        $('#score').text(score);
+        $('#streak').text(streak);
+        $('#lives').text(lives);
+
+        if (streak > 10 || c == null) {
+            $('.dots .material-icons').css('color', '#bbb');
+        } else {
+            $(`.dots div:nth-child(${streak}) .material-icons`).css('color', '#ffc107');
+        }
+
+        if (c) {
+            await feedback('success', 'Streak Bonus!', '+' + streak);
+        }
+    }
+
+    function calculator(result) {
+        let pts = 10;
+        let add = null;
+        if (result) {
+            add = 0;
+            streak++;
+            score += pts;
+            if (streak == 2) {
+                add = 5; 
+                score += add;
+            }
+            if (streak == 5) {
+                add = 10;
+                score += add;
+            }
+            if (streak == 10) {
+                add = 50;
+                score += add;
+            }
+        } else {
+            streak = 0;
+            lives--;
+        }
+        return add;
     }
 
     $('.button').click(async function() {
@@ -307,5 +340,9 @@ $(document).ready(async function() {
         let newone = elm.cloneNode(true);
         elm.parentNode.replaceChild(newone, elm);
     }
+
+    $('.toggle-trigger').click(function() {
+        $('.toggle').toggle();
+    });
 });
 

@@ -13,7 +13,9 @@
 	background-size: cover;
 }
 
-
+#overview {
+	display: none;
+}
 
 .poster-buttons-container {
 	display: flex;

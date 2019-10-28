@@ -10,8 +10,7 @@
 
 .sborder	{
     padding-right: 15px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-weight: 500;
 }
 
 .swal-text {
@@ -20,6 +19,20 @@
 
 .ucontainer {
 	margin-top: 15px;
+}
+
+.dots {
+    width: 100%;
+    display: flex;
+    padding: 2%;
+}
+
+.dot-wrapper {
+    flex-basis: 10%;
+}
+
+.dots .material-icons {
+    font-size: 10px
 }
 
 .z-depth {
