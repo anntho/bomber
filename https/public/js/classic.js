@@ -282,7 +282,7 @@ $(document).ready(async function() {
         $('.button').prop('disabled', false);
     });
 
-    $('i.replay').click(async function() {
+    $('#restart').click(async function() {
         showGamebox();
     });
 
@@ -295,13 +295,13 @@ $(document).ready(async function() {
         package = [];
         ref = {};
         loadMovie(movieIds[currentIndex], true);
-        $('#score').text(score);
-        $('#lives').text(lives);
+        updateStatsDisplay(null);
     }
 
     async function gameOver() {
         hideGamebox();
         restartGame();
+        $('#finalScore').text(score);
     }
 
     function hideGamebox() {
