@@ -154,7 +154,7 @@ $(document).ready(async function() {
         cast.forEach(c => {
             names.push(c.name);
         });
-        let index = Math.floor(Math.random() * 10);
+        let index = Math.floor(Math.random() * 5);
         let actor = names[index];
         correct = actor;
         let list = [];
