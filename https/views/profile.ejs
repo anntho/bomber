@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>moviebomber.org | <%-mbUser.username%></title>
+	<title>moviebomber.org | <%-thisUser.username%></title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
@@ -12,61 +12,82 @@
 	<% include ./nav %>
 	<main>
 		<div class="top-wrapper row">
-			<br>
-			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
-				<div class="row">
-					<div class="col s6">
-						<span id="username" class="mb-orange-text heavy"><%-mbUser.username%></span>
+			<div class="content-wrapper">
+				<div class="col s12">
+					<div class="row">
+						<div class="col s6">
+							<span id="username" class="mb-orange-text bold"><%-thisUser.username%></span>
+						</div>
 					</div>
-				</div>
-				<div class="row valign-wrapper line">
-					<div class="col s8">
-						<span>Joined</span>
+					<div class="row valign-wrapper line">
+						<div class="col s4 m2">
+							<span>Joined</span>
+						</div>
+						<div class="col s8 m10">
+							<span id="dateJoined" class="data"><%-new Date(thisUser.created).toISOString().split('T')[0];%></span>
+						</div>
 					</div>
-					<div class="col s4">
-						<span id="dateJoined" class="data"><%-new Date(mbUser.created).toISOString().split('T')[0];%></span>
+					<div class="row valign-wrapper line">
+						<div class="col s4 m2">
+							<span>Rank</span>
+						</div>
+						<div class="col s8 m4">
+							<span id="rank" class="data"><%-rank.currentRank.toUpperCase()%></span>
+						</div>
+						<div class="col s8 m6">
+							<span class="progress-data"><%-rank.nextRank.toUpperCase()%></span>
+							<div class="progress">
+								<div class="determinate" style="width: <%-rank.levelProgress%>%"></div>
+							</div>
+						</div>
 					</div>
-				</div>
-				<div class="row valign-wrapper line">
-					<div class="col s8">
-						<span>Rank</span>
+					<div class="row valign-wrapper line">
+						<div class="col s4 m2">
+							<span>Level</span>
+						</div>
+						<div class="col s8 m4">
+							<span id="rank" class="data"><%-rank.currentLevel.toUpperCase()%></span>
+						</div>
+						<div class="col s8 m6">
+							<span class="progress-data"><%-rank.nextLevel.toUpperCase()%> <%-rank.totalUserPts%>/<%-rank.nextFloor%></span>
+							<div class="progress">
+								<div class="determinate" style="width: <%-rank.levelProgressString%>%"></div>
+							</div>
+						</div>
 					</div>
-					<div class="col s4">
-						<span id="rank" class="data"><%-mbUser.name.toUpperCase()%></span>
+	
+					<div class="row">
+						<div class="chart"><canvas id="userChart"></canvas></div>
 					</div>
-				</div>
-
-				<div class="row">
-					<div class="col s12"><canvas id="userChart"></canvas></div>
-				</div>
-				
-				<div class="row">
-					<div class="col s12">
-						<span>Games</span>
-					</div>
-					<div class="col s12">
-						<table class="responsive-table">
-							<thead>
+					
+					<div class="row">
+						<div class="col s12">
+							<span class="mb-orange-text bold title">game log</span>
+						</div>
+						<div class="col s12">
+							<table class="responsive-table">
+								<thead>
 									<tr>
-										<th>Score</th>
-										<th>Type</th>
-									<th>Date</th>
-									<th>Log</th>
+										<th>score</th>
+										<th>type</th>
+										<th>date</th>
+										<th>log</th>
 									</tr>
-							</thead>
-							<tbody>
-								<% if (games && games.length) { %>
-									<% games[0].forEach(game => { %>
-										<tr>
-											<td><%-game.score%></td>
-											<td><%-game.mode%></td>
-											<td><%-new Date(game.created).toISOString().split('T')[0];%></td>
-											<td><a href="/game/<%-game.sid%>">view</a></td>
-										</tr>
-									<% }); %>
-								<% } %>
-							</tbody>
-						</table>
+								</thead>
+								<tbody>
+									<% if (games && games.length) { %>
+										<% games[0].forEach(game => { %>
+											<tr>
+												<td><%-game.score%></td>
+												<td><%-game.mode%></td>
+												<td><%-new Date(game.created).toISOString().split('T')[0];%></td>
+												<td><a href="/game/<%-game.sid%>">view</a></td>
+											</tr>
+										<% }); %>
+									<% } %>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -82,6 +103,7 @@
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/Chart.bundle.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/nav.js"></script>
 	<script src="/js/profile.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>

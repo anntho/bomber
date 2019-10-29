@@ -30,6 +30,10 @@ input {
 	font-weight: 700;
 }
 
+.bold {
+	font-weight: 500;
+}
+
 main {
 	min-height: -moz-calc(100% - 56px);
 	min-height: -webkit-calc(100% - 56px);

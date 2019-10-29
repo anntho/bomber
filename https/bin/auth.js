@@ -16,7 +16,8 @@ module.exports.setUser = (req, res, next) => {
 		res.locals.username = req.session.user.username;
 		res.locals.userId = req.session.user.id;
 		res.locals.email = req.session.user.email;
-		res.locals.name = req.session.user.name;
+		res.locals.rank = req.session.user.rank;
+		res.locals.level = req.session.user.level;
 	}
 	next();
 }

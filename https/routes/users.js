@@ -19,6 +19,10 @@ router.get('/:id', [setUser], async (req, res) => {
 			res.locals.file = '404';
 			res.render(res.locals.file);
 		} else {
+			let rankProc = 'CALL moviebomber.sp_GetRank(?)';
+			let rankInfo = await procHandler(usersPool, rankProc, parseInt(user[0].id));
+			//console.log('rank info', rankInfo);
+
 			let gamesProc = 'CALL moviebomber.sp_GetUserGames(?)';
 			let games = await procHandler2(usersPool, gamesProc, userInputs);
 			console.log(`games for user ${username}: ${games[0].length || 0}`);
@@ -35,7 +39,11 @@ router.get('/:id', [setUser], async (req, res) => {
 			res.locals.file = 'profile';
 			res.locals.games = games;
 			res.locals.chart = chart;
-			res.locals.mbUser = user[0];
+			res.locals.thisUser = user[0];
+
+			res.locals.rank = rankInfo[0];
+			res.locals.rank.levelProgressString = Math.round((rankInfo[0].totalUserPts/rankInfo[0].nextFloor) * 100) / 100;
+
 			res.render(res.locals.file);
 			
 		}

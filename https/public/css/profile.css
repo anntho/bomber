@@ -1,8 +1,31 @@
-.content-wrapper .line {
+.line {
     border-bottom: 1px solid #474747;
     padding-bottom: 15px;
 }
 
-.content-wrapper .data {
-    font-weight: 700;
+.data, th {
+    font-weight: 500;
 }
+
+.chart {
+    max-width: 700px;
+
+}
+
+.title {
+    padding-left: 5px;
+}
+
+.progress {
+    background-color: #607D8B;
+}
+
+.progress .determinate {
+    background-color: #ffc107;
+}
+
+.progress-data {
+    font-size: .8rem;
+    font-weight: 500;
+}
+
