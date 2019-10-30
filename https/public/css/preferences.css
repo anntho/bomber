@@ -28,8 +28,7 @@ h5 a:hover {
 .collapsible-header {
 	background-color: transparent;
 	overflow: auto;
-    font-size: 22px;
-    font-weight: 300;
+    font-weight: 500;
 }
 
 .alert {
