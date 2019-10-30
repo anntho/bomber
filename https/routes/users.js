@@ -42,8 +42,12 @@ router.get('/:id', [setUser], async (req, res) => {
 			res.locals.thisUser = user[0];
 
 			res.locals.rank = rankInfo[0];
-			res.locals.rank.levelProgressString = Math.round((rankInfo[0].totalUserPts/rankInfo[0].nextFloor) * 100) / 100;
-
+			let rankPctString = pct(rankInfo[0].totalUserPts, rankInfo[0].nextRankFloor);
+			let levelPctString = pct(rankInfo[0].totalUserPts, rankInfo[0].nextLevelFloor);
+			
+			res.locals.rank.rankPctString = rankPctString;
+			res.locals.rank.levelPctString = levelPctString;
+			
 			res.render(res.locals.file);
 			
 		}
@@ -52,5 +56,9 @@ router.get('/:id', [setUser], async (req, res) => {
 		res.sendStatus(500);
 	}
 });
+
+function pct(a, b) {
+	return Math.round((a/b) * 100);
+}
 
 module.exports = router;

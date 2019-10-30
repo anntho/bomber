@@ -35,9 +35,9 @@
 							<span id="rank" class="data"><%-rank.currentRank.toUpperCase()%></span>
 						</div>
 						<div class="col s8 m6">
-							<span class="progress-data"><%-rank.nextRank.toUpperCase()%></span>
+							<span class="progress-data"><%-rank.nextRank.toUpperCase()%> <%-rank.totalUserPts%>/<%-rank.nextRankFloor%></span>
 							<div class="progress">
-								<div class="determinate" style="width: <%-rank.levelProgress%>%"></div>
+								<div class="determinate" style="width: <%-rank.rankPctString%>%"></div>
 							</div>
 						</div>
 					</div>
@@ -49,9 +49,9 @@
 							<span id="rank" class="data"><%-rank.currentLevel.toUpperCase()%></span>
 						</div>
 						<div class="col s8 m6">
-							<span class="progress-data"><%-rank.nextLevel.toUpperCase()%> <%-rank.totalUserPts%>/<%-rank.nextFloor%></span>
+							<span class="progress-data"><%-rank.nextLevel.toUpperCase()%> <%-rank.totalUserPts%>/<%-rank.nextLevelFloor%></span>
 							<div class="progress">
-								<div class="determinate" style="width: <%-rank.levelProgressString%>%"></div>
+								<div class="determinate" style="width: <%-rank.levelPctString%>%"></div>
 							</div>
 						</div>
 					</div>
