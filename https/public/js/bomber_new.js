@@ -34,6 +34,10 @@ $(document).ready(async function() {
         });
     }
 
+    let wait = async (ms) => {
+		return new Promise(r => setTimeout(r, ms));
+	}
+
     let loaderOn = () => {
         if (log) console.log('loaderOn');
         $('.prompt').hide();
@@ -134,7 +138,7 @@ $(document).ready(async function() {
 		shuffle(movieIds);
 		for (let i = 0; i < n; i++) {
 			let movie = movies.find(m => m.altId == movieIds[i]);
-			tempArray.push(`${movie.title} (${movie.year})`);
+			tempArray.push(movie);
 		}
 		if (log) console.log('getRandomMovies', n);
 		return tempArray;
@@ -145,7 +149,7 @@ $(document).ready(async function() {
 		shuffle(actorIds);
 		for (let i = 0; i < n; i++) {
 			let actor = actors.find(a => a.altId == actorIds[i]);
-			tempArray.push(actor.name);
+			tempArray.push(actor);
 		}
 		if (log) console.log('getRandomActors', n);
 		return tempArray;
@@ -157,10 +161,10 @@ $(document).ready(async function() {
 		actorIds.forEach((a) => {
 			if (!castIdList.includes(parseInt(a)) && tempArray.length < n) {
 				let actor = actors.find(x => x.altId == a);
-				tempArray.push(actor.name);
+				tempArray.push(actor);
 			}
 		});
-		if (log) console.log('getRandomActorsWithExclusions', n, id);
+        if (log) console.log('getRandomActorsWithExclusions', n, id, tempArray);
 		return tempArray;
     }
     
@@ -170,22 +174,20 @@ $(document).ready(async function() {
 		movieIds.forEach(m => {
 			if (!creditsIdList.includes(parseInt(m)) && tempArray.length < n) {
                 let movie = movies.find(x => x.altId == m);
-                tempArray.push(`${movie.title} (${movie.year})`);
+                tempArray.push(movie);
 			}
 		});
-		if (log) console.log('getRandomMoviesWithExclusions', n, id);
+		if (log) console.log('getRandomMoviesWithExclusions', n, id, tempArray);
 		return tempArray;
 	}
     
-    let setDialouge = (a, b) => {
-        if (log) console.log('setDialouge', a, b);
+    let setDialouge = (p) => {
+        if (log) console.log('setDialouge', p);
         $('.prompt').each(function() {
             $(this).removeClass('slide');
             $(this).addClass('slide');
         });
-        
-        $('#prompt-a').text(a);
-        $('#prompt-b').text(b);
+        $('#prompt').text(p);
     }
 
     let getCreditsFromActor = async (id) => {
@@ -216,6 +218,14 @@ $(document).ready(async function() {
 		});
     }
 
+    let updateReference = (type, name, id, from, reset) => {
+        ref.type = type;
+        ref.name = name;
+        ref.id = id;
+        ref.reset = reset;
+        ref.from = from;
+    }
+
     let setButtons = async (type, name, id, exclusions) => {
         let list = [];
         if (type == 'actor') {
@@ -223,107 +233,93 @@ $(document).ready(async function() {
         } else if (type == 'movie') {
             list = await getRandomMoviesWithExclusions(3, id, exclusions);
         }
-        list.push(name);
+        
+        list.push({
+            altId: id,
+            name: name
+        });
         shuffle(list);
-        ref.name = name;
-        ref.id = id;
-        ref.type = type;
+
         $('.button').each(function(i) {
-            $(this).text(list[i]);
+            if (type == 'actor') {
+                $(this).text(list[i].name);
+            } else {
+                $(this).text(`${list[i].title} (${list[i].year})`);
+            }
+            $(this).attr('data-id', list[i].altId);
         });
     }
 
 	let pickMovie = (initial) => {
+        let prompt = '';
         let movies = getRandomMovies(4);
-        let a = '';
-        let b = '';
-
+        
+        shuffle(movies);
         $('.button').each(function(i) {
-            $(this).text(movies[i]);
+            $(this).text(`${movies[i].title} (${movies[i].year})`);
+            $(this).attr('data-id', movies[i].altId);
         });
 
         if (initial) {
-            a = `Let's play moviebomber!`;
-            b = 'Start it off by picking a movie from the list';
+            prompt = `Start us off by picking a movie from the list`;
             emitGame('start', null);
         } else {
-            a = 'Send it back by picking a movie from the list';
+            prompt = 'Send it back by picking a movie from the list';
         }
 
-        setDialouge(a, b);
-        ref = {};
-        ref.type = 'actor';
-        if (initial) ref.reset = true;
+        setDialouge(prompt);
+        updateReference('movie', null, null, null, true);
 
 		if (log) console.log('userPickActor', ref);
     }
 
-	let guessActor = async (name) => {
-		if (log) console.log('guessActor', name);
-		let pos = 0;
-		let ipActor = {};
-		let credits = [];
-		let credit = {};
-		let cast = [];
-		let castIds = [];
-		let movie = {};
+    let guessActorFromMovie = async (id) => {
+		if (this.log) console.log('start', 'guessActorFromMovie', id);
+        let baseMovie = {};
+        let baseMovieTitle = '';
 		let actor = {};
-		let exclusions = [];
+        let cast = [];
+        let castIds = [];
 
-		// Credits from actor
-		ipActor = actors.find(a => a.name === name);
-		credits = await getCreditsFromActor(ipActor.altId);
-		credits.sort((a, b) => b.vote_count-a.vote_count);
-		
-		// Movie from credits
-		if (crazy) {
-			credit = credits[Math.floor(Math.random()*credits.length)];
-		} else {
-			credit = credits[0];
-		}
+        baseMovie = movies.find(m => m.altId == id); // might have to use api call here if its not the iniital 
+        baseMovieTitle = `${baseMovie.title} (${baseMovie.year})`;
+        cast = await getCast(baseMovie.altId);
+        castIds = cast.map(c => c.id);
+        console.log(castIds)
 
-		movie = {
-            id: credit.id,
-            title: `${credit.title} (${credit.release_date.substring(0, 4)})`
+        for (const c of cast) {
+            if (!usedActors.some(a => a.altId == c.id)) {
+                actor = {
+                    id: c.id,
+                    name: c.name
+                }
+                break;
+            }
         }
 
-		cast = await getCast(movie.id);
-
-		// Remove target from cast
-		pos = cast.map(x => x.id).indexOf(ipActor.altId);
-		cast.splice(pos, 1);
-		castIds = cast.map(x => x.id);
-
-		// Create exclusions list
-		exclusions = castIds.slice();
-		exclusions.push(ipActor.altId);
-
-		// Get actor from cast
-		actor = {id: cast[0].id, name: cast[0].name}
-
-		usedActors.push(actor);
-		usedMovies.push(movie);
-        ref.prev = movie.title;
-        
-        setDialouge(
-            `${name} was in ${movie.title}`, 
-            `Can you name another actor that was in ${movie.title}?`
-        );
-
-		setButtons('actor', actor.name, actor.id, exclusions);
-
-		if (log) console.log('guessActor', ref);
+		setDialouge(`Name an actor in ${baseMovieTitle}`);
+        updateReference('actor', actor.name, actor.id, baseMovieTitle, false);
+		await setButtons('actor', actor.name, actor.id, castIds);
+		if (log) console.log('end', 'guessActorFromMovie', ref);
 	}
 
-    async function logic(input) {
+    async function logic(id) {
+        if (log) console.log(id);
         loaderOn();
         if (ref.reset) {
-            
+            if (log) console.log('logic', 'reset');
+            await guessActorFromMovie(id);
+            await wait(500);
+            loaderOff();
+        } else {
+            console.log(ref.id)
+            if (id == ref.id) {
+                alert(true)
+            } else {
+                alert(false)
+            }
         }
     }
-
-
-
 
 
 
@@ -332,12 +328,11 @@ $(document).ready(async function() {
     await fillStarters();
     await pickMovie(true);
 
-
     $('.button').click(async function() {
         if ($('.button').prop('disabled')) return false;
         $('.button').prop('disabled', true);
         stopTimer();
-        await logic($(this).text());
+        await logic($(this).data('id')); // id is not updating quick enough
         $('.button').prop('disabled', false);
     });
 
