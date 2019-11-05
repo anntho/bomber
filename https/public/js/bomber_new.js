@@ -9,18 +9,26 @@ $(document).ready(async function() {
     let movieIds = [];
     let usedActors = [];
     let usedMovies = [];
-    let correct = '';
     let ref = {};
     let package = [];
     let sid = '';
-    let log = true;
     let timer = null;
     let counter = 10;
     let interval = 1000;
     let crazy = false;
 
+    let log = (func, data, write) => {
+        let all = false;
+        if (write || all) {
+            console.log('-------------------');
+            console.log(func);
+            console.log(data);
+            console.log('-------------------');
+        }
+    }
+
     socket.on('game', (data) => {
-        if (log) console.log('sid received', data);
+        log('sid received', data, false);
         sid = data;
     });
 
@@ -30,7 +38,8 @@ $(document).ready(async function() {
             event: event,
             mode: 'bomber',
             participants: 1,
-            sid: sid
+            sid: sid,
+            package: package
         });
     }
 
@@ -39,17 +48,32 @@ $(document).ready(async function() {
 	}
 
     let loaderOn = () => {
-        if (log) console.log('loaderOn');
+        log('loaderOn', null, false);
         $('.prompt').hide();
         $('#face').hide();
         $('#faceLoader').show();
     }
 
     let loaderOff = () => {
-        if (log) console.log('loaderOff');
+        log('loaderOff', null, false);
         $('.prompt').css('display', 'flex');
         $('#face').show();
         $('#faceLoader').hide();
+    }
+
+    let gameOver = () => {
+        $('#finalScore').text(score);
+        hideGamebox();
+    }
+
+    let hideGamebox = () => {
+        $('#board').css('display', 'none');
+        $('#go').css('display', 'block');
+    }
+
+    let showGamebox = () => {
+        $('#board').css('display', 'block');
+        $('#go').css('display', 'none');
     }
 
     let shuffle = (a) => {
@@ -64,7 +88,7 @@ $(document).ready(async function() {
         counter--;
         $('#timer').text(counter);
         if (counter === 0) {
-            if (log) console.log('time up');
+            log('step', 'time up', false);
             resetTimer();
             logic(null);
         }
@@ -72,13 +96,13 @@ $(document).ready(async function() {
 
     let startTimer = () => {
         if (timer !== null) return;
-        if (log) console.log('starting timer');
         timer = setInterval(step, interval);
+        log('startTimer', null, false);
     }
 
     let stopTimer = () => {
-        if (log) console.log('stopping timer');
         resetTimer();
+        log('stopTimer', null, false);
     }
     
     let resetTimer = () => {
@@ -97,349 +121,7 @@ $(document).ready(async function() {
         });
     }
 
-    async function reportError() {
-		await swal({
-			title: 'Whoops!',
-			text: 'An error occured',
-			icon: 'error',
-			buttons: ['Home', 'Reload Page'],
-			closeOnClickOutside: false
-		})
-		.then((again) => {
-			if (again) {
-				location.reload();
-			} else {
-				location.href = '/';
-			}
-		});
-	}
-
-    let fillStarters = async () => {
-		if (log) console.log('fillStarters');
-		socket.emit('starters');
-		return new Promise((res, rej) => {
-			socket.on('starters', async (data) => {
-				if (log) console.log('starters received');
-				movies = data.movies;
-				actors = data.actors;
-				movieIds = movies.map(movie => movie.altId);
-				actorIds = actors.map(actor => actor.altId);
-				res();
-			});
-			socket.on('err', () => {
-                alert('an error occured');
-				rej();
-			});
-		});
-    }
-    
-    let getRandomMovies = (n) => {
-		let tempArray = [];
-		shuffle(movieIds);
-		for (let i = 0; i < n; i++) {
-			let movie = movies.find(m => m.altId == movieIds[i]);
-			tempArray.push(movie);
-		}
-		if (log) console.log('getRandomMovies', n);
-		return tempArray;
-    }
-
-	let getRandomActors = (n) => {
-		let tempArray = [];
-		shuffle(actorIds);
-		for (let i = 0; i < n; i++) {
-			let actor = actors.find(a => a.altId == actorIds[i]);
-			tempArray.push(actor);
-		}
-		if (log) console.log('getRandomActors', n);
-		return tempArray;
-    }
-    
-	let getRandomActorsWithExclusions = (n, id, castIdList) => {
-		let tempArray = [];
-		shuffle(actorIds);
-		actorIds.forEach((a) => {
-			if (!castIdList.includes(parseInt(a)) && tempArray.length < n) {
-				let actor = actors.find(x => x.altId == a);
-				tempArray.push(actor);
-			}
-		});
-        if (log) console.log('getRandomActorsWithExclusions', n, id, tempArray);
-		return tempArray;
-    }
-    
-	let getRandomMoviesWithExclusions = (n, id, creditsIdList) => {
-		let tempArray = [];
-		shuffle(movieIds);
-		movieIds.forEach(m => {
-			if (!creditsIdList.includes(parseInt(m)) && tempArray.length < n) {
-                let movie = movies.find(x => x.altId == m);
-                tempArray.push(movie);
-			}
-		});
-		if (log) console.log('getRandomMoviesWithExclusions', n, id, tempArray);
-		return tempArray;
-	}
-    
-    let setDialouge = (p) => {
-        if (log) console.log('setDialouge', p);
-        $('.prompt').each(function() {
-            $(this).removeClass('slide');
-            $(this).addClass('slide');
-        });
-        $('#prompt').text(p);
-    }
-
-    let getCreditsFromActor = async (id) => {
-		if (log) console.log('getCreditsFromActor', id);
-		socket.emit('getCredits', id);
-		return new Promise((res, rej) => {
-			socket.on('getCredits', async (data) => {
-				res(data.cast);
-			});
-			socket.on('err', async () => {
-                alert('an error occured');
-                rej();
-			});
-		});
-    }
-    
-	let getCast = async (id) => {
-		if (log) console.log('getCast', id);
-		socket.emit('getCast', id);
-		return new Promise((res, rej) => {
-			socket.on('getCast', async (data) => {
-				res(data.cast);
-			});
-			socket.on('err', async () => {
-                alert('an error occured');
-                rej();
-			});
-		});
-    }
-
-    let updateReference = (type, name, id, from, reset) => {
-        ref.type = type;
-        ref.name = name;
-        ref.id = id;
-        ref.reset = reset;
-        ref.from = from;
-    }
-
-    let setButtons = async (type, name, id, exclusions) => {
-        let list = [];
-        if (type == 'actor') {
-            list = await getRandomActorsWithExclusions(3, id, exclusions);
-        } else if (type == 'movie') {
-            list = await getRandomMoviesWithExclusions(3, id, exclusions);
-        }
-        
-        list.push({
-            altId: id,
-            name: name
-        });
-        shuffle(list);
-
-        $('.button').each(function(i) {
-            if (type == 'actor') {
-                $(this).text(list[i].name);
-            } else {
-                $(this).text(`${list[i].title} (${list[i].year})`);
-            }
-            $(this).attr('data-id', list[i].altId);
-        });
-    }
-
-	let pickMovie = (initial) => {
-        let prompt = '';
-        let movies = getRandomMovies(4);
-        
-        shuffle(movies);
-        $('.button').each(function(i) {
-            $(this).text(`${movies[i].title} (${movies[i].year})`);
-            $(this).attr('data-id', movies[i].altId);
-        });
-
-        if (initial) {
-            prompt = `Start us off by picking a movie from the list`;
-            emitGame('start', null);
-        } else {
-            prompt = 'Send it back by picking a movie from the list';
-        }
-
-        setDialouge(prompt);
-        updateReference('movie', null, null, null, true);
-
-		if (log) console.log('userPickActor', ref);
-    }
-
-    let guessActorFromMovie = async (id) => {
-		if (this.log) console.log('start', 'guessActorFromMovie', id);
-        let baseMovie = {};
-        let baseMovieTitle = '';
-		let actor = {};
-        let cast = [];
-        let castIds = [];
-
-        baseMovie = movies.find(m => m.altId == id); // might have to use api call here if its not the iniital 
-        baseMovieTitle = `${baseMovie.title} (${baseMovie.year})`;
-        cast = await getCast(baseMovie.altId);
-        castIds = cast.map(c => c.id);
-        console.log(castIds)
-
-        for (const c of cast) {
-            if (!usedActors.some(a => a.altId == c.id)) {
-                actor = {
-                    id: c.id,
-                    name: c.name
-                }
-                break;
-            }
-        }
-
-		setDialouge(`Name an actor in ${baseMovieTitle}`);
-        updateReference('actor', actor.name, actor.id, baseMovieTitle, false);
-		await setButtons('actor', actor.name, actor.id, castIds);
-		if (log) console.log('end', 'guessActorFromMovie', ref);
-	}
-
-    async function logic(id) {
-        if (log) console.log(id);
-        loaderOn();
-        if (ref.reset) {
-            if (log) console.log('logic', 'reset');
-            await guessActorFromMovie(id);
-            await wait(500);
-            loaderOff();
-        } else {
-            console.log(ref.id)
-            if (id == ref.id) {
-                alert(true)
-            } else {
-                alert(false)
-            }
-        }
-    }
-
-
-
-
-
-    await fillStarters();
-    await pickMovie(true);
-
-    $('.button').click(async function() {
-        if ($('.button').prop('disabled')) return false;
-        $('.button').prop('disabled', true);
-        stopTimer();
-        await logic($(this).data('id')); // id is not updating quick enough
-        $('.button').prop('disabled', false);
-    });
-
-
-
-
-    
-
-    /*
-    async function loadMovie(id, initial) {
-        loaderOn();
-        let movie = movies.find(movie => movie.altId == id);
-        let url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster}`;
-
-        await setPosterAndTitle(url, movie.title, movie.year);
-        loaderOff();
-
-        ref.movie = movie.title + ' (' + movie.year + ')';
-        let cast = await getCast(id);
-        let details = await getMovie(id);
-
-        $('#overview').text(details.overview);
-
-        let names = [];
-        cast.forEach(c => {
-            names.push(c.name);
-        });
-        let index = Math.floor(Math.random() * 3);
-        let actor = names[index];
-        correct = actor;
-        let list = [];
-        list.push(actor);
-        shuffle(actors);
-        actors.forEach(a => {
-            if ((list.length < 4) && (!names.includes(a.name))) {
-                list.push(a.name);
-            }
-        });
-        shuffle(list);
-        $('.button').each(function(index) {
-            $(this).text(list[index]);
-        });
-
-        if (!initial) {
-            startTimer();
-        }
-    }
-
-    async function setPosterAndTitle(url, title, year) {
-        if (log) console.log('setPosterAndTitle', url, title, year);
-        return new Promise(function(res, rej) {
-            $('#poster').attr('src', url);
-            $('#poster').on('load', function() {
-                $('#loader').css('display', 'none');
-                $('#title').text(`${title} (${year})`);
-                res();
-            });
-        });
-    }
-
-    async function logic(guess) {
-        currentIndex++;
-        let c = null;
-        
-        if (guess == correct) {
-            updatePackage(ref.movie, guess, score, 1);
-            c = calculator(true);
-            await feedback('success', 'Correct!');
-        } else if (guess == null) {
-            updatePackage(ref.movie, 'none', score, -1);
-            c = calculator(false);
-            await feedback('error', 'Out of time!', `The correct answer was ${correct}`);
-        } else {
-            updatePackage(ref.movie, guess, score, -1);
-            c = calculator(false);
-            await feedback('error', 'Incorrect', `The correct answer was ${correct}`);
-        }
-
-        await updateStatsDisplay(c);
-
-        if (log) {
-            console.log(ref.movie);
-            console.log('guess: ' + guess, 'correct: ' + correct);
-            console.log(package);
-        }
-
-        if (lives < 1 || currentIndex == movieIds.length) {
-            if (log) console.log('game over');
-            socket.emit('game', {
-				score: score,
-				event: 'end',
-				mode: 'classic',
-				participants: 1,
-                sid: sid,
-                package: package
-			});
-            await gameOver();
-        } else {
-            await loadMovie(movieIds[currentIndex], false);
-        }
-    }
-
-    function updatePackage(m, g, s, r) {
-        package.push({m: m, g: g, s: s, r: r});
-    }
-
-    async function updateStatsDisplay(c) {
+    let updateStatsDisplay = async (c) => {
         $('#score').text(score);
         $('#streak').text(streak);
         $('#lives').text(lives);
@@ -456,7 +138,157 @@ $(document).ready(async function() {
         }
     }
 
-    function calculator(result) {
+    let fillStarters = async () => {
+		log('fillStarters', null, false);
+		socket.emit('starters');
+		return new Promise((res, rej) => {
+			socket.on('starters', async (data) => {
+				log('fillStarters', 'starters received', false);
+				movies = data.movies;
+				actors = data.actors;
+				movieIds = movies.map(movie => movie.altId);
+				actorIds = actors.map(actor => actor.altId);
+				res();
+			});
+			socket.on('err', () => {
+                alert('an error occured');
+				rej();
+			});
+		});
+    }
+
+    let formatTitle = (t, y) => {
+        return `${t} (${y})`;
+    }
+    
+    let getRandomMovies = (n) => {
+		let tempArray = [];
+		shuffle(movieIds);
+		for (let i = 0; i < n; i++) {
+			let movie = movies.find(m => m.altId == movieIds[i]);
+			tempArray.push(movie);
+		}
+		log('getRandomMovies', n, false);
+		return tempArray;
+    }
+
+	let getRandomActors = (n) => {
+		let tempArray = [];
+		shuffle(actorIds);
+		for (let i = 0; i < n; i++) {
+			let actor = actors.find(a => a.altId == actorIds[i]);
+			tempArray.push(actor);
+		}
+		log('getRandomActors', n, false);
+		return tempArray;
+    }
+    
+	let getRandomActorsWithExclusions = (n, castIdList) => {
+		let tempArray = [];
+		shuffle(actorIds);
+		actorIds.forEach((a) => {
+			if (!castIdList.includes(parseInt(a)) && tempArray.length < n) {
+				let actor = actors.find(x => x.altId == a);
+				tempArray.push(actor);
+			}
+		});
+        log('getRandomActorsWithExclusions', tempArray, false);
+		return tempArray;
+    }
+    
+	let getRandomMoviesWithExclusions = (n, creditsIdList) => {
+		let tempArray = [];
+		shuffle(movieIds);
+		movieIds.forEach(m => {
+			if (!creditsIdList.includes(parseInt(m)) && tempArray.length < n) {
+                let movie = movies.find(x => x.altId == m);
+                tempArray.push(movie);
+			}
+		});
+		log('getRandomMoviesWithExclusions', tempArray, false);
+		return tempArray;
+	}
+    
+    let setDialouge = (p) => {
+        $('.prompt').each(function() {
+            $(this).removeClass('slide');
+            $(this).addClass('slide');
+        });
+        $('#prompt').text(p);
+        log('setDialouge', p, false);
+    }
+
+    let getCreditsFromActor = async (id) => {
+		log('getCreditsFromActor', id, false);
+		socket.emit('getCredits', id);
+		return new Promise((res, rej) => {
+			socket.on('getCredits', async (data) => {
+				res(data.cast);
+			});
+			socket.on('err', async () => {
+                alert('an error occured');
+                rej();
+			});
+		});
+    }
+    
+	let getCast = async (id) => {
+		log('getCast', id, false);
+		socket.emit('getCast', id);
+		return new Promise((res, rej) => {
+			socket.on('getCast', async (data) => {
+				res(data.cast);
+			});
+			socket.on('err', async () => {
+                alert('an error occured');
+                rej();
+			});
+		});
+    }
+
+    let updatePackage = (from, guess, score, result) => {
+        package.push({f: from, g: guess, s: score, r: result});
+    }
+
+    let updateReference = (type, name, id, from, reset) => {
+        ref.type = type;
+        ref.name = name;
+        ref.id = id;
+        ref.reset = reset;
+        ref.from = from;
+    }
+
+    let setButtonsActors = async (actor, exclusions) => {
+        let list = await getRandomActorsWithExclusions(3, exclusions);
+        list.push(actor);
+        shuffle(list);
+        $('.button').each(function(i) {
+            $(this).text(list[i].name);
+            $(this).attr('data-id', list[i].altId);
+        });
+        log('setButtonsActors', list, false);
+    }
+
+    let setButtonsMovies = async (movie, exclusions, reset) => {
+        let list = [];
+        if (reset) {
+            list = await getRandomMovies(4);
+        } else {
+            list = await getRandomMoviesWithExclusions(3, exclusions);
+            console.log(movie)
+            list.push(movie);
+        }
+        shuffle(list);
+        $('.button').each(function(i) {
+            $(this).text(formatTitle(list[i].title, list[i].year));
+            //console.log('before', $(this).attr('data-id') || null);
+            $(this).attr('data-id', list[i].altId);
+            //console.log('after', $(this).attr('data-id'));
+        });
+        log('setButtonsMovies', list, false);
+    }
+
+    let calculator = (result) => {
         let pts = 10;
         let add = null;
         if (result) {
@@ -482,37 +314,143 @@ $(document).ready(async function() {
         return add;
     }
 
+	let pickMovie = async (initial) => {
+        let prompt = '';
+        if (initial) {
+            prompt = `Pick a movie from the list below to start the game`;
+            emitGame('start', null);
+        } else {
+            prompt = 'Send it back by picking a movie from the list';
+        }
+
+        setDialouge(prompt);
+        updateReference('movie', null, null, null, true);
+        await setButtonsMovies(null, null, true);
+		log('userPickActor', ref, false);
+    }
+
+    let guessActorFromMovie = async (id, title) => {
+		log('guessActorFromMovie [start]', id, false);
+		let actor = {};
+        let cast = [];
+        let castIds = [];
+
+        cast = await getCast(id);
+        castIds = cast.map(c => c.id);
+
+        console.log('used actors', usedActors)
+        for (const c of cast) {
+            if (!usedActors.includes(c.id)) {
+                actor = {
+                    altId: c.id,
+                    name: c.name
+                }
+                break;
+            }
+        }
+
+        usedActors.push(parseInt(actor.altId));
+
+		setDialouge(`Which of the following actors was in ${title}`);
+        updateReference('actor', actor.name, actor.altId, title, false);
+		await setButtonsActors(actor, castIds);
+		log('guessActorFromMovie [end]', ref, false);
+    }
+    
+    let guessMovieFromActor = async (id, name) => {
+        log('guessMovieFromActr [start]', id, false);
+        let movie = {};
+        let credits = [];
+        let creditsIds = [];
+
+        credits = await getCreditsFromActor(id);
+        creditsIds = credits.map(c => c.id);
+
+        console.log('used movies', usedMovies)
+        for (const c of credits) {
+            if (!usedMovies.includes(c.id)) {
+                console.log(c)
+                movie = {
+                    altId: c.id,
+                    title: c.title,
+                    year: c.release_date.split('-')[0]
+                }
+                break;
+            }
+        }
+
+        usedMovies.push(parseInt(movie.altId));
+
+        setDialouge(`${name} was in which of the following movies?`);
+        updateReference('movie', formatTitle(movie.title, movie.year), movie.altId, false);
+        await setButtonsMovies(movie, creditsIds, false);
+        log('guessMovieFromActor [start]', ref, false);
+    }
+
+    async function logic(guessId, guessText) {
+        log('logic [input]', `${guessId} | ${guessText}`, false);
+        log('logic [ref]', `${ref.name} | ${ref.id}`, false);
+        let c = null;
+        loaderOn();
+        if (ref.reset) {
+            usedMovies.push(parseInt(guessId));
+            await guessActorFromMovie(guessId, guessText);
+            loaderOff();
+        } else {
+            if (guessId == ref.id) {
+                log('logic [match]', `${guessId} == ${ref.id}`, true);
+                c = calculator(true);
+                updatePackage(ref.name, guessText, score, 1);
+                await feedback('success', 'Correct!');
+            } else {
+                log('logic [mismatch]', `${guessId} == ${ref.id}`, true);
+                c = calculator(false);
+                updatePackage(ref.name, guessText, score, -1);
+                await feedback('error', 'Incorrect', `The correct answer was ${ref.name}`);
+            }
+
+            await updateStatsDisplay(c);
+
+            if (lives < 1) {
+                console.log('game over');
+                emitGame('end', sid);
+                await gameOver();
+            } else if (ref.type == 'actor') {
+                await guessMovieFromActor(guessId, guessText);
+                loaderOff();
+            } else {
+                await guessActorFromMovie(guessId, guessText);
+                loaderOff();
+            }
+        }
+    }
+
+    let restartGame = async () => {
+        score = 0;
+        lives = 6;
+        streak = 0;
+        usedActors = [];
+        usedMovies = [];
+        package = [];
+        ref = {};
+        updateStatsDisplay(null);
+        await pickMovie(true);
+    }
+
+    await fillStarters();
+    await pickMovie(true);
+
+    $('.button').click(async function() {
+        if ($('.button').prop('disabled')) return false;
+        $('.button').prop('disabled', true);
+        stopTimer();
+        await logic($(this).attr('data-id'), $(this).text()); // id is not updating quick enough
+        $('.button').prop('disabled', false);
+    });
+
     $('#restart').click(async function() {
         restartGame();
         showGamebox();
     });
-
-    function restartGame() {
-        shuffle(movieIds);
-        currentIndex = 0;
-        score = 0;
-        lives = 6;
-        correct = '';
-        package = [];
-        ref = {};
-        loadMovie(movieIds[currentIndex], true);
-        updateStatsDisplay(null);
-    }
-
-    async function gameOver() {
-        $('#finalScore').text(score);
-        hideGamebox();
-    }
-
-    function hideGamebox() {
-        $('#board').css('display', 'none');
-        $('#go').css('display', 'block');
-    }
-
-    function showGamebox() {
-        $('#board').css('display', 'block');
-        $('#go').css('display', 'none');
-    }
-    */
 });
 

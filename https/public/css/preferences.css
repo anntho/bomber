@@ -38,7 +38,10 @@ h5 a:hover {
 
 .alert {
     background-color: #2b2c3c;
-    color: #ab7779;
+    color: #aaa;
+    padding: 5px;
+    display: flex;
+    margin-bottom: 20px;
 }
 
 i.alert-icon {

@@ -29,6 +29,7 @@
 .prompts-container .text .prompt {
     flex-basis: 100%;
     padding-left: 1%;
+    font-weight: 500;
 }
 
 .button-wrapper {
@@ -45,6 +46,7 @@
 	flex-basis: 80%;
     height: 50px;
     padding-left: 1%;
+    font-weight: 500;
 }
 
 #faceLoader {

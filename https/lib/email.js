@@ -43,7 +43,7 @@ module.exports = {
 			if (err) {
 				throw err;
 			} else {
-				console.log(response);
+				//console.log(response);
 				smtpTransport.close();
 			}
 		});

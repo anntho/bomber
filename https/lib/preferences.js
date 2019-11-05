@@ -40,18 +40,18 @@ async function emailAlertHTML(ip, username, code, description) {
 
 module.exports = {
     editUsername: async (data, socket) => {
-		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
-			return socket.emit('err');
+		if (!data.username || !socket.request.session || !socket.request.session.user) {
+			return socket.emit('err', {error: generic});
         }
         
         console.log(data);
-
 		let user = socket.request.session.user;
 		let updateSession = false;
         let error = '';
         let code = 1;
 
-		if (user.changedUsername == 1) {
+		if (user.prevUsername) {
+            console.log(user.prevUsername);
 			error = 'You are only allowed to edit your username once.';
 			socket.emit('err', {
                 code: code,
@@ -74,17 +74,15 @@ module.exports = {
                         error: error
                     });
 				} else {
-					let updateUsernameProc = 'CALL sp_UpdateUsername(?, ?)';
-					let updateUsernameInputs = [username, user.id];
+					let updateUsernameProc = 'CALL sp_UpdateUsername(?, ?, ?)';
+					let updateUsernameInputs = [username, user.username, user.id];
 					try {
                         await procHandler(preferencesPool, updateUsernameProc, updateUsernameInputs);
-                        console.log('need to update session')
+                        console.log('session update required');
 						updateSession = true;
-						socket.emit('editUsername', {
-							username: username
-						});
+						socket.emit('editUsername');
 					} catch (err) {
-						reportError(file, '80', err, true);
+						reportError(file, '85', err, true);
 						socket.emit('err', {
                             code: code,
                             error: generic
@@ -99,8 +97,8 @@ module.exports = {
 		}
     },
     editEmail: async (data, socket) => {
-		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
-			return socket.emit('err');
+		if (!data.email || !socket.request.session || !socket.request.session.user) {
+			return socket.emit('err', {error: generic});
         }
         
         console.log(data);
@@ -131,7 +129,7 @@ module.exports = {
 				email: email
 			});
 		} catch (err) {
-			reportError(file, '127', err, true);
+			reportError(file, '132', err, true);
 			socket.emit('err', {
                 code: code,
                 error: generic
@@ -143,12 +141,11 @@ module.exports = {
 		}
     },
     editPassword: async (data, socket) => {
-		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
-			return socket.emit('err');
+		if (!data || !socket.request.session || !socket.request.session.user) {
+			return socket.emit('err', {error: generic});
         }
         
         console.log(data);
-
         let user = socket.request.session.user;
 		let updateSession = false;
         let error = '';
@@ -189,7 +186,7 @@ module.exports = {
                     let html = await emailAlertHTML(ipAddress, user.username, code, desciption);
                     await sendEmail(user.email, desciption, html);
                 } catch (err) {
-                    reportError(file, '198', err, true);
+                    reportError(file, '189', err, true);
                     return socket.emit('err', {code: code, error: generic});
                 }
             }
@@ -198,17 +195,16 @@ module.exports = {
                 await us.updateSession(user.id, socket);
             }
         } catch (err) {
-            reportError(file, '203', err, true);
+            reportError(file, '198', err, true);
             return socket.emit('err', {code: code, error: generic});
         }
     },
     deleteAccount: async (data, socket) => {
-		if (!data || !data.id || !socket.request.session || data.id !== socket.request.session.user.id) {
-			return socket.emit('err');
+		if (!data || !socket.request.session || !socket.request.session.user) {
+			return socket.emit('err', {error: generic});
         }
         
         console.log(data);
-
         let user = socket.request.session.user;
 		let updateSession = false;
         let code = 4;
@@ -230,7 +226,7 @@ module.exports = {
                 await us.updateSession(user.id, socket);
             }
         } catch (err) {
-            reportError(file, '239', err, true);
+            reportError(file, '229', err, true);
             socket.emit('err', {code: code, error: generic});
         }
     }
