@@ -39,78 +39,69 @@ module.exports = {
 		console.log(line);
 
 		let errorMessage = '';
-		let uname = data.uname;
+		let uname = data.uname.trim();
+		console.log(`trimmed ${uname}`);
 		let email = data.email;
 		let password = data.password;
 		let password2 = data.password2;
 
 		if (!uname || !email || !password || !password2) {
-			errorMessage = 'Missing required fields.';
-			return socket.emit('err', {
-                error: errorMessage
-            });
+			errorMessage = 'Missing required fields';
+			return socket.emit('err', {error: errorMessage});
 		} else if (password !== password2) {
-			errorMessage = 'Passwords do not match.';
-			return socket.emit('err', {
-                error: errorMessage
-            });
+			errorMessage = 'Passwords do not match';
+			return socket.emit('err', {error: errorMessage});
 		} else if (swearjar.profane(uname)) {
 			errorMessage = 'Username is unavailable';
-			return socket.emit('err', {
-				error: errorMessage
-			});
+			return socket.emit('err', {error: errorMessage});
 		} else {
 			try {
-				const getUserSQL = `CALL sp_GetUser(?)`;
+				const getUserSQL = `CALL sp_CheckUsername(?)`;
 				const getUserInputs = [uname];
 				const foundUser = await procHandler(accessPool, getUserSQL, getUserInputs);
 				
 				if (foundUser && foundUser.length) {
-					errorMessage = 'That username is unavailable, please try a different one.';
-					return socket.emit('err', {
-                        error: errorMessage
-                    });
+					errorMessage = 'That username is unavailable, please try a different one';
+					return socket.emit('err', {error: errorMessage});
 				} else {
 					const getEmailSQL = `CALL sp_GetUserByEmail(?)`;
 					const getEmailInputs = [email];
 					const foundEmail = await procHandler(accessPool, getEmailSQL, getEmailInputs);
 
 					if (foundEmail && foundEmail.length) {
-						errorMessage = 'An account is already registered with that email address.';
-						return socket.emit('err', {
-							error: errorMessage
-						});
+						errorMessage = 'An account is already registered with that email address';
+						return socket.emit('err', {error: errorMessage});
 					} else {
 						try {
 							const salt = await bcrypt.genSaltSync(10);
 							const hash = await bcrypt.hashSync(password, salt);
-							const code = randomString({length: 32, type: 'alphabetic'});
+							const code = randomString({length: 32, type: 'url-safe'});
 							const encodedVerificationString = Buffer.from(`${email}:${code}`).toString('base64');
 							const newUserSQL = 'CALL sp_InsertUser(?, ?, ?, ?)';
 							const newUserInputs = [uname, email, hash, code]; // save raw code, but email base64 encoded
 							const newUser = await procHandler(accessPool, newUserSQL, newUserInputs);
 
 							if (newUser && newUser[0]) {
-								console.log('verified first time user', email);
+								console.log(`verified first time user [${email} | ${uname}]`);
 								let ipAddress = socket.handshake.address.split(':')[3];
 								let html = await emailAlertHTML(ipAddress, uname, encodedVerificationString);
 								await sendEmail(email, 'Please verify your email address', html);
 								socket.emit('success');
 							}
 						} catch (err) {
-							reportError(file, '97', err, true);
+							reportError(file, '91', err, true);
 							return socket.emit('err', {error: generic});
 						}
 					}
 				}
 			} catch (err) {
-				reportError(file, '102', err, true);
+				reportError(file, '97', err, true);
 				return socket.emit('err', {error: generic});
 			}
 		}
     },
     login: async (data, socket) => {
-		console.log('login requested >>', data.username);
+		console.log(`login requested [${data.username}]`);
 
 		try {
 			const sql = `CALL sp_GetUser(?)`;

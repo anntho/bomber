@@ -200,7 +200,7 @@ module.exports = {
         }
     },
     deleteAccount: async (data, socket) => {
-		if (!data || !socket.request.session || !socket.request.session.user) {
+		if (!socket.request.session || !socket.request.session.user) {
 			return socket.emit('err', {error: generic});
         }
         
@@ -217,7 +217,7 @@ module.exports = {
             socket.emit('deleteAccount');
 
             // send alert email
-            let desciption = 'Account Deleted';
+            let desciption = 'Account Deactivated';
             let ipAddress = socket.handshake.address.split(':')[3];
             let html = await emailAlertHTML(ipAddress, user.username, code, desciption);
             await sendEmail(user.email, 'Sorry to see you go!', html);

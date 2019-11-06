@@ -19,7 +19,7 @@ input {
 
 .btn,
 .btn-large {
-	font-weight: 700;
+	font-weight: 500;
 }
 
 .point {
@@ -32,6 +32,15 @@ input {
 
 .bold {
 	font-weight: 500;
+}
+
+.heading {
+	font-weight: 500;
+    font-size: 1.2rem;
+}
+
+.heading i.material-icons {
+	font-size: 1.2rem;
 }
 
 main {

@@ -33,14 +33,13 @@ h5 a:hover {
 	background-color: transparent;
 	overflow: auto;
     font-weight: 500;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid rgba(255, 255, 255, .4);
 }
 
 .alert {
     background-color: #2b2c3c;
     color: #aaa;
     padding: 5px;
-    display: flex;
     margin-bottom: 20px;
 }
 

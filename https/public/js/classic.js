@@ -229,8 +229,8 @@ $(document).ready(async function() {
         }
     }
 
-    function updatePackage(m, g, s, r) {
-        package.push({m: m, g: g, s: s, r: r});
+    function updatePackage(f, g, s, r) {
+        package.push({f: f, g: g, s: s, r: r});
     }
 
     async function updateStatsDisplay(c) {

@@ -14,119 +14,65 @@
 	<main>
 		<% if (!verified) { %>
 			<div id="valert" class="row alert">
-				<div class="content-wrapper">
-					<p class="valign-wrapper">
-						<i class="material-icons left alert-icon">close</i>
-						Please check your inbox to verify your email address
-					</p>
+				<div class="col s12">
+						<p class="valign-wrapper">
+								<i class="material-icons left alert-icon">close</i>
+								Please check your inbox to verify your email address
+							</p>
 				</div>
 			</div>
 		<% } %>
 		<div class="top-wrapper row">
 			<div class="content-wrapper">
-				<div class="row">
-					<div class="col s12">
-						<h5 class="valign-wrapper">
-							<i class="material-icons left mb-orange-text">settings</i>
-							settings
-						</h5>
+				<div class="sub-wrapper">
+					<div class="row">
+						<div class="col s12">
+							<div class="valign-wrapper heading">
+								<i class="material-icons left mb-orange-text">settings</i>
+								User Settings
+							</div>
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col s12">
-						<ul class="collapsible">
-							<li>
-								<div class="collapsible-header valign-wrapper">
-									<i class="material-icons left mb-orange-text">keyboard_arrow_down</i>
-									<span><%-username%></span>
-								</div>
-								<div class="collapsible-body">
-									<p class="mb-grey-blue-light-text">You can only edit your username once, so choose wisely!</p>
-									<div class="row">
-										<div class="col s12">
-											<input type="text" id="username" class="validate" minlength="5" maxlength="15" placeholder="Type a new username">
-										</div>
-										<div class="col s3">
-											<br>
-											<a id="editUsername" class="btn mb-deep-grey"><i class="material-icons left">check_circle</i>Confirm</a>
-										</div>
-									</div>
-								</div>
-							</li>
-						</ul>
+					<br>
+					<div class="row">
+						<div class="col s12">
+							<div><%-username%></div>
+							<label for="username">You can only edit your username once, so choose wisely!</label>
+							<input type="text" id="username" class="validate" minlength="5" maxlength="15" placeholder="Type a new username">
+							<a id="editUsername" class="btn-small mb-deep-grey">Confirm</a>
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col s12">
-						<ul class="collapsible">
-							<li>
-								<div class="collapsible-header valign-wrapper">
-									<i class="material-icons left mb-orange-text">keyboard_arrow_down</i>
-									<span><%-email%></span>
-								</div>
-								<div class="collapsible-body">
-									<p class="mb-grey-blue-light-text">Please enter a new email address and ensure that you have access to that account.</p>
-									<div class="row">
-										<div class="col s12">
-											<input type="email" id="email" maxlength="40" placeholder="Type your email address">
-										</div>
-										<div class="col s3">
-											<br>
-											<a id="editEmail" class="btn mb-deep-grey"><i class="material-icons left">check_circle</i>Confirm</a>
-										</div>
-									</div>
-								</div>
-							</li>
-						</ul>
+					<br>
+					<div class="row">
+						<div class="col s12">
+							<div><%-email%></div>
+							<label for="email">Please enter a new email address and ensure that you have access to that account</label>
+							<input type="email" id="email" maxlength="40" placeholder="Type your email address">
+							<a id="editEmail" class="btn-small mb-deep-grey">Confirm</a>
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col s12">
-						<ul class="collapsible">
-							<li>
-								<div class="collapsible-header valign-wrapper">
-									<i class="material-icons left mb-orange-text">keyboard_arrow_down</i>
-									<span>Change Password</span>
-								</div>
-								<div class="collapsible-body">
-									<p class="mb-grey-blue-light-text">Please complete the form below to change your password.</p>
-									<div class="row">
-										<div class="col s12">
-											<label for="cpass">password</label>
-											<input type="password" class="pw" id="cpass" placeholder="Type your current password">
-										</div>
-										<div class="col s12">
-											<label for="npass">new password</label>
-											<input type="password" class="pw" id="npass" placeholder="Type a new password">
-										</div>
-										<div class="col s12">
-											<label for="npassc">confirm new password</label>
-											<input type="password" class="pw" id="npassc" placeholder="Confirm your new password">
-										</div>
-										<div class="col s3">
-											<br>
-											<a id="editPassword" class="btn mb-deep-grey"><i class="material-icons left">check_circle</i>Confirm</a>
-										</div>
-									</div>
-								</div>
-							</li>
-						</ul>
+					<br>
+					<div class="row">
+						<div class="col s12">
+							<div>Change Password</div>
+							<label>Please complete the form below to change your password</label>
+							<input type="password" class="pw" id="cpass" placeholder="Type your current password">
+							<input type="password" class="pw" id="npass" placeholder="Type a new password">
+							<input type="password" class="pw" id="npassc" placeholder="Confirm your new password">
+							<a id="editPassword" class="btn-small mb-deep-grey">Confirm</a>
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col s12">
-						<ul class="collapsible">
-							<li>
-								<div class="collapsible-header valign-wrapper">
-									<i class="material-icons left mb-orange-text">highlight_off</i>
-									<span>Delete Account</span>
-								</div>
-								<div class="collapsible-body">
-									<p class="mb-grey-blue-light-text">Are you sure you want to delete your account? If you're sure, confirm by clicking the button below.</p>
-									<a id="deleteAccount" class="btn mb-dark-red">Confirm</a>
-								</div>
-							</li>
-						</ul>
+					<br>
+					<div class="row">
+						<div class="col s12">
+							<div>Deactivate Account</div>
+							<label>Are you sure you want to deactivate your account? If you're sure, confirm by clicking the button below</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12">
+							<a id="deleteAccount" class="btn-small mb-dark-red">deactivate</a>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -145,6 +91,7 @@
 	<script src="/js/preferences.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
+	<script src="/js/nav.js"></script>
 	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

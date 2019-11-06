@@ -2,7 +2,7 @@ $(document).ready(async function() {
     var socket = io.connect(socketString);
 
     socket.on('success', async function(data) {
-        await report('success', 'success', 'you can now login!');
+        await report('success', 'success', 'You can now login!');
         window.location.href = '/login';
     });
 

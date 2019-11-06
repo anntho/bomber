@@ -6,7 +6,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="keywords" content="movie trivia, trivia, free trivia">
 	<meta name="robots" content="noindex,nofollow">
-	<% include ./styles %>
+	<link rel="stylesheet" href="/css/materialize.min.css">
+	<link rel="stylesheet" href="/css/global.css">
+	<link rel="stylesheet" href="/css/nav.css">
+	<link rel="stylesheet" href="/css/footer.css">
+	<link rel="stylesheet" href="/css/colors.css">
 	<% include ./fonts %>
 </head>
 <body>
@@ -31,5 +35,15 @@
 		</div>
 	</main>
 	<% include ./footer %>
+
+	<script>
+		var socketString = <%-JSON.stringify(socket)%>;
+	</script>
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>
