@@ -190,22 +190,22 @@ $(document).ready(async function() {
     async function logic(guess) {
         currentIndex++;
         let c = null;
+        let r = -1;
         
         if (guess == correct) {
-            updatePackage(ref.movie, guess, score, 1);
             c = calculator(true);
+            r = 1;
             await feedback('success', 'Correct!');
         } else if (guess == null) {
-            updatePackage(ref.movie, 'none', score, -1);
             c = calculator(false);
             await feedback('error', 'Out of time!', `The correct answer was ${correct}`);
         } else {
-            updatePackage(ref.movie, guess, score, -1);
             c = calculator(false);
             await feedback('error', 'Incorrect', `The correct answer was ${correct}`);
         }
 
         await updateStatsDisplay(c);
+        updatePackage(ref.movie, guess, score, r);
 
         if (log) {
             console.log(ref.movie);
