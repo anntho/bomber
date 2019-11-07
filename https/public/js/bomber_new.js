@@ -1,5 +1,6 @@
 $(document).ready(async function() {
     let socket = io.connect(socketString);
+    let start = true;
     let score = 0;
     let lives = 6;
     let streak = 0;
@@ -318,7 +319,6 @@ $(document).ready(async function() {
         let prompt = '';
         if (initial) {
             prompt = `Pick a movie from the list below to start the game`;
-            emitGame('start', null);
         } else {
             prompt = 'Send it back by picking a movie from the list';
         }
@@ -392,6 +392,12 @@ $(document).ready(async function() {
         log('logic [ref]', `${ref.name} | ${ref.id}`, false);
         let c = null;
         loaderOn();
+
+        if (start) {
+            emitGame('start', null);
+            start = false;
+        }
+
         if (ref.reset) {
             usedMovies.push(parseInt(guessId));
             await guessActorFromMovie(guessId, guessText);
@@ -426,6 +432,7 @@ $(document).ready(async function() {
     }
 
     let restartGame = async () => {
+        start = true;
         score = 0;
         lives = 6;
         streak = 0;
