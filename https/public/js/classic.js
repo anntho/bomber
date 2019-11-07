@@ -11,22 +11,26 @@ $(document).ready(async function() {
     let ref = {};
     let package = [];
     let sid = '';
-    let log = false;
     let timer = null;
     let counter = 10;
     let interval = 1000;
 
-    loaderOn();
-
-    await fillStarters();
-    await loadMovie(movieIds[currentIndex], true);
+    let log = (func, data, write) => {
+        let all = false;
+        if (write || all) {
+            console.log('-------------------');
+            console.log(func);
+            console.log(data);
+            console.log('-------------------');
+        }
+    }
 
     socket.on('game', function(data) {
-        if (log) console.log('sid received', data);
+        log('sid received', data, false);
         sid = data;
     });
 
-    function shuffle(a) {
+    let shuffle = (a) => {
         for (let i = a.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [a[i], a[j]] = [a[j], a[i]];
@@ -34,35 +38,35 @@ $(document).ready(async function() {
         return a;
     }
 
-    function step() {
+    let step = () => {
         counter--;
         $('#timer').text(counter);
         if (counter === 0) {
-            if (log) console.log('time up');
+            log('time up', null, false);
             resetTimer();
             logic(null);
         }
     }
 
-    function startTimer() {
+    let startTimer = () => {
         if (timer !== null) return;
-        if (log) console.log('starting timer');
+        log('starting timer', null, false);
         timer = setInterval(step, interval);
     }
 
-    function stopTimer() {
-        if (log) console.log('stopping timer');
+    let stopTimer = () => {
+        log('stopping timer', null, false);
         resetTimer();
     }
 
-    function resetTimer() {
+    let resetTimer = () => {
         clearInterval(timer);
         timer = null;
         counter = 10;
         $('#timer').text(counter);
     }
 
-    async function feedback(icon, title, text) {
+    let feedback = async (icon, title, text) => {
         return await swal({
             icon: icon,
             title: title,
@@ -71,24 +75,7 @@ $(document).ready(async function() {
         });
     }
 
-    async function reportError() {
-		await swal({
-			title: 'Whoops!',
-			text: 'An error occured',
-			icon: 'error',
-			buttons: ['Home', 'Reload Page'],
-			closeOnClickOutside: false
-		})
-		.then((again) => {
-			if (again) {
-				location.reload();
-			} else {
-				location.href = '/';
-			}
-		});
-	}
-
-    async function fillStarters() {
+    let fillStarters = async () => {
 		socket.emit('starters');
 		return new Promise((res, rej) => {
 			socket.on('starters', async (data) => {
@@ -106,10 +93,8 @@ $(document).ready(async function() {
 		});
 	}
 
-    async function getCast(id) {
-		if (log) {
-			console.log('getCast', id);
-		}
+    let getCast = async (id) => {
+		log('getCast', id, false);
 		socket.emit('getCast', id);
 		return new Promise((res, rej) => {
 			socket.on('getCast', async (data) => {
@@ -121,10 +106,8 @@ $(document).ready(async function() {
 		});
     }
     
-    async function getMovie(id) {
-		if (log) {
-			console.log('getMovie', id);
-		}
+    let getMovie = async (id) => {
+		log('getMovie', id, false);
 		socket.emit('getMovie', id);
 		return new Promise((res, rej) => {
 			socket.on('getMovie', async (data) => {
@@ -136,7 +119,7 @@ $(document).ready(async function() {
 		});
 	}
 
-    async function loadMovie(id, initial) {
+    let loadMovie = async (id, initial) => {
         loaderOn();
         let movie = movies.find(movie => movie.altId == id);
         let url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster}`;
@@ -175,8 +158,8 @@ $(document).ready(async function() {
         }
     }
 
-    async function setPosterAndTitle(url, title, year) {
-        if (log) console.log('setPosterAndTitle', url, title, year);
+    let setPosterAndTitle = async (url, title, year) => {
+        log('setPosterAndTitle', `${url} ${title} ${year}`, false);
         return new Promise(function(res, rej) {
             $('#poster').attr('src', url);
             $('#poster').on('load', function() {
@@ -187,7 +170,7 @@ $(document).ready(async function() {
         });
     }
 
-    async function logic(guess) {
+    let logic = async (guess) => {
         currentIndex++;
         let c = null;
         let r = -1;
@@ -207,14 +190,11 @@ $(document).ready(async function() {
         await updateStatsDisplay(c);
         updatePackage(ref.movie, guess, score, r);
 
-        if (log) {
-            console.log(ref.movie);
-            console.log('guess: ' + guess, 'correct: ' + correct);
-            console.log(package);
-        }
+        log('logic', ref.movie, false);
+        log('logic', `guess: ${guess} | correct: ${correct}`, false);
 
         if (lives < 1 || currentIndex == movieIds.length) {
-            if (log) console.log('game over');
+            log('game over', null, true);
             socket.emit('game', {
 				score: score,
 				event: 'end',
@@ -229,11 +209,11 @@ $(document).ready(async function() {
         }
     }
 
-    function updatePackage(f, g, s, r) {
+    let updatePackage = (f, g, s, r) => {
         package.push({f: f, g: g, s: s, r: r});
     }
 
-    async function updateStatsDisplay(c) {
+    let updateStatsDisplay = async (c) => {
         $('#score').text(score);
         $('#streak').text(streak);
         $('#lives').text(lives);
@@ -250,7 +230,7 @@ $(document).ready(async function() {
         }
     }
 
-    function calculator(result) {
+    let calculator = (result) => {
         let pts = 10;
         let add = null;
         if (result) {
@@ -277,9 +257,7 @@ $(document).ready(async function() {
     }
 
     $('.button').click(async function() {
-        if ($('.button').prop('disabled')) {
-            return false;
-        }
+        if ($('.button').prop('disabled')) return false;
         $('.button').prop('disabled', true);
         stopTimer();
         if (currentIndex == 0) {
@@ -300,7 +278,7 @@ $(document).ready(async function() {
         showGamebox();
     });
 
-    function restartGame() {
+    let restartGame = () => {
         shuffle(movieIds);
         currentIndex = 0;
         score = 0;
@@ -312,29 +290,29 @@ $(document).ready(async function() {
         updateStatsDisplay(null);
     }
 
-    async function gameOver() {
+    let gameOver = async () => {
         $('#finalScore').text(score);
         hideGamebox();
     }
 
-    function hideGamebox() {
+    let hideGamebox = () => {
         $('#board').css('display', 'none');
         $('#go').css('display', 'block');
     }
 
-    function showGamebox() {
+    let showGamebox = () => {
         $('#board').css('display', 'block');
         $('#go').css('display', 'none');
     }
 
-    function loaderOn() {
-        if (log) console.log('loaderOn');
+    let loaderOn = () => {
+        log('loaderOn', null, false);
         $('#loader').css('display', 'block');
         $('#poster').css('display', 'none');
     }
 
-    function loaderOff() {
-        if (log) console.log('loaderOff');
+    let loaderOff = () => {
+        log('loaderOff', null, false);
         $('#loader').css('display', 'none');
         $('#poster').css('display', 'block');
         let elm = document.getElementById('poster');
@@ -345,5 +323,10 @@ $(document).ready(async function() {
     $('.toggle-trigger').click(function() {
         $('.toggle').toggle();
     });
+
+    loaderOn();
+
+    await fillStarters();
+    await loadMovie(movieIds[currentIndex], true);
 });
 
