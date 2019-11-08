@@ -74,20 +74,30 @@ module.exports = {
                         error: error
                     });
 				} else {
-					let updateUsernameProc = 'CALL sp_UpdateUsername(?, ?, ?)';
-					let updateUsernameInputs = [username, user.username, user.id];
-					try {
-                        await procHandler(preferencesPool, updateUsernameProc, updateUsernameInputs);
-                        console.log('session update required');
-						updateSession = true;
-						socket.emit('editUsername');
-					} catch (err) {
-						reportError(file, '85', err, true);
+                    try {
+                        const getUserSQL = `CALL sp_CheckUsername(?)`;
+                        const getUserInputs = [username];
+                        const foundUser = await procHandler(preferencesPool, getUserSQL, getUserInputs);
+
+                        if (foundUser && foundUser.length) {
+                            error = 'Username is not available.';
+                            socket.emit('err', {code: code, error: error});
+                        } else {
+                            let updateUsernameProc = 'CALL sp_UpdateUsername(?, ?, ?)';
+                            let updateUsernameInputs = [username, user.username, user.id];
+                            
+                            await procHandler(preferencesPool, updateUsernameProc, updateUsernameInputs);
+                            console.log('session update required');
+                            updateSession = true;
+                            socket.emit('editUsername');
+                        }
+                    } catch (err) {
+                        reportError(file, '85', err, true);
 						socket.emit('err', {
                             code: code,
                             error: generic
                         });
-					}
+                    }
 				}
 			}
 		}

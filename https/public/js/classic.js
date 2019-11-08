@@ -295,6 +295,12 @@ $(document).ready(async function() {
         hideGamebox();
     }
 
+    socket.on('levelUp', (data) => {
+        if (data.newRank) {
+            $('#levelUp').text()
+        }
+    });
+
     let hideGamebox = () => {
         $('#board').css('display', 'none');
         $('#go').css('display', 'block');

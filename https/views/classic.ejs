@@ -21,7 +21,7 @@
 					<% include ./stats %>
 					<div class="row">
 						<div class="col s12">
-							<p id="title"></p>
+							<p id="title" class="bold"></p>
 						</div>
 						<div class="col s12">
 							<div class="row mb-0 poster-buttons-container">
@@ -53,6 +53,7 @@
 	</main>
 
 	<% include ./footer %>
+
 	<script>
 		const socketString = <%-JSON.stringify(socket)%>;
 		const usernameString = <%-JSON.stringify(username)%>;

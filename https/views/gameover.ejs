@@ -7,11 +7,15 @@
     <div class="row gomessage">
         <div class="col s12">
             <% if (user) { %>
-                <p>Thanks for playing, <%-user.username%></p>
-                <p>Check out your score on the leaderboard.</p>
+                <div>Thanks for playing, <%-username%></div>
+                <div>Check out your score on the leaderboard.</div><br>
+                <div id="levelUp" class="heavy">
+                    <div>Congrats! You've leveled up!</div>
+                    <div>New Rank: <span id="newLevel"></span></div>
+                </div>
             <% } else { %>
                 <p>Thanks for playing!</p>
-                <p>If you want to see your score on the leaderboard, as well as track past games you can sign up for a free account using the link below.</p>
+                <p>If you want to see your score on the leaderboard, as well as track past games you can sign up for a free account using the link below.</p><br>
                 <p><a href="/register">Click HERE to register now!</a></p>
             <% } %>
         </div>
