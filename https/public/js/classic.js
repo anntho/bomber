@@ -18,6 +18,32 @@ $(document).ready(async function() {
         sid = data;
     });
 
+    let getCast = async (id) => {
+        log('getCast', id, false);
+        socket.emit('getCast', id);
+        return new Promise((res, rej) => {
+            socket.on('getCast', async (data) => {
+                res(data.cast);
+            });
+            socket.on('err', async () => {
+                rej(reportError());
+            });
+        });
+    }
+    
+    let getMovie = async (id) => {
+        log('getMovie', id, false);
+        socket.emit('getMovie', id);
+        return new Promise((res, rej) => {
+            socket.on('getMovie', async (data) => {
+                res(data);
+            });
+            socket.on('err', async () => {
+                rej(reportError());
+            });
+        });
+    }
+
     let fillStarters = async () => {
 		socket.emit('starters');
 		return new Promise((res, rej) => {

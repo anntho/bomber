@@ -5,9 +5,6 @@ let streak = 0;
 let timer = null;
 let counter = 10;
 let interval = 1000;
-let package = [];
-
-let testVar = 'fdfds';
 
 let log = (func, data, write) => {
     let all = false;
@@ -64,10 +61,6 @@ let resetTimer = () => {
     $('#timer').text(counter);
 }
 
-let updatePackage = (f, g, s, r) => {
-    package.push({f: f, g: g, s: s, r: r});
-}
-
 let calculator = (result) => {
     let pts = 10;
     let add = null;
@@ -92,32 +85,6 @@ let calculator = (result) => {
         lives--;
     }
     return add;
-}
-
-let getCast = async (id) => {
-    log('getCast', id, false);
-    socket.emit('getCast', id);
-    return new Promise((res, rej) => {
-        socket.on('getCast', async (data) => {
-            res(data.cast);
-        });
-        socket.on('err', async () => {
-            rej(reportError());
-        });
-    });
-}
-
-let getMovie = async (id) => {
-    log('getMovie', id, false);
-    socket.emit('getMovie', id);
-    return new Promise((res, rej) => {
-        socket.on('getMovie', async (data) => {
-            res(data);
-        });
-        socket.on('err', async () => {
-            rej(reportError());
-        });
-    });
 }
 
 let updateStatsDisplay = async (c) => {

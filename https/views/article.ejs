@@ -16,15 +16,18 @@
 			<div class="col s12 m8 offset-m2 l6 offset-l3">
 				<br>
 				<div class="article">
-					<p><%=article.title%></p>
-					<% let date1 = String(article.date).split("G")[0]; %>
-					<% let date2 = date1.substring(0, date1.length - 9); %>
-					<p><span class="article-date"><%=date2%></span>| by <span><%=article.author%></span></p>
+					<div class="info">
+						<p class="title"><%=article.title%></p>
+						<% let date1 = String(article.date).split("G")[0]; %>
+						<% let date2 = date1.substring(0, date1.length - 9); %>
+						<p><span class="article-date"><%=date2%></span>| by <span><%=article.author%></span></p>
+					</div>
+					
 					<p class="divider"></p>
 					<p id="a-content" class="prose"><%-article.content%></p>
 				</div>
 				<br>
-				<a class="back waves-effect waves-light btn purple" href="/blog">
+				<a class="back waves-effect waves-light btn mb-deep-grey" href="/blog">
 					<i class="material-icons left">chevron_left</i>
 					back
 				</a>

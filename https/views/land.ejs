@@ -21,20 +21,20 @@
 				<br>
 				<h5 class="valign-wrapper">
 					<i class="material-icons left mb-orange-text">equalizer</i>
-					site metrics
+					Site Metrics
 				</h5>
 				<canvas id="myChart"></canvas>
 
 				<br>
 				<h5 class="valign-wrapper">
 					<i class="material-icons left mb-orange-text">people</i>
-					new users
+					New Users
 				</h5>
 				<% if (metrics.newUsers) { %>
 					<% metrics.newUsers.forEach(u => { %>
 						<p class="valign-wrapper newUser">
 							<i class="material-icons left">exposure_plus_1</i>
-							<a href="/@/<%-u%>"><%-u%></a>
+							<a href="/@/<%-u%>">[<%-u%>]</a>
 						</p>
 					<% }); %>
 				<% } %>

@@ -16,12 +16,12 @@
 		<div class="top-wrapper row">
 			<div class="content-wrapper">
 				<div class="sub-wrapper">
-					<h4>
+					<h5>
 						<a href="/blog" class="valign-wrapper">
-							<i class="material-icons left mb-orange-text">book</i>
-							blog
+							<i class="material-icons left mb-orange-text">folder</i>
+							Blog
 						</a>
-					</h4>
+					</h5>
 					<br>
 					<% articles.forEach((doc, key) => { %>
 						<% let date1 = String(doc.date).split("G")[0]; %>
@@ -31,10 +31,15 @@
 						
 						<a href="<%-link%>">
 							<div class="article">
-								<div class="info-wrapper">
-									<span><%=date2%> by <%=doc.author%></span>
+								<div class="col s10 card-wrapper">
+									<div class="info-wrapper">
+										<span><%=date2%> by <%=doc.author%></span>
+									</div>
+									<div class="title-wrapper"><%=doc.title%></div>
 								</div>
-								<div class="title-wrapper"><%=doc.title%></div>
+								<div class="col s2 card-wrapper">
+									<i class="material-icons right mb-orange-text">chevron_right</i>
+								</div>
 							</div>
 						</a>
 					<% }); %>

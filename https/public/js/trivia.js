@@ -1,14 +1,17 @@
 $(document).ready(async function() {
+    await $.getScript( "js/helpers.js");
     let socket = io.connect(socketString);
     let sid = '';
-    await $.getScript( "js/helpers.js");
-
-    console.log(testVar)
+    let package = [];
 
     socket.on('game', function(data) {
         log('sid received', data, false);
         sid = data;
     });
+
+    let updatePackage = (f, g, s, r) => {
+        package.push({f: f, g: g, s: s, r: r});
+    }
 
     let loadQuestion = (initial) => {
         let question = questions[currentIndex];
