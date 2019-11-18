@@ -3,6 +3,7 @@ const router = express.Router();
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
 const { setUser } = require('../bin/auth');
+const { Game } = require('../models/models');
 const file = 'routes/pages.js';
 
 
@@ -63,6 +64,23 @@ router.get('/article/:id', setUser, async (req, res) => {
 	}
 });
 
+router.get('/live/:id', setUser, async (req, res) => {
+	try {
+		let room = req.params.id;
+		let game = await Game.findOne({room: room});
+		if (!game) {
+			res.sendStatus(404);
+		} else {
+			res.locals.game = game;
+			res.locals.file = 'live';
+			res.locals.game = true;
+			res.render(res.locals.file);
+		}
+	} catch (err) {
+		res.sendStatus(404);
+	}
+});
+
 router.get('/bomber', setUser, (req, res) => {
 	res.locals.file = 'bomber';
 	res.locals.game = true;
@@ -72,11 +90,6 @@ router.get('/bomber', setUser, (req, res) => {
 router.get('/classic', setUser, (req, res) => {
 	res.locals.file = 'classic';
 	res.locals.game = true;
-	res.render(res.locals.file);
-});
-
-router.get('/about', setUser, (req, res) => {
-	res.locals.file = 'about';
 	res.render(res.locals.file);
 });
 

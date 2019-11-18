@@ -115,12 +115,16 @@ io.on('connection', (socket) => {
 		await games.saveGame(data, socket);
 	});
 
-	socket.on('live', async () => {
-		await games.createGame(socket);
+	socket.on('findGame', async () => {
+		await games.findGame(io, socket);
 	});
 
-	socket.on('findGame', async (data) => {
-		await games.findGame(data, socket);
+	socket.on('updateGame', async (data) => {
+		await games.updateGame(data, socket);
+	});
+
+	socket.on('fire', async (data) => {
+		await games.fire(data, socket);
 	});
 });
 

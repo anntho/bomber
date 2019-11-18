@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const config = require('../bin/config');
 const pagesPool = mysql.createPool(config.mysql);
-const Article = require('../models/article');
+const { Article } = require('../models/models');
 const { procHandler, procHandler2 } = require('../lib/sql');
 
 module.exports = {

@@ -1,0 +1,131 @@
+.prompts-container, 
+.button-wrapper {
+    color: #fafafa;
+	background-color: #292929;
+}
+
+.prompts-container {
+	display: flex;
+	height: 110px;
+}
+
+.prompts-container .icon,
+.button-wrapper .icon {
+	flex-basis: 20%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.prompts-container .icon {
+    color: #f44336;
+}
+
+.prompts-container .text {
+	flex-basis: 80%;
+	overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+}
+
+.prompts-container .text .prompt {
+    flex-basis: 100%;
+    padding-left: 1%;
+    font-weight: 500;
+}
+
+.button-wrapper {
+    display: flex;
+}
+
+.button-wrapper .icon {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #00bcd4;
+}
+
+.button-wrapper .text {
+    align-items: center;
+    display: flex;
+	flex-basis: 80%;
+    height: 60px;
+    padding-left: 1%;
+    font-weight: 500;
+}
+
+#faceLoader {
+    animation: spinPulse 1s infinite ease-in-out;
+    -moz-animation: spinPulse 1s infinite ease-in-out;
+    -webkit-animation: spinPulse 1s infinite ease-in-out;
+}
+/* ===================================================
+// Visor
+   =================================================== */
+img {
+    height: 50px;
+    width: 50px;
+}
+
+.visor-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.visor-wrapper div {
+    flex-basis: 100%;
+}
+
+.visor-icon-box {
+    flex-basis: 30%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.visor-icon-box div {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.visor-clock {
+    flex-basis: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.visor-text {
+    flex-wrap: wrap;
+}
+
+.visor-row {
+    display: flex;
+}
+
+.progress {
+    height: 8px;
+    background-color: #444444;
+}
+
+@keyframes spinPulse {
+    0% {transform: rotate(0deg) scale(1) }
+    50% { transform: rotate(15deg) scale(1.8) }
+    100% { transform: rotate(360deg) scale(1) }
+}
+
+@-webkit-keyframes spinPulse {
+    0% { -webkit-transform: rotate(0deg) scale(1) }
+    50% { -webkit-transform: rotate(15deg) scale(1.8) }
+    100% { -webkit-transform: rotate(360deg) scale(1) }
+}
+
+@-moz-keyframes spinPulse {
+    0% { -moz-transfrom: rotate(0deg) scale(1) }
+    50% { -moz-transform: rotate(15deg) scale(1.8) }
+    100% { -moz-transform: rotate(360deg) scale(1) }
+}

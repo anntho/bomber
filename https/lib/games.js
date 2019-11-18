@@ -3,90 +3,14 @@ const config = require('../bin/config');
 const gamesPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const { sendEmail } = require('./email');
+const { Game } = require('../models/models');
 const { reportError } = require('./errors');
-const randomString = require('crypto-random-string');
+const cryptoRandomString = require('crypto-random-string');
 
 const line = '---------------------------------';
 const file = 'lib/games.js';
 
 module.exports = {
-    findGame: async (data, socket) => {
-		let username = '';
-
-		if (!socket.request.session.user) {
-			socket.emit('error', 'not logged in');
-		} else {
-			username = socket.request.session.user.username;
-			let activeMatch = await Match.findOne({players: username, status: 1});
-			if (activeMatch) {
-				socket.emit('error', 'already in match');
-			} else {
-				try {
-					let match = await Match.findOne({status: 0});
-					if (!match) {
-						socket.emit('info', 'no matches to join -- creating one');
-						let room = randomString({length: 8});
-						const newMatch = new Match({
-							status: 0,
-							room: room,
-							players: [data.user.username],
-							sockets: [socket.id]
-						});
-
-						try {
-							await newMatch.save();
-							socket.join(room, () => {
-								io.to(room).emit('joined', room);
-							});
-						} catch (err) {
-							socket.emit('error', err);
-						}
-					} else {
-						console.log('Found Match');
-						console.log(match);
-						console.log(line);
-
-						match.players.push(username);
-						match.sockets.push(socket.id);
-						match.status = 1;
-
-						try {
-							await match.save();
-							socket.join(match.room);
-							io.to(match.room).emit('matched', match.room);
-						} catch (err) {
-							socket.emit('error', err);
-						}
-					}
-				} catch (err) {
-					reportError(process.env, file, '61', err, true);
-				}
-			}
-		}
-    },
-    createGame: async (socket) => {
-		if (socket.request.session.user) {
-			let username = socket.request.session.user.username;
-			
-			let match = await Match.findOne({ 
-				status: 1, players: username
-			}).sort({date: 'desc'}).exec();
-
-			if (match) {
-				let index = match.players.indexOf(username);
-				match.sockets.set(index, socket.id);
-				
-				try {
-					await match.save();
-					socket.join(match.room, () => {
-						io.to(match.room).emit('re-joined', match.room);
-					});
-				} catch (err) {
-					socket.emit('error', err);
-				}
-			}
-		}
-    },
     saveGame: async (data, socket) => {
 		console.log('Game data:');
 		console.log(data);
@@ -132,5 +56,107 @@ module.exports = {
 			console.log(err);
 			socket.emit('err');
 		}
-    }
+	},
+	// ===================================================
+	// Live Games
+	// ===================================================
+	updateGame: async (socket) => {
+		if (socket.request.session.room) {
+			// 1. Update the user's socket id
+			try {
+				let room = socket.request.session.room;
+				let userId = socket.request.session.user.id;
+				let game = await Game.findOne({room: room});
+				if (game) {
+					let userData = game.players.find(p => p.userId == userId);
+					console.log('old id', userData.socketId);
+					console.log('new id', socket.id);
+					userData.socketId = socket.id;
+					game.save();
+				}
+				socket.emit('update');
+			} catch (err) {
+				console.log(err);
+				return socket.emit('err', err);
+			}
+		}
+	},
+	findGame: async (io, socket) => {
+		if (!socket.request.session.user) {
+			return socket.emit('liveCheckUser', false);
+		} else {
+			socket.emit('liveCheckUser', true);
+		}
+
+		try {
+			let username = socket.request.session.user.username;
+			let userId = socket.request.session.user.id;
+			console.log('game request', username);
+
+			// 1. Find an open game
+			let open = await Game.findOne({status: 'open'});
+			
+			// 2. If no open games, create one and wait in new room
+			if (!open) {
+				console.log('no open games found');
+				let roomId = cryptoRandomString({length: 10});
+				let newGame = {
+					room: roomId,
+					status: 'open',
+					players: [{
+						username: username,
+						userId: userId,
+						socketId: socket.id
+					}]
+				}
+
+				let doc = new Game(newGame);
+				let response = await doc.save();
+
+				console.log(response);
+
+				socket.join(roomId);
+				socket.request.session.game = newGame;
+				socket.request.session.save(function(err) {
+					if (err) {
+						return socket.emit('err', err);
+					}
+				});
+			} else {
+				// 3. Join open game
+				console.log('joining open game');
+				open.status = 'active';
+				open.players.push({
+					username: username,
+					userId: userId,
+					socketId: socket.id
+				});
+				open.save();
+
+				socket.join(open.room);
+				socket.request.session.game = open;
+				socket.request.session.save(function(err) {
+					if (err) {
+						return socket.emit('err', err);
+					}
+				});
+				io.to(open.room).emit('connected', {
+					room: open.room
+				});
+			}
+		} catch (err) {
+			console.log(err);
+			return socket.emit('err', err);
+		}
+	},
+	fire: async (data, socket) => {
+		let game = games.find(g => g.room == data.room);
+		let opponent = game.players.find(p => p.username != socket.request.session.user);
+		//console.log('opponent', opponent)
+		socket.broadcast.to(opponent.socketId).emit('msg', 'boop');
+		socket.emit('msg', 'beep');
+		io.to(data.room).emit('gameover');
+	}
 }
+
+let games = [];

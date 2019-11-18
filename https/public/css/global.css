@@ -5,7 +5,7 @@ body, html {
 	font-size: 14px;
 	font-family: 'Montserrat', sans-serif;
 	color: #fafafa;
-	background-color: #212331;
+	background-color: #1b1b1b;
 }
 
 a {
@@ -56,6 +56,10 @@ main {
 
 .mb-1 {
 	margin-bottom: 1%;
+}
+
+.mb-2 {
+	margin-bottom: 2%;
 }
 
 .mb-3 {

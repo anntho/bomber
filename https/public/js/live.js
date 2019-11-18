@@ -1,42 +1,40 @@
-$(document).ready(async function() {
-    var socket = io.connect(socketString);
+$(document).ready(function() {
+	console.log('loaded')
+	let socket = io.connect(socketString);
+    let room = null;
 
-    // Sockets
-    socket.emit('live');
-    socket.on('error', function(data) {
-        report('error', 'error', data);
-    });
-    socket.on('info', function(data) {
-        report('info', 'info', data);
-    });
-    socket.on('matched', function(data) {
-        report('success', 'found match', data);
-    });
-    socket.on('joined', function(data) {
-        report('success', 'joined match', data);
-    });
-    socket.on('re-joined', function(data) {
-        report('success', 're-joined match', data);
-    });
-
-
-    // Listeners
-    $('#search').click(function() {
-        socket.emit('find');
-    });
-
-
-
-    
-
-    // Helpers
-    function report(icon, title, text) {
-        return swal({
+    let report = async (icon, title, text) => {
+        return await swal({
             icon: icon,
             title: title,
             text: text,
             closeOnClickOutside: false
         });
     }
+    
+    socket.on('err', (err) => {
+        alert('error check console');
+        report('error', 'Error', JSON.stringify(err));
+    });
 
+	socket.emit('update');
+	socket.on('update', (data) => {
+		room = data.room;
+		console.log(room);
+		console.log(socket.id);
+    });
+    
+	socket.on('connected', function(data) {
+		room = data.room;
+		console.log(data);
+		alert('connected');
+	});
+
+	socket.on('msg', function(data) {
+		$('#status').text(data)
+	});
+
+	socket.on('gameover', function() {
+		$('#gameover').show();
+	});
 });

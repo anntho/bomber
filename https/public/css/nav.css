@@ -1,5 +1,5 @@
 nav {
-	background-color: #212331;
+	background-color: #1b1b1b;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	max-width: 1600px;
@@ -24,7 +24,7 @@ nav ul a:hover {
 }
 
 .sidenav {
-	background-color: #181828;
+	background-color: #292929;
 }
 
 .sidenav li > a {
@@ -52,7 +52,7 @@ ul.sidenav:not(.browser-default) {
 }
 
 .dropdown-content {
-	background-color: #212331;
+	background-color: #292929;
 }
 
 .dropdown-content li > a {
@@ -66,20 +66,18 @@ ul.sidenav:not(.browser-default) {
 input[type=email]:not(.browser-default):focus:not([readonly])+label,
 input[type=text]:not(.browser-default):focus:not([readonly])+label,
 input[type=password]:not(.browser-default):focus:not([readonly])+label {
-    color: #607D8B;
+    color: #00bcd4;
 }
 
 input[type=email]:not(.browser-default):focus:not([readonly]),
 input[type=text]:not(.browser-default):focus:not([readonly]),
 input[type=password]:not(.browser-default):focus:not([readonly]) {
-    border-bottom: 1px solid #607D8B;
-    -webkit-box-shadow: 0 1px 0 0 #607D8B;
-    box-shadow: 0 1px 0 0 #607D8B;
+    border-bottom: 1px solid #00bcd4;
+    -webkit-box-shadow: 0 1px 0 0 #00bcd4;
+    box-shadow: 0 1px 0 0 #00bcd4;
 }
 
-/* Media Queries --- Mobile First */
-@media (min-width: 601px) {
-	nav .brand-logo {
-	    padding-left: 5%;
-	}
+
+@media (min-width: 993px) {
+	nav .brand-logo { padding-left: 5% }
 }

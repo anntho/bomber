@@ -1,7 +1,30 @@
 $(document).ready(function() {
-    console.log(metrics)
-    var ctx = $('#myChart');
-    var myChart = new Chart(ctx, {
+    let socket = io.connect(socketString);
+
+    $('#beta').click(function() {
+        socket.emit('findGame');
+    });
+
+    socket.on('liveCheckUser', (user) => {
+        if (!user) {
+            swal({
+                icon: 'warning',
+                title: 'Not logged in',
+                text: 'Please login to try this game mode'
+            });
+        } else {
+            $('#searchModal').modal('open');
+        }
+    });
+
+    socket.on('connected', function(data) {
+        $('#searchModal').modal('close');
+        let url = `/live/${data.room}`;
+        location.href = url;
+    });
+
+    let ctx = $('#myChart');
+    let myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Bomber', 'Classic', 'Trivia', 'Community', 'Articles'],

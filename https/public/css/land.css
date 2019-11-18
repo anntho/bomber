@@ -37,3 +37,8 @@ canvas {
 .newUser a {
     font-size: 18px;
 }
+
+.modal, 
+.modal .modal-footer {
+    background-color: #292929;
+}

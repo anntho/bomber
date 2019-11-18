@@ -5,111 +5,71 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="keywords" content="Movies, Trivia, Free Trivia, Free Movie Trivia">
-	<meta name="robots" content="noindex,nofollow">
+	<meta name="description" content="Play moviebomber and try to beat your high score!">
+	<% include ./robots %>
 	<% include ./styles %>
 	<% include ./fonts %>
 </head>
 <body>
-	<style type="text/css">
-		input[type=text]:not(.browser-default) {
-			color: #13172f;
-			font-size: 2em;
-			margin: 0;
-			border-bottom: none;
-		}
-		input[type=text]:not(.browser-default):focus:not([readonly]) {
-			border-bottom: none;
-			box-shadow: none;
-		}
-	</style>
-	<% include ./partials/nav %>
-	<div class="top-wrapper row">
-		<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
-			<div id="gameover" class="gameover">
-				<p class="go">GAME OVER</p>
-				<p>
-					<a id="myscore" class="myscore">LEADERBOARD</a>
-				</p>
-				<i class="material-icons pulse replay">autorenew</i>
-			</div>
-
-			<div id="gamebox" class="gamebox z-index-4">
-
-				<a id="search" class="waves-effect waves-light btn">
-					<i class="material-icons left">people</i>find match
-				</a>
-
-				<div class="stuff">
-					<div class="scontainer">
-						<div class="icon">USERNAME</div>
-						<div class="stat text" id="score">0</div>
-					</div>
-					<div class="scontainer">
-						<div class="icon">LIVES</div>
-						<div class="stat text" id="lives">6</div>
-					</div>
-				</div>
-				<br>
-				<h6 class="heavy">PROMPTS</h6>
-				<br>
-				<div class="prompts">
-					<div class="pcontainer z-index-4">
-						<div class="icon">
-							<i class="material-icons">face</i>
-						</div>
-						<div class="text">
-						   <div class="prompt slide" id="prompt-a">dfds</div>
-							<div class="prompt slide" id="prompt-b"></div>
-							<div class="loader" id="loader">
-								<div class="line-scale">
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-									<div></div>
-								</div>
+	<% include ./nav %>
+	<main>
+		<div class="top-wrapper row">
+			<div class="content-wrapper">
+				<% include ./gameover %>
+				<div id="board" class="gcontainer z-index-4">
+					<% include ./visor %>
+					<div id="prompts" class="row z-depth-2">
+						<div class="prompts-container">
+							<div class="icon">
+								<i id="face" class="material-icons">data_usage</i>
+								<i id="faceLoader" class="material-icons" style="display: none;">data_usage</i>
+							</div>
+							<div class="text">
+								<div class="prompt slide" id="prompt"></div>
 							</div>
 						</div>
 					</div>
-				</div>
-				<br>
-				<% if (user) { %>
-					<h6 class="heavy"><%-user.username%></h6>
-				<% } %>
-				<br>
-				<div class="prompts">
-					<div class="pcontainer z-index-4">
-						<div class="icon">
-							<i class="material-icons">face</i>
-						</div>
-						<div class="text input-field">
-
-							<input id="send" type="text" class="validate">
-
+					<div class="row buttons-container">
+						<div class="buttons">
+							<div class="button-wrapper z-depth-2">
+								<div class="icon">A</div>
+								<div class="text button waves-effect point" data-id=""></div>
+							</div>
+							<br>
+							<div class="button-wrapper z-depth-2">
+								<div class="icon">B</div>
+								<div class="text button waves-effect point" data-id=""></div>
+							</div>
+							<br>
+							<div class="button-wrapper z-depth-2">
+								<div class="icon">C</div>
+								<div class="text button waves-effect point" data-id=""></div>
+							</div>
+							<br>
+							<div class="button-wrapper z-depth-2">
+								<div class="icon">D</div>
+								<div class="text button waves-effect point" data-id=""></div>
+							</div>
+							<br>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</main>
+	<% include ./footer %>
 
-	<% include ./partials/links %>
-
-	<script type="text/javascript">
-		var socketString = <%-JSON.stringify(socket)%>;
-		var user = <%-JSON.stringify(user)%>;
+	<script>
+		let socketString = <%-JSON.stringify(socket)%>;
+		let usernameString = <%-JSON.stringify(username)%>;
+		let userIdString = <%-JSON.stringify(userId)%>;
 	</script>
-	<script type="text/javascript" src="/js/jquery.slim.min.js"></script>
-	<script type="text/javascript" src="/js/materialize.min.js"></script>
-	<script type="text/javascript" src="/js/init.js"></script>
-	<script type="text/javascript" src="<%-socket%>/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="/js/live.js"></script>
-	<script type="text/javascript" src="/js/sweetalert.min.js"></script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/live.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

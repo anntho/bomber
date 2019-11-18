@@ -8,15 +8,15 @@ input[type=password]:not(.browser-default) {
 input[type=email]:not(.browser-default):focus:not([readonly])+label,
 input[type=text]:not(.browser-default):focus:not([readonly])+label,
 input[type=password]:not(.browser-default):focus:not([readonly])+label {
-    color: #607D8B;
+    color: #00bcd4;
 }
 
 input[type=email]:not(.browser-default):focus:not([readonly]),
 input[type=text]:not(.browser-default):focus:not([readonly]),
 input[type=password]:not(.browser-default):focus:not([readonly]) {
-    border-bottom: 1px solid #607D8B;
-    -webkit-box-shadow: 0 1px 0 0 #607D8B;
-    box-shadow: 0 1px 0 0 #607D8B;
+    border-bottom: 1px solid #00bcd4;
+    -webkit-box-shadow: 0 1px 0 0 #00bcd4;
+    box-shadow: 0 1px 0 0 #00bcd4;
 }
 
 .login {

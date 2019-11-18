@@ -1,7 +1,7 @@
 .prompts-container, 
 .button-wrapper {
     color: #fafafa;
-	background-color: #607d8b;
+	background-color: #292929;
 }
 
 .prompts-container {
@@ -15,6 +15,10 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+.prompts-container .icon {
+    color: #f44336;
 }
 
 .prompts-container .text {
@@ -37,7 +41,9 @@
 }
 
 .button-wrapper .icon {
-	font-weight: 500;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #00bcd4;
 }
 
 .button-wrapper .text {
