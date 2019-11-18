@@ -69,7 +69,7 @@ router.get('/live/:id', setUser, async (req, res) => {
 		let room = req.params.id;
 		let game = await Game.findOne({room: room});
 		if (!game) {
-			res.sendStatus(404);
+			res.redirect('/');
 		} else {
 			res.locals.game = game;
 			res.locals.file = 'live';
@@ -77,7 +77,7 @@ router.get('/live/:id', setUser, async (req, res) => {
 			res.render(res.locals.file);
 		}
 	} catch (err) {
-		res.sendStatus(404);
+		res.redirect('/');
 	}
 });
 
