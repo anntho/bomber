@@ -1,17 +1,23 @@
-$(document).ready(function() {
-	console.log('loaded')
-	let socket = io.connect(socketString);
-    let room = null;
+$(document).ready(async function() {
+    // ===================================================
+	// Connect Socket
+	// ===================================================
+    let socket = io.connect(socketString);
 
-    let report = async (icon, title, text) => {
-        return await swal({
-            icon: icon,
-            title: title,
-            text: text,
-            closeOnClickOutside: false
-        });
-    }
-    
+    // ===================================================
+	// Variables
+	// ===================================================
+    let room = null;
+    let index = 0;
+
+    // ===================================================
+	// Helpers
+	// ===================================================
+    await $.getScript( "js/helpers.js");
+
+    // ===================================================
+	// Sockets
+	// ===================================================
     socket.on('err', (err) => {
         alert('error check console');
         report('error', 'Error', JSON.stringify(err));
@@ -36,5 +42,87 @@ $(document).ready(function() {
 
 	socket.on('gameover', function() {
 		$('#gameover').show();
-	});
+    });
+
+    // ===================================================
+	// Data Sockets
+    // ===================================================
+
+    // ===================================================
+	// Timer
+    // ===================================================
+    let step = () => {
+        counter--;
+        $('#timer').text(counter);
+        if (counter === 0) {
+            log('time up', null, false);
+            resetTimer();
+            logic(null);
+        }
+    }
+
+    let startTimer = () => {
+        if (timer !== null) return;
+        log('starting timer', null, false);
+        timer = setInterval(step, interval);
+    }
+
+    let stopTimer = () => {
+        log('stopping timer', null, false);
+        resetTimer();
+    }
+    
+    let resetTimer = () => {
+        clearInterval(timer);
+        timer = null;
+        counter = 10;
+        $('#timer').text(counter);
+    }
+
+    // ===================================================
+	// Game Over
+    // ===================================================
+
+
+
+    // ===================================================
+	// Stats 
+    // ===================================================
+
+
+
+
+    // ===================================================
+	// Package
+    // ===================================================
+
+
+
+
+    // ===================================================
+	// Logic
+    // ===================================================
+
+
+
+
+    // ===================================================
+	// Restart
+    // ===================================================
+
+
+
+
+
+    // ===================================================
+	// Event Listeners & Buttons
+    // ===================================================
+
+
+
+    // ===================================================
+	// Immediate
+    // ===================================================
+    shuffle(rounds);
+    console.log(rounds.length);
 });

@@ -3,7 +3,7 @@ const router = express.Router();
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
 const { setUser } = require('../bin/auth');
-const { Game } = require('../models/models');
+const { Game, Round } = require('../models/models');
 const file = 'routes/pages.js';
 
 
@@ -64,22 +64,32 @@ router.get('/article/:id', setUser, async (req, res) => {
 	}
 });
 
-router.get('/live/:id', setUser, async (req, res) => {
-	try {
-		let room = req.params.id;
-		let game = await Game.findOne({room: room});
-		if (!game) {
-			res.redirect('/');
-		} else {
-			res.locals.game = game;
-			res.locals.file = 'live';
-			res.locals.game = true;
-			res.render(res.locals.file);
-		}
-	} catch (err) {
-		res.redirect('/');
-	}
+router.get('/live', setUser, async (req, res) => {
+	let rounds = await Round.find({listID: '109087'});
+	res.locals.file = 'live';
+	res.locals.game = true;
+	res.locals.rounds = rounds;
+	res.render(res.locals.file);
 });
+
+// router.get('/live/:id', setUser, async (req, res) => {
+// 	try {
+// 		let room = req.params.id;
+// 		let game = await Game.findOne({room: room});
+// 		let rounds = await Round.find({listID: '109087'});
+// 		if (!game) {
+// 			res.redirect('/');
+// 		} else {
+// 			res.locals.game = game;
+// 			res.locals.file = 'live';
+// 			res.locals.game = true;
+// 			res.locals.rounds = rounds;
+// 			res.render(res.locals.file);
+// 		}
+// 	} catch (err) {
+// 		res.redirect('/');
+// 	}
+// });
 
 router.get('/bomber', setUser, (req, res) => {
 	res.locals.file = 'bomber';

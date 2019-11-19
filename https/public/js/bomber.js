@@ -1,5 +1,12 @@
 $(document).ready(async function() {
+    // ===================================================
+	// Connect Socket
+	// ===================================================
     let socket = io.connect(socketString);
+
+    // ===================================================
+	// Variables
+	// ===================================================
     let start = true;
     let score = 0;
     let lives = 6;
@@ -16,18 +23,15 @@ $(document).ready(async function() {
     let timer = null;
     let counter = 10;
     let interval = 1000;
-    let crazy = false;
 
-    let log = (func, data, write) => {
-        let all = false;
-        if (write || all) {
-            console.log('-------------------');
-            console.log(func);
-            console.log(data);
-            console.log('-------------------');
-        }
-    }
+    // ===================================================
+	// Helpers
+	// ===================================================
+    await $.getScript( "js/helpers.js");
 
+    // ===================================================
+	// Sockets
+	// ===================================================
     socket.on('game', (data) => {
         log('sid received', data, false);
         sid = data;
@@ -44,101 +48,9 @@ $(document).ready(async function() {
         });
     }
 
-    let wait = async (ms) => {
-		return new Promise(r => setTimeout(r, ms));
-	}
-
-    let loaderOn = () => {
-        log('loaderOn', null, false);
-        $('.prompt').hide();
-        $('#face').hide();
-        $('#faceLoader').show();
-    }
-
-    let loaderOff = () => {
-        log('loaderOff', null, false);
-        $('.prompt').css('display', 'flex');
-        $('#face').show();
-        $('#faceLoader').hide();
-    }
-
-    let gameOver = () => {
-        $('#finalScore').text(score);
-        hideGamebox();
-    }
-
-    let hideGamebox = () => {
-        $('#board').css('display', 'none');
-        $('#go').css('display', 'block');
-    }
-
-    let showGamebox = () => {
-        $('#board').css('display', 'block');
-        $('#go').css('display', 'none');
-    }
-
-    let shuffle = (a) => {
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
-    }
-
-    let step = () => {
-        counter--;
-        $('#timer').text(counter);
-        if (counter === 0) {
-            log('step', 'time up', false);
-            resetTimer();
-            logic(null);
-        }
-    }
-
-    let startTimer = () => {
-        if (timer !== null) return;
-        timer = setInterval(step, interval);
-        log('startTimer', null, false);
-    }
-
-    let stopTimer = () => {
-        resetTimer();
-        log('stopTimer', null, false);
-    }
-    
-    let resetTimer = () => {
-        clearInterval(timer);
-        timer = null;
-        counter = 10;
-        $('#timer').text(counter);
-    }
-
-    let feedback = async (icon, title, text) => {
-        return await swal({
-            icon: icon,
-            title: title,
-            text: text,
-            closeOnClickOutside: false
-        });
-    }
-
-    let updateStatsDisplay = async (c) => {
-        $('#score').text(score);
-        $('#streak').text(streak);
-        $('#lives').text(lives);
-
-        if (streak > 10 || c == null) {
-            $('.dots .material-icons').css('color', '#bbb');
-        } else {
-            $(`.dots div:nth-child(${streak}) .material-icons`).css('color', '#ffc107');
-        }
-
-        if (c) {
-            let text = `${streak} in a row (+${c})`;
-            await feedback('success', 'Streak Bonus!', text);
-        }
-    }
-
+    // ===================================================
+	// Data Sockets
+    // ===================================================
     let fillStarters = async () => {
 		log('fillStarters', null, false);
 		socket.emit('starters');
@@ -156,10 +68,6 @@ $(document).ready(async function() {
 				rej();
 			});
 		});
-    }
-
-    let formatTitle = (t, y) => {
-        return `${t} (${y})`;
     }
     
     let getRandomMovies = (n) => {
@@ -208,15 +116,6 @@ $(document).ready(async function() {
 		});
 		log('getRandomMoviesWithExclusions', tempArray, false);
 		return tempArray;
-	}
-    
-    let setDialouge = (p) => {
-        $('.prompt').each(function() {
-            $(this).removeClass('slide');
-            $(this).addClass('slide');
-        });
-        $('#prompt').text(p);
-        log('setDialouge', p, false);
     }
 
     let getCreditsFromActor = async (id) => {
@@ -246,17 +145,125 @@ $(document).ready(async function() {
 			});
 		});
     }
+    
+    // ===================================================
+	// Timer
+    // ===================================================
+    let step = () => {
+        counter--;
+        $('#timer').text(counter);
+        if (counter === 0) {
+            log('time up', null, false);
+            resetTimer();
+            logic(null, null);
+        }
+    }
 
+    let startTimer = () => {
+        if (timer !== null) return;
+        log('starting timer', null, false);
+        timer = setInterval(step, interval);
+    }
+
+    let stopTimer = () => {
+        log('stopping timer', null, false);
+        resetTimer();
+    }
+    
+    let resetTimer = () => {
+        clearInterval(timer);
+        timer = null;
+        counter = 10;
+        $('#timer').text(counter);
+    }
+
+    // ===================================================
+	// Loader
+    // ===================================================
+    let loaderOn = () => {
+        log('loaderOn', null, false);
+        $('.prompt').hide();
+        $('#face').hide();
+        $('#faceLoader').show();
+    }
+
+    let loaderOff = () => {
+        log('loaderOff', null, false);
+        $('.prompt').css('display', 'flex');
+        $('#face').show();
+        $('#faceLoader').hide();
+    }
+
+    // ===================================================
+	// Game Over
+    // ===================================================
+    let gameOver = () => {
+        $('#finalScore').text(score);
+        hideGamebox();
+    }
+
+    let hideGamebox = () => {
+        $('#board').css('display', 'none');
+        $('#go').css('display', 'block');
+    }
+
+    let showGamebox = () => {
+        $('#board').css('display', 'block');
+        $('#go').css('display', 'none');
+    }
+
+    // ===================================================
+	// Stats
+    // ===================================================
+    let updateStats = async (calc) => {
+        score = calc.score;
+        streak = calc.streak;
+        lives = calc.lives;
+
+        $('#score').text(score);
+        $('#streak').text(streak);
+        $('#lives').text(lives);
+
+        if (streak > 10 || calc.bonus == null) {
+            $('.dots .material-icons').css('color', '#bbb');
+        } else {
+            $(`.dots div:nth-child(${streak}) .material-icons`).css('color', '#ffc107');
+        }
+
+        if (calc.bonus) {
+            let text = `${streak} in a row (+${calc.bonus})`;
+            await feedback('success', 'Streak Bonus!', text);
+        }
+    }
+
+    // ===================================================
+	// Package
+    // ===================================================
     let updatePackage = (from, guess, score, result) => {
         package.push({f: from, g: guess, s: score, r: result});
     }
 
+    // ===================================================
+	// Reference
+    // ===================================================
     let updateReference = (type, name, id, from, reset) => {
         ref.type = type;
         ref.name = name;
         ref.id = id;
         ref.reset = reset;
         ref.from = from;
+    }
+
+    // ===================================================
+	// Display
+    // ===================================================
+    let setDialouge = (p) => {
+        $('.prompt').each(function() {
+            $(this).removeClass('slide');
+            $(this).addClass('slide');
+        });
+        $('#prompt').text(p);
+        log('setDialouge', p, false);
     }
 
     let setButtonsActors = async (actor, exclusions) => {
@@ -276,45 +283,19 @@ $(document).ready(async function() {
             list = await getRandomMovies(4);
         } else {
             list = await getRandomMoviesWithExclusions(3, exclusions);
-            console.log(movie)
             list.push(movie);
         }
         shuffle(list);
         $('.button').each(function(i) {
             $(this).text(formatTitle(list[i].title, list[i].year));
-            //console.log('before', $(this).attr('data-id') || null);
             $(this).attr('data-id', list[i].altId);
-            //console.log('after', $(this).attr('data-id'));
         });
         log('setButtonsMovies', list, false);
     }
 
-    let calculator = (result) => {
-        let pts = 10;
-        let add = null;
-        if (result) {
-            add = 0;
-            streak++;
-            score += pts;
-            if (streak == 2) {
-                add = 5; 
-                score += add;
-            }
-            if (streak == 5) {
-                add = 10;
-                score += add;
-            }
-            if (streak == 10) {
-                add = 50;
-                score += add;
-            }
-        } else {
-            streak = 0;
-            lives--;
-        }
-        return add;
-    }
-
+    // ===================================================
+	// Logic
+    // ===================================================
 	let pickMovie = async (initial) => {
         let prompt = '';
         if (initial) {
@@ -338,7 +319,6 @@ $(document).ready(async function() {
         cast = await getCast(id);
         castIds = cast.map(c => c.id);
 
-        console.log('used actors', usedActors)
         for (const c of cast) {
             if (!usedActors.includes(c.id)) {
                 actor = {
@@ -366,10 +346,8 @@ $(document).ready(async function() {
         credits = await getCreditsFromActor(id);
         creditsIds = credits.map(c => c.id);
 
-        console.log('used movies', usedMovies)
         for (const c of credits) {
             if (!usedMovies.includes(c.id)) {
-                console.log(c)
                 movie = {
                     altId: c.id,
                     title: c.title,
@@ -387,10 +365,12 @@ $(document).ready(async function() {
         log('guessMovieFromActor [start]', ref, false);
     }
 
-    async function logic(guessId, guessText) {
+    let logic = async (guessId, guessText) => {
         log('logic [input]', `${guessId} | ${guessText}`, false);
         log('logic [ref]', `${ref.name} | ${ref.id}`, false);
-        let c = null;
+        
+        let calc = null;
+        let r = -1;
         loaderOn();
 
         if (start) {
@@ -405,17 +385,17 @@ $(document).ready(async function() {
         } else {
             if (guessId == ref.id) {
                 log('logic [match]', `${guessId} == ${ref.id}`, true);
-                c = calculator(true);
-                updatePackage(ref.name, guessText, score, 1);
+                calc = calculator(true, streak, score, lives);
+                r = 1;
                 await feedback('success', 'Correct!');
             } else {
                 log('logic [mismatch]', `${guessId} == ${ref.id}`, true);
-                c = calculator(false);
-                updatePackage(ref.name, guessText, score, -1);
+                calc = calculator(false, streak, score, lives);
                 await feedback('error', 'Incorrect', `The correct answer was ${ref.name}`);
             }
 
-            await updateStatsDisplay(c);
+            await updateStats(calc);
+            updatePackage(ref.name, guessText, score, r);
 
             if (lives < 1) {
                 console.log('game over');
@@ -429,8 +409,13 @@ $(document).ready(async function() {
                 loaderOff();
             }
         }
+
+        if (!start) startTimer();
     }
 
+    // ===================================================
+	// Restart
+    // ===================================================
     let restartGame = async () => {
         start = true;
         score = 0;
@@ -440,13 +425,13 @@ $(document).ready(async function() {
         usedMovies = [];
         package = [];
         ref = {};
-        updateStatsDisplay(null);
+        updateStats(null);
         await pickMovie(true);
     }
 
-    await fillStarters();
-    await pickMovie(true);
-
+    // ===================================================
+	// Event Listeners & Buttons
+    // ===================================================
     $('.button').click(async function() {
         if ($('.button').prop('disabled')) return false;
         $('.button').prop('disabled', true);
@@ -459,5 +444,12 @@ $(document).ready(async function() {
         restartGame();
         showGamebox();
     });
+
+    // ===================================================
+	// Immediate
+    // ===================================================
+
+    await fillStarters();
+    await pickMovie(true);
 });
 

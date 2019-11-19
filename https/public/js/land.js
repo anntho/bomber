@@ -2,7 +2,11 @@ $(document).ready(function() {
     let socket = io.connect(socketString);
 
     $('#beta').click(function() {
-        socket.emit('findGame');
+        socket.emit('find');
+    });
+
+    $('#cancel').click(function() {
+        socket.emit('cancel');
     });
 
     socket.on('liveCheckUser', (user) => {

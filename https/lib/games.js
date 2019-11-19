@@ -60,7 +60,33 @@ module.exports = {
 	// ===================================================
 	// Live Games
 	// ===================================================
-	updateGame: async (socket) => {
+	cancel: async (socket) => {
+		if (socket.request.session.game) {
+			try {
+				let game = socket.request.session.game;
+				if (game.status == 'open') {
+					let doc = await Game.findOne({room: game.room});
+					doc.status = 'aborted';
+					doc.save();
+					socket.request.session.game = null;
+					socket.request.session.save();
+					socket.emit('stopSearch', {
+						error: false, 
+						message: 'success'
+					});
+				} else {
+					socket.emit('stopSearch', {
+						error: true, 
+						message: 'no open games found'
+					});
+				}
+			} catch (err) {
+				console.log(err);
+				return socket.emit('err', err);
+			}
+		}
+	},
+	update: async (socket) => {
 		if (socket.request.session.room) {
 			// 1. Update the user's socket id
 			try {
@@ -81,7 +107,7 @@ module.exports = {
 			}
 		}
 	},
-	findGame: async (io, socket) => {
+	find: async (io, socket) => {
 		if (!socket.request.session.user) {
 			return socket.emit('liveCheckUser', false);
 		} else {

@@ -115,11 +115,15 @@ io.on('connection', (socket) => {
 		await games.saveGame(data, socket);
 	});
 
-	socket.on('findGame', async () => {
+	socket.on('cancel', async (data) => {
+		await games.cancel(data, socket);
+	});
+
+	socket.on('find', async () => {
 		await games.findGame(io, socket);
 	});
 
-	socket.on('updateGame', async (data) => {
+	socket.on('update', async (data) => {
 		await games.updateGame(data, socket);
 	});
 
