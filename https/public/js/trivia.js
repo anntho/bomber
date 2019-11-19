@@ -6,7 +6,11 @@ $(document).ready(async function() {
 
     // ===================================================
 	// Variables
-	// ===================================================
+    // ===================================================
+    let score = 0;
+    let streak = 0;
+    let lives = 6;
+    let currentIndex = 0;
     let package = [];
     let sid = '';
     let timer = null;
@@ -155,18 +159,18 @@ $(document).ready(async function() {
         let question = questions[i].question;
         
         if (guess == correct) {
-            calc = calculator(true, score, streak, lives);
+            calc = calculator(true, streak, score, lives);
             await feedback('success', 'Correct!');
         } else if (guess == null) {
-            calc = calculator(false, score, streak, lives);
+            calc = calculator(false, streak, score, lives);
             await feedback('error', 'Out of time!', `The correct answer was ${correct}`);
         } else {
-            calc = calculator(false, score, streak, lives);
+            calc = calculator(false, streak, score, lives);
             await feedback('error', 'Incorrect', `The correct answer was ${correct}`);
         }
 
         await updateStats(calc);
-        updatePackage(question, 'none', score, r);
+        updatePackage(question, guess, score, r);
 
         if (lives < 1 || currentIndex == questions.length) {
             log('game over', null, false);
@@ -188,7 +192,7 @@ $(document).ready(async function() {
         correct = '';
         package = [];
         loadQuestion(true);
-        updateStatsDisplay(null);
+        updateStats(null, streak, score, lives);
     }
 
     // ===================================================

@@ -34,16 +34,16 @@ let calculator = (result, streak, score, lives) => {
         streak = streak + 1;
         score = score + points;
         if (streak == 2) {
-            bonus = 5; 
-            score += bonus;
+            bonus = 5;
+            score = score + bonus;
         }
         if (streak == 5) {
             bonus = 10;
-            score += bonus;
+            score = score + bonus;
         }
         if (streak == 10) {
             bonus = 50;
-            score += bonus;
+            score = score + bonus;
         }
     } else {
         streak = 0;
