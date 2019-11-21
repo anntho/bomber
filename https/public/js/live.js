@@ -13,21 +13,19 @@ $(document).ready(async function() {
     // ===================================================
 	// Helpers
 	// ===================================================
-    await $.getScript( "js/helpers.js");
+    await $.getScript( "/js/helpers.js");
 
     // ===================================================
 	// Sockets
 	// ===================================================
     socket.on('err', (err) => {
         alert('error check console');
-        report('error', 'Error', JSON.stringify(err));
+        feedback('error', 'Error', JSON.stringify(err));
     });
 
 	socket.emit('update');
 	socket.on('update', (data) => {
-		room = data.room;
-		console.log(room);
-		console.log(socket.id);
+        console.log('updated');
     });
     
 	socket.on('connected', function(data) {
@@ -42,6 +40,10 @@ $(document).ready(async function() {
 
 	socket.on('gameover', function() {
 		$('#gameover').show();
+    });
+
+    socket.on('fire', function(data) {
+        feedback('info', 'result', data);
     });
 
     // ===================================================
@@ -95,6 +97,57 @@ $(document).ready(async function() {
     // ===================================================
 	// Package
     // ===================================================
+    let organize = () => {
+        let movie = rounds[index];
+        let choices = [];
+        let correct = {};
+
+        shuffle(movie.correct);
+
+        correct = {
+           title: movie.correct[0],
+           r: 1 
+        }
+
+        choices.push(correct);
+
+        for (const i of movie.incorrect) {
+            choices.push({
+                title: i,
+                r: -1
+            });
+        }
+
+        return {
+            movie: movie,
+            choices: choices
+        }
+    }
+
+    let prompt = (data) => {
+        $('#prompt').text(data.title);
+    }
+
+    let buttons = (data) => {
+        $('.button').each(function(index) {
+            $(this).text(data[index].title);
+            $(this).attr('data-r', data[index].r);
+        });
+    }
+
+    let load = () => {
+        let { movie, choices } = organize();
+        
+        prompt(movie);
+        buttons(choices);
+
+    }
+
+    let logic = async (text, r) => {
+        console.log('emitting', text, r);
+        socket.emit('fire', {r: r});
+    }
+
 
 
 
@@ -117,12 +170,21 @@ $(document).ready(async function() {
     // ===================================================
 	// Event Listeners & Buttons
     // ===================================================
-
+    $('.button').click(async function() {
+        if ($('.button').prop('disabled')) return false;
+        $('.button').prop('disabled', true);
+        await logic(
+            $(this).text(),
+            $(this).attr('data-r')
+        );
+        $('.button').prop('disabled', false);
+    });
 
 
     // ===================================================
 	// Immediate
     // ===================================================
     shuffle(rounds);
-    console.log(rounds.length);
+    load();
+    $('#userRank').text(socket.id);
 });

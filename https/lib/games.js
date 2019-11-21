@@ -65,9 +65,7 @@ module.exports = {
 			try {
 				let game = socket.request.session.game;
 				if (game.status == 'open') {
-					let doc = await Game.findOne({room: game.room});
-					doc.status = 'aborted';
-					doc.save();
+					await Game.deleteOne({room: game.room});
 					socket.request.session.game = null;
 					socket.request.session.save();
 					socket.emit('stopSearch', {
@@ -86,17 +84,15 @@ module.exports = {
 			}
 		}
 	},
-	update: async (socket) => {
-		if (socket.request.session.room) {
+	update: async (data, socket) => {
+		if (socket.request.session.game.room) {
 			// 1. Update the user's socket id
 			try {
-				let room = socket.request.session.room;
+				let room = socket.request.session.game.room;
 				let userId = socket.request.session.user.id;
 				let game = await Game.findOne({room: room});
 				if (game) {
 					let userData = game.players.find(p => p.userId == userId);
-					console.log('old id', userData.socketId);
-					console.log('new id', socket.id);
 					userData.socketId = socket.id;
 					game.save();
 				}
@@ -117,7 +113,6 @@ module.exports = {
 		try {
 			let username = socket.request.session.user.username;
 			let userId = socket.request.session.user.id;
-			console.log('game request', username);
 
 			// 1. Find an open game
 			let open = await Game.findOne({status: 'open'});
@@ -137,9 +132,7 @@ module.exports = {
 				}
 
 				let doc = new Game(newGame);
-				let response = await doc.save();
-
-				console.log(response);
+				await doc.save();
 
 				socket.join(roomId);
 				socket.request.session.game = newGame;
@@ -175,14 +168,20 @@ module.exports = {
 			return socket.emit('err', err);
 		}
 	},
-	fire: async (data, socket) => {
-		let game = games.find(g => g.room == data.room);
-		let opponent = game.players.find(p => p.username != socket.request.session.user);
-		//console.log('opponent', opponent)
-		socket.broadcast.to(opponent.socketId).emit('msg', 'boop');
-		socket.emit('msg', 'beep');
-		io.to(data.room).emit('gameover');
+	fire: async (data, io, socket) => {
+		try {
+			let userId = socket.request.session.user.id;
+			let room = socket.request.session.game.room;
+			let game = await Game.findOne({room: room});
+			let opponent = game.players.find(p => p.userId != userId);
+			
+			socket.emit('fire', 'you win');
+			io.to(opponent.socketId).emit('fire', 'you lose');
+
+			// socket.broadcast.to(opponent.socketId).emit('msg', 'boop');
+		} catch (err) {
+			console.log(err);
+			return socket.emit('err', err);
+		}
 	}
 }
-
-let games = [];

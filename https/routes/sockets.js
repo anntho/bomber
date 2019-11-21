@@ -115,20 +115,20 @@ io.on('connection', (socket) => {
 		await games.saveGame(data, socket);
 	});
 
-	socket.on('cancel', async (data) => {
-		await games.cancel(data, socket);
+	socket.on('cancel', async () => {
+		await games.cancel(socket);
 	});
 
 	socket.on('find', async () => {
-		await games.findGame(io, socket);
+		await games.find(io, socket);
 	});
 
 	socket.on('update', async (data) => {
-		await games.updateGame(data, socket);
+		await games.update(data, socket);
 	});
 
 	socket.on('fire', async (data) => {
-		await games.fire(data, socket);
+		await games.fire(data, io, socket);
 	});
 });
 
