@@ -21,12 +21,17 @@ let roundSchema = new mongoose.Schema({
 let gameSchema = new mongoose.Schema({
 	room: String,
 	status: String,
+	index: Number,
+	cIndex: Number,
+	list: [String],
 	players: [
 		{
 			username: String,
 			userId: Number,
 			socketId: String,
-			score: Number
+			score: Number,
+			rank: String,
+			level: String
 		}
 	]
 });

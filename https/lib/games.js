@@ -3,7 +3,8 @@ const config = require('../bin/config');
 const gamesPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const { sendEmail } = require('./email');
-const { Game } = require('../models/models');
+const { shuffle } = require('./helpers');
+const { Game, Round } = require('../models/models');
 const { reportError } = require('./errors');
 const cryptoRandomString = require('crypto-random-string');
 
@@ -89,14 +90,22 @@ module.exports = {
 			// 1. Update the user's socket id
 			try {
 				let room = socket.request.session.game.room;
-				let userId = socket.request.session.user.id;
+				let user = socket.request.session.user;
 				let game = await Game.findOne({room: room});
-				if (game) {
-					let userData = game.players.find(p => p.userId == userId);
-					userData.socketId = socket.id;
-					game.save();
-				}
-				socket.emit('update');
+				let userData = game.players.find(p => p.userId == user.id);
+				userData.socketId = socket.id;
+				game.save();
+				
+				let opponent = game.players.find(p => p.userId != user.id);
+
+				socket.emit('update', {
+					username: user.username,
+					rank: user.rank,
+					level: user.level,
+					opponentUsername: opponent.username,
+					opponentRank: opponent.rank,
+					opponentLevel: opponent.level
+				});
 			} catch (err) {
 				console.log(err);
 				return socket.emit('err', err);
@@ -113,6 +122,9 @@ module.exports = {
 		try {
 			let username = socket.request.session.user.username;
 			let userId = socket.request.session.user.id;
+			let rank = socket.request.session.user.rank;
+			let level = socket.request.session.user.level;
+			let defaultListId = '109087';
 
 			// 1. Find an open game
 			let open = await Game.findOne({status: 'open'});
@@ -127,7 +139,9 @@ module.exports = {
 					players: [{
 						username: username,
 						userId: userId,
-						socketId: socket.id
+						socketId: socket.id,
+						rank: rank,
+						level: level
 					}]
 				}
 
@@ -143,13 +157,23 @@ module.exports = {
 				});
 			} else {
 				// 3. Join open game
-				console.log('joining open game');
+				console.log('Joining open game');
+				let list = await Round.find({listID: defaultListId});
+				let idList = list.map(x => x._id);
+				shuffle(idList);
+				let cIndex = Math.floor(Math.random() * 3); // Determine the index of the correct answer to use
+				
 				open.status = 'active';
 				open.players.push({
 					username: username,
 					userId: userId,
-					socketId: socket.id
+					socketId: socket.id,
+					rank: rank,
+					level: level
 				});
+				open.index = 0;
+				open.cIndex = cIndex;
+				open.list = idList;
 				open.save();
 
 				socket.join(open.room);
@@ -160,7 +184,9 @@ module.exports = {
 					}
 				});
 				io.to(open.room).emit('connected', {
-					room: open.room
+					room: open.room,
+					idList: idList,
+					cIndex: cIndex
 				});
 			}
 		} catch (err) {

@@ -127,6 +127,10 @@ io.on('connection', (socket) => {
 		await games.update(data, socket);
 	});
 
+	socket.on('addList', async (data) => {
+		await games.addList(data, socket);
+	});
+
 	socket.on('fire', async (data) => {
 		await games.fire(data, io, socket);
 	});

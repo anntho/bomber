@@ -9,6 +9,8 @@ $(document).ready(async function() {
 	// ===================================================
     let room = null;
     let index = 0;
+    let cIndex = 0;
+    let idList = [];
 
     // ===================================================
 	// Helpers
@@ -26,10 +28,18 @@ $(document).ready(async function() {
 	socket.emit('update');
 	socket.on('update', (data) => {
         console.log('updated');
+        console.log(data);
+        $('#visorUser').text(data.username);
+        $('#visorUserRank').text(`${data.rank} [${data.level}]`);
+
+        $('#visorOpponent').text(data.opponentUsername);
+        $('#visorOpponentRank').text(`${data.opponentRank} [${data.opponentLevel}]`);
     });
     
 	socket.on('connected', function(data) {
-		room = data.room;
+        room = data.room;
+        idList = data.idList;
+        cIndex = data.cIndex;
 		console.log(data);
 		alert('connected');
 	});
@@ -98,14 +108,13 @@ $(document).ready(async function() {
 	// Package
     // ===================================================
     let organize = () => {
-        let movie = rounds[index];
+        let id = idList[index];
+        let movie = rounds.find(r => r.id === id);
         let choices = [];
         let correct = {};
 
-        shuffle(movie.correct);
-
         correct = {
-           title: movie.correct[0],
+           title: movie.correct[cIndex],
            r: 1 
         }
 
@@ -129,6 +138,7 @@ $(document).ready(async function() {
     }
 
     let buttons = (data) => {
+        shuffle(data);
         $('.button').each(function(index) {
             $(this).text(data[index].title);
             $(this).attr('data-r', data[index].r);
@@ -140,7 +150,6 @@ $(document).ready(async function() {
         
         prompt(movie);
         buttons(choices);
-
     }
 
     let logic = async (text, r) => {
@@ -184,7 +193,5 @@ $(document).ready(async function() {
     // ===================================================
 	// Immediate
     // ===================================================
-    shuffle(rounds);
     load();
-    $('#userRank').text(socket.id);
 });
