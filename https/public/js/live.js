@@ -34,6 +34,11 @@ $(document).ready(async function() {
         feedback('error', 'Error', JSON.stringify(err));
     });
 
+    socket.on('ping', (data) => {
+        counter = data.seconds;
+        updateClock(counter);
+    });
+
 	socket.emit('update');
 	socket.on('update', (data) => {
         console.log('updated');
@@ -72,7 +77,7 @@ $(document).ready(async function() {
     // ===================================================
 	// Timer
     // ===================================================
-    let updateClock = (c) => {
+    function updateClock(c) {
         let { minutes, seconds } = secondsToMinutesaAndSeconds(c);
         $('#clockMinutes').text(minutes);
         $('#clockSeconds').text(seconds);
@@ -104,6 +109,20 @@ $(document).ready(async function() {
         timer = null;
         counter = counterDefault;
         updateClock(counter);
+    }
+
+    // ===================================================
+	// Clock Checker
+    // ===================================================
+    let clockChecker = setInterval(checkClock, 10000);
+
+    let checkClock = () => {
+        if (counter < 1) stopClockChecker();
+        socket.emit('ping');
+    }
+
+    let stopClockChecker = () => {
+        clearInterval(clockChecker);
     }
 
     // ===================================================

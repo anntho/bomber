@@ -21,6 +21,7 @@ let roundSchema = new mongoose.Schema({
 let gameSchema = new mongoose.Schema({
 	room: String,
 	status: String,
+	time: Number,
 	index: Number,
 	cIndex: Number,
 	list: [

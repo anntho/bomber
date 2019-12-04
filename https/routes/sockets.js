@@ -136,7 +136,7 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('ping', async (data) => {
-		
+		await games.ping(data, io, socket);
 	});
 });
 
