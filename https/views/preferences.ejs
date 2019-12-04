@@ -15,10 +15,10 @@
 		<% if (!verified) { %>
 			<div id="valert" class="row alert">
 				<div class="col s12">
-						<p class="valign-wrapper">
-								<i class="material-icons left alert-icon">close</i>
-								Please check your inbox to verify your email address
-							</p>
+					<p class="valign-wrapper">
+						<i class="material-icons left alert-icon">close</i>
+						Please check your inbox to verify your email address
+					</p>
 				</div>
 			</div>
 		<% } %>
@@ -39,7 +39,7 @@
 							<div><%-username%></div>
 							<label for="username">You can only edit your username once, so choose wisely!</label>
 							<input type="text" id="username" class="validate" minlength="5" maxlength="15" placeholder="Type a new username">
-							<a id="editUsername" class="btn-small mb-deep-grey">Confirm</a>
+							<a id="editUsername" class="btn-small green">Confirm</a>
 						</div>
 					</div>
 					<br>
@@ -48,7 +48,7 @@
 							<div><%-email%></div>
 							<label for="email">Please enter a new email address and ensure that you have access to that account</label>
 							<input type="email" id="email" maxlength="40" placeholder="Type your email address">
-							<a id="editEmail" class="btn-small mb-deep-grey">Confirm</a>
+							<a id="editEmail" class="btn-small green">Confirm</a>
 						</div>
 					</div>
 					<br>
@@ -59,7 +59,7 @@
 							<input type="password" class="pw" id="cpass" placeholder="Type your current password">
 							<input type="password" class="pw" id="npass" placeholder="Type a new password">
 							<input type="password" class="pw" id="npassc" placeholder="Confirm your new password">
-							<a id="editPassword" class="btn-small mb-deep-grey">Confirm</a>
+							<a id="editPassword" class="btn-small green">Confirm</a>
 						</div>
 					</div>
 					<br>
@@ -71,7 +71,7 @@
 					</div>
 					<div class="row">
 						<div class="col s12">
-							<a id="deleteAccount" class="btn-small mb-dark-red">deactivate</a>
+							<a id="deleteAccount" class="btn-small red">deactivate</a>
 						</div>
 					</div>
 				</div>

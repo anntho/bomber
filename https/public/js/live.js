@@ -8,14 +8,23 @@ $(document).ready(async function() {
 	// Variables
 	// ===================================================
     let room = null;
-    let index = 0;
+    let currentIndex = 0;
+    let currentId = '';
     let cIndex = 0;
     let idList = [];
+    let timer = null;
+    let counterDefault = 180;
+    let counter = 180;
+    let interval = 1000;
 
     // ===================================================
 	// Helpers
 	// ===================================================
     await $.getScript( "/js/helpers.js");
+
+    function disable() {
+        $('.buttons').fadeTo(500, 0.2);
+    }
 
     // ===================================================
 	// Sockets
@@ -52,8 +61,8 @@ $(document).ready(async function() {
 		$('#gameover').show();
     });
 
-    socket.on('fire', function(data) {
-        feedback('info', 'result', data);
+    socket.on('next', function() {
+        currentIndex = currentIndex + 1;
     });
 
     // ===================================================
@@ -63,13 +72,19 @@ $(document).ready(async function() {
     // ===================================================
 	// Timer
     // ===================================================
+    let updateClock = (c) => {
+        let { minutes, seconds } = secondsToMinutesaAndSeconds(c);
+        $('#clockMinutes').text(minutes);
+        $('#clockSeconds').text(seconds);
+    }
+
     let step = () => {
         counter--;
-        $('#timer').text(counter);
+        updateClock(counter);
         if (counter === 0) {
             log('time up', null, false);
             resetTimer();
-            logic(null);
+            // this will be game over
         }
     }
 
@@ -87,8 +102,8 @@ $(document).ready(async function() {
     let resetTimer = () => {
         clearInterval(timer);
         timer = null;
-        counter = 10;
-        $('#timer').text(counter);
+        counter = counterDefault;
+        updateClock(counter);
     }
 
     // ===================================================
@@ -108,7 +123,8 @@ $(document).ready(async function() {
 	// Package
     // ===================================================
     let organize = () => {
-        let id = idList[index];
+        let id = idList[currentIndex];
+        currentId = id;
         let movie = rounds.find(r => r.id === id);
         let choices = [];
         let correct = {};
@@ -152,9 +168,18 @@ $(document).ready(async function() {
         buttons(choices);
     }
 
-    let logic = async (text, r) => {
-        console.log('emitting', text, r);
-        socket.emit('fire', {r: r});
+    let logic = async (r) => {
+        r = parseInt(r);
+        if (r != 1) {
+            feedback('error', 'Incorrect');
+            return false;
+        } else {
+            socket.emit('correct', {
+                index: currentIndex,
+                id: currentId
+            });
+            return true;
+        }
     }
 
 
@@ -182,11 +207,12 @@ $(document).ready(async function() {
     $('.button').click(async function() {
         if ($('.button').prop('disabled')) return false;
         $('.button').prop('disabled', true);
-        await logic(
-            $(this).text(),
-            $(this).attr('data-r')
-        );
-        $('.button').prop('disabled', false);
+        let result = await logic($(this).attr('data-r'));
+        if (result) {
+            $('.button').prop('disabled', false);
+        } else {
+            disable();
+        }
     });
 
 
@@ -194,4 +220,5 @@ $(document).ready(async function() {
 	// Immediate
     // ===================================================
     load();
+    startTimer();
 });

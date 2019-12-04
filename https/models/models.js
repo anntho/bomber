@@ -23,7 +23,12 @@ let gameSchema = new mongoose.Schema({
 	status: String,
 	index: Number,
 	cIndex: Number,
-	list: [String],
+	list: [
+		{
+			id: String,
+			winner: Number
+		}
+	],
 	players: [
 		{
 			username: String,

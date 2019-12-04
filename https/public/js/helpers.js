@@ -64,3 +64,23 @@ let formatTitle = (t, y) => {
 let wait = async (ms) => {
     return new Promise(r => setTimeout(r, ms));
 }
+
+let padZero = (num) => {
+    return ('0' + num).slice(-2);
+}
+
+let millisToMinutesAndSeconds = (ms) => {
+    let minutes = Math.floor(millis / 60000);
+    let seconds = ((millis % 60000) / 1000).toFixed(0);
+    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+}
+
+let secondsToMinutesaAndSeconds = (s) => {
+    let minutes = Math.floor(s / 60);
+    let seconds = s - minutes * 60;
+
+    return {
+        minutes: minutes,
+        seconds: padZero(seconds)
+    }
+}

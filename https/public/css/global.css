@@ -66,6 +66,10 @@ main {
 	margin-bottom: 3%;
 }
 
+.progress {
+	height: 6px;
+}
+
 .content-wrapper {
 	height: 100%;
 	max-width: 850px;

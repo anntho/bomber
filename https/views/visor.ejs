@@ -10,11 +10,13 @@
             </div>
         </div>
         <div class="visor-clock">
-            <span class="red-text">10</span>
+            <span class="red-text">
+                <span id="clockMinutes">3</span>:<span id="clockSeconds">00</span>
+            </span>
         </div>
         <div class="visor-icon-box">
             <div class="visor-icon">
-                <img src="/images/user_1.png" alt="user_icon">
+                <img id="opponentIcon" src="/images/user_1.png" alt="user_icon">
             </div>
             <div class="visor-text">
                 <div id="visorOpponent"></div>
@@ -24,12 +26,12 @@
     </div>
     <div class="visor-row middle">
         <div class="progress">
-            <div class="determinate"></div>
+            <div id="userProgress" class="determinate"></div>
         </div>
     </div>
     <div class="visor-row bottom">
         <div class="progress">
-            <div class="determinate"></div>
+            <div id="opponentProgress" class="determinate"></div>
         </div>
     </div>
 </div>

@@ -161,7 +161,13 @@ module.exports = {
 				let list = await Round.find({listID: defaultListId});
 				let idList = list.map(x => x._id);
 				shuffle(idList);
-				let cIndex = Math.floor(Math.random() * 3); // Determine the index of the correct answer to use
+				for (const id of idList) {
+					id.winner = null;
+				}
+
+				// Determine the index of the correct answer to use
+				// Currently store 3
+				let cIndex = Math.floor(Math.random() * 3);
 				
 				open.status = 'active';
 				open.players.push({
@@ -194,14 +200,14 @@ module.exports = {
 			return socket.emit('err', err);
 		}
 	},
-	fire: async (data, io, socket) => {
+	correct: async (data, io, socket) => {
 		try {
 			let userId = socket.request.session.user.id;
 			let room = socket.request.session.game.room;
 			let game = await Game.findOne({room: room});
 			let opponent = game.players.find(p => p.userId != userId);
 			
-			socket.emit('fire', 'you win');
+			socket.emit('correct', 'you win');
 			io.to(opponent.socketId).emit('fire', 'you lose');
 
 			// socket.broadcast.to(opponent.socketId).emit('msg', 'boop');

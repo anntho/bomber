@@ -131,8 +131,12 @@ io.on('connection', (socket) => {
 		await games.addList(data, socket);
 	});
 
-	socket.on('fire', async (data) => {
-		await games.fire(data, io, socket);
+	socket.on('correct', async (data) => {
+		await games.correct(data, io, socket);
+	});
+
+	socket.on('ping', async (data) => {
+		
 	});
 });
 
