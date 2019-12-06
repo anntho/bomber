@@ -71,6 +71,10 @@ io.on('connection', (socket) => {
 		await data.getQuestions(socket);
 	});
 
+	socket.on('getMovieDocs', async (id) => {
+		await data.getMovieDocs(socket, id);
+	});
+
 	// ===================================================
 	// Site Metrics
 	// ===================================================
@@ -119,6 +123,10 @@ io.on('connection', (socket) => {
 		await games.cancel(socket);
 	});
 
+	socket.on('close', async () => {
+		await games.close(socket);
+	});
+
 	socket.on('find', async () => {
 		await games.find(io, socket);
 	});
@@ -131,13 +139,17 @@ io.on('connection', (socket) => {
 		await games.addList(data, socket);
 	});
 
-	socket.on('correct', async (data) => {
-		await games.correct(data, io, socket);
+	socket.on('guess', async (data) => {
+		await games.guess(data, io, socket);
 	});
 
-	socket.on('ping', async (data) => {
-		await games.ping(data, io, socket);
-	});
+	// socket.on('timeIn', async (data) => {
+	// 	await games.timeIn(data, socket);
+	// });
+
+	// socket.on('checkTime', async (data) => {
+	// 	await games.checkTime(data, socket);
+	// });
 });
 
 module.exports = router;

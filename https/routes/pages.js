@@ -66,22 +66,27 @@ router.get('/article/:id', setUser, async (req, res) => {
 
 router.get('/live/:id', setUser, async (req, res) => {
 	try {
-		let defaultListId = '109087';
 		let room = req.params.id;
 		let game = await Game.findOne({room: room});
-		let rounds = await Round.find({listID: defaultListId});
 		if (!game) {
 			res.redirect('/');
 		} else {
 			res.locals.game = game;
 			res.locals.file = 'live';
 			res.locals.game = true;
-			res.locals.rounds = rounds;
 			res.render(res.locals.file);
 		}
 	} catch (err) {
 		res.redirect('/');
 	}
+});
+
+router.get('/win', (req, res) => {
+	res.send('you win!');
+});
+
+router.get('/lose', (req, res) => {
+	res.send('you lose!');
 });
 
 router.get('/bomber', setUser, (req, res) => {

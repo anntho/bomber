@@ -94,6 +94,7 @@ img {
     font-size: 2rem;
     font-weight: 700;
     min-width: 50px;
+    opacity: .1; /* until timer is setup */
 }
 
 .visor-text {
@@ -116,8 +117,25 @@ img {
 }
 
 .progress {
-    height: 8px;
+    height: 7px;
+    border-radius: 0;
+}
+
+.progress.user {
     background-color: #444444;
+}
+
+.progress.user .determinate {
+    background-color: #ffc107;
+}
+
+.progress.opp {
+    background-color: #ffc107;
+}
+
+.progress.opp .determinate {
+    background-color: #444444;
+    width: 100%;
 }
 
 #opponentIcon {

@@ -9,12 +9,13 @@ let articleSchema = new mongoose.Schema({
 	content: String
 });
 
-let roundSchema = new mongoose.Schema({
+let movieSchema = new mongoose.Schema({
 	correct: [String],
 	incorrect: [String],
 	list: String,
 	listID: String,
 	title: String,
+	altId: String,
 	overview: String
 });
 
@@ -27,7 +28,8 @@ let gameSchema = new mongoose.Schema({
 	list: [
 		{
 			id: String,
-			winner: Number
+			winner: { type: Number, default: null },
+			guesses: [Number]
 		}
 	],
 	players: [
@@ -35,7 +37,7 @@ let gameSchema = new mongoose.Schema({
 			username: String,
 			userId: Number,
 			socketId: String,
-			score: Number,
+			score: { type: Number, default: 0 },
 			rank: String,
 			level: String
 		}
@@ -44,6 +46,6 @@ let gameSchema = new mongoose.Schema({
 
 module.exports = {
 	Article: mongoose.model('article', articleSchema),
-	Round: mongoose.model('round', roundSchema),
+	Movie: mongoose.model('movie', movieSchema),
 	Game: mongoose.model('game', gameSchema)
 }

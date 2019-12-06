@@ -4,7 +4,7 @@ const gamesPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const { sendEmail } = require('./email');
 const { shuffle } = require('./helpers');
-const { Game, Round } = require('../models/models');
+const { Game, Movie } = require('../models/models');
 const { reportError } = require('./errors');
 const cryptoRandomString = require('crypto-random-string');
 
@@ -85,6 +85,18 @@ module.exports = {
 			}
 		}
 	},
+	close: async (socket) => {
+		if (socket.request.session.game.room) {
+			try {
+				let game = socket.request.session.game;
+				await Game.deleteOne({room: game.room});
+				socket.request.session.game = null;
+				socket.request.session.save();
+			} catch (err) {
+				console.log(err);
+			}
+		}
+	},
 	update: async (data, socket) => {
 		if (socket.request.session.game.room) {
 			// 1. Update the user's socket id
@@ -96,15 +108,15 @@ module.exports = {
 				userData.socketId = socket.id;
 				game.save();
 				
-				let opponent = game.players.find(p => p.userId != user.id);
+				let u = game.players.find(p => p.userId == user.id);
+				let opp = game.players.find(p => p.userId != user.id);
 
+				socket.join(room); // re-join room
 				socket.emit('update', {
-					username: user.username,
-					rank: user.rank,
-					level: user.level,
-					opponentUsername: opponent.username,
-					opponentRank: opponent.rank,
-					opponentLevel: opponent.level
+					user: user,
+					u: u,
+					opp: opp,
+					game: game
 				});
 			} catch (err) {
 				console.log(err);
@@ -124,25 +136,42 @@ module.exports = {
 			let userId = socket.request.session.user.id;
 			let rank = socket.request.session.user.rank;
 			let level = socket.request.session.user.level;
-			let defaultListId = '109087';
+			let defaultListId = '87545';
 
 			// 1. Find an open game
 			let open = await Game.findOne({status: 'open'});
 			
 			// 2. If no open games, create one and wait in new room
 			if (!open) {
-				console.log('no open games found');
+				console.log('No open games found..creating one');
 				let roomId = cryptoRandomString({length: 10});
+				let list = await Movie.find({listID: defaultListId});
+				let idList = [];
+
+				for (const i of list) {
+					idList.push({
+						id: i.altId,
+						winner: null
+					});
+				}
+				
+				shuffle(idList);
+
 				let newGame = {
 					room: roomId,
 					status: 'open',
+					time: 60, //seconds
+					index: 0,
+					cIndex: Math.floor(Math.random() * 3),
 					players: [{
 						username: username,
 						userId: userId,
 						socketId: socket.id,
 						rank: rank,
-						level: level
-					}]
+						level: level,
+						score: 0
+					}],
+					list: idList
 				}
 
 				let doc = new Game(newGame);
@@ -158,41 +187,30 @@ module.exports = {
 			} else {
 				// 3. Join open game
 				console.log('Joining open game');
-				let list = await Round.find({listID: defaultListId});
-				let idList = list.map(x => x._id);
-				shuffle(idList);
-				for (const id of idList) {
-					id.winner = null;
-				}
-
-				// Determine the index of the correct answer to use
-				// Currently store 3
-				let cIndex = Math.floor(Math.random() * 3);
-				
 				open.status = 'active';
 				open.players.push({
 					username: username,
 					userId: userId,
 					socketId: socket.id,
 					rank: rank,
-					level: level
+					level: level,
+					score: 0
 				});
-				open.index = 0;
-				open.cIndex = cIndex;
-				open.list = idList;
 				open.save();
 
 				socket.join(open.room);
 				socket.request.session.game = open;
 				socket.request.session.save(function(err) {
 					if (err) {
+						console.log('err saving session');
 						return socket.emit('err', err);
 					}
 				});
+
+				console.log(open.room, open.idList, open.cIndex)
+
 				io.to(open.room).emit('connected', {
-					room: open.room,
-					idList: idList,
-					cIndex: cIndex
+					room: open.room
 				});
 			}
 		} catch (err) {
@@ -200,17 +218,58 @@ module.exports = {
 			return socket.emit('err', err);
 		}
 	},
-	correct: async (data, io, socket) => {
+	guess: async (data, io, socket) => {
+		console.log('Guess route');
+		console.log(data);
 		try {
 			let userId = socket.request.session.user.id;
 			let room = socket.request.session.game.room;
 			let game = await Game.findOne({room: room});
-			let opponent = game.players.find(p => p.userId != userId);
+			let movie = game.list.find(m => m.id == data.id);
+			console.log(movie);
 			
-			socket.emit('correct', 'you win');
-			io.to(opponent.socketId).emit('fire', 'you lose');
+			if (movie && !movie.winner) {
+				let advance = true;
+				let bothWrong = false;
+				movie.guesses.push(userId);
+				game.index = data.index + 1; // this may be controversial (movie.index = movie.index + 1 ???)
 
-			// socket.broadcast.to(opponent.socketId).emit('msg', 'boop');
+				let u = game.players.find(p => p.userId == userId);
+				let o = game.players.find(p => p.userId != userId);
+
+				if (data.correct) {
+					movie.winner = userId;
+					u.score += 10;
+
+					// Emit to Winner
+					socket.emit('win', u.score);
+
+					// If there's a winner...there's a loser
+					io.to(o.socketId).emit('lose');
+				} else {
+					console.log('guesses', movie.guesses.length);
+					if (movie.guesses.length >= 2) {
+						bothWrong = true;
+					} else {
+						advance = false;
+					}
+				}
+
+				game.save();
+
+				// Emit to room
+				if (advance) {
+					console.log('advance');
+					io.to(room).emit('advance', {
+						index: game.index,
+						userProgress: u.score,
+						oppProgress: o.score,
+						bothWrong: bothWrong,
+					});
+				}
+			} else {
+				console.log('Not a winner');
+			}
 		} catch (err) {
 			console.log(err);
 			return socket.emit('err', err);

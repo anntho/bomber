@@ -6,15 +6,16 @@ $(document).ready(async function() {
 
     // ===================================================
 	// Variables
-	// ===================================================
+    // ===================================================
+    let list = [];
     let room = null;
     let currentIndex = 0;
     let currentId = '';
     let cIndex = 0;
     let idList = [];
     let timer = null;
-    let counterDefault = 180;
-    let counter = 180;
+    let counterDefault = 60;
+    let counter = 60; // will need to move this to set via sockets initially
     let interval = 1000;
 
     // ===================================================
@@ -22,8 +23,17 @@ $(document).ready(async function() {
 	// ===================================================
     await $.getScript( "/js/helpers.js");
 
-    function disable() {
+    function disableBtnDisplay() {
         $('.buttons').fadeTo(500, 0.2);
+    }
+
+    function disableBtnClick() {
+        $('.button').prop('disabled', true);
+    }
+
+    function enableBtn() {
+        $('.buttons').fadeTo(100, 1);
+        $('.button').prop('disabled', false);
     }
 
     // ===================================================
@@ -34,41 +44,97 @@ $(document).ready(async function() {
         feedback('error', 'Error', JSON.stringify(err));
     });
 
-    socket.on('ping', (data) => {
-        counter = data.seconds;
-        updateClock(counter);
-    });
+    refresh();
 
-	socket.emit('update');
-	socket.on('update', (data) => {
-        console.log('updated');
+    async function refresh() {
+        list = await getMovieDocs('87545');
+        $('#list').text(list[0].list);
+        let data = await update();
+        updateTracking(data);
+        updateVisor(data);
+        load();
+    }
+
+    function updateTracking(data) {
+        idList = data.game.list;
+        currentIndex = data.game.index;
+    }
+
+    function updateVisor(data) {
+        $('#visorUser').text(data.user.username);
+        $('#visorUserRank').text(`${data.user.rank} [${data.user.level}]`);
+        $('#visorOpponent').text(data.opp.username);
+        $('#visorOpponentRank').text(`${data.opp.rank} [${data.opp.level}]`);
+
+        setProgress(data.u.score, data.opp.score);
+    }
+
+    async function update() {
+        socket.emit('update');
+        return new Promise((res, rej) => {
+            socket.on('update', (data) => {
+                res(data);
+            });
+        });
+    }
+
+    async function getMovieDocs(id) {
+        socket.emit('getMovieDocs', id);
+        return new Promise((res, rej) => {
+            socket.on('getMovieDocs', (data) => {
+                res(data);
+            });
+        });
+    }
+
+    function setProgress(uProgress, oProgress) {
+        console.log(uProgress, oProgress);
+        oProgress = 100 - oProgress;
+        $('#userProgress').width(`${uProgress}%`);
+        $('#opponentProgress').width(`${oProgress}%`);
+    }
+
+    socket.on('advance', function(data) {
+        console.log('advance');
         console.log(data);
-        $('#visorUser').text(data.username);
-        $('#visorUserRank').text(`${data.rank} [${data.level}]`);
 
-        $('#visorOpponent').text(data.opponentUsername);
-        $('#visorOpponentRank').text(`${data.opponentRank} [${data.opponentLevel}]`);
+        if (data.userProgress == 100) {
+            location.href = '/win';
+            socket.emit('close');
+        } else if (data.oppProgress == 100) {
+            location.href = '/lose';
+            socket.emit('close');
+        } else {
+            currentIndex = data.index;
+            setProgress(data.userProgress, data.oppProgress);
+            if (data.bothWrong) {
+                feedback('info', 'Both Wrong!');
+            }
+            load();
+        }
     });
     
 	socket.on('connected', function(data) {
+        //console.log('connected');
+        //console.log(data);
         room = data.room;
-        idList = data.idList;
-        cIndex = data.cIndex;
-		console.log(data);
-		alert('connected');
 	});
 
-	socket.on('msg', function(data) {
-		$('#status').text(data)
-	});
+	socket.on('win', function() {
+        feedback('success', 'Correct!');
+    });
+
+    socket.on('lose', function() {
+        feedback('error', 'Too slow!');
+    });
 
 	socket.on('gameover', function() {
 		$('#gameover').show();
     });
 
-    socket.on('next', function() {
-        currentIndex = currentIndex + 1;
-    });
+    // socket.on('next', function() {
+    //     currentIndex = currentIndex + 1;
+    // });
 
     // ===================================================
 	// Data Sockets
@@ -112,20 +178,6 @@ $(document).ready(async function() {
     }
 
     // ===================================================
-	// Clock Checker
-    // ===================================================
-    let clockChecker = setInterval(checkClock, 10000);
-
-    let checkClock = () => {
-        if (counter < 1) stopClockChecker();
-        socket.emit('ping');
-    }
-
-    let stopClockChecker = () => {
-        clearInterval(clockChecker);
-    }
-
-    // ===================================================
 	// Game Over
     // ===================================================
 
@@ -142,15 +194,20 @@ $(document).ready(async function() {
 	// Package
     // ===================================================
     let organize = () => {
-        let id = idList[currentIndex];
+        //console.log('organize');
+        //console.log(currentIndex);
+        //console.log(idList);
+
+        let id = idList[currentIndex].id;
         currentId = id;
-        let movie = rounds.find(r => r.id === id);
+
+        let movie = list.find(r => r.altId === id);
         let choices = [];
         let correct = {};
 
         correct = {
            title: movie.correct[cIndex],
-           r: 1 
+           r: 1
         }
 
         choices.push(correct);
@@ -181,29 +238,13 @@ $(document).ready(async function() {
     }
 
     let load = () => {
+        enableBtn();
         let { movie, choices } = organize();
+        //console.log('movie', movie)
         
         prompt(movie);
         buttons(choices);
     }
-
-    let logic = async (r) => {
-        r = parseInt(r);
-        if (r != 1) {
-            feedback('error', 'Incorrect');
-            return false;
-        } else {
-            socket.emit('correct', {
-                index: currentIndex,
-                id: currentId
-            });
-            return true;
-        }
-    }
-
-
-
-
 
     // ===================================================
 	// Logic
@@ -224,20 +265,45 @@ $(document).ready(async function() {
 	// Event Listeners & Buttons
     // ===================================================
     $('.button').click(async function() {
-        if ($('.button').prop('disabled')) return false;
-        $('.button').prop('disabled', true);
-        let result = await logic($(this).attr('data-r'));
-        if (result) {
-            $('.button').prop('disabled', false);
-        } else {
-            disable();
+        if ($('.button').prop('disabled')) {
+            console.log('Btn disabled');
+            return false;
         }
+
+        disableBtnClick();
+
+        let correct = false;
+        if ($(this).attr('data-r') == 1) {
+            correct = true;
+        } else {
+            disableBtnDisplay();
+        }
+
+        socket.emit('guess', {
+            index: currentIndex,
+            id: currentId,
+            correct: correct
+        });
     });
 
 
     // ===================================================
 	// Immediate
     // ===================================================
-    load();
-    startTimer();
+    let logic = async (correct) => {
+        
+        socket.emit('guess', {
+            index: currentIndex,
+            id: currentId
+        });
+
+        if (!correct) {
+            feedback('error', 'Incorrect');
+            return false;
+        } else {
+            return true;
+        }
+
+        return correct;
+    }
 });

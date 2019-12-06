@@ -5,6 +5,7 @@ const dataPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const { sendEmail } = require('./email');
 const { reportError } = require('./errors');
+const { Game, Movie } = require('../models/models');
 
 const TMDB_KEY = `?api_key=${config.tmdb.key}`;
 const URL_BASE = 'https://api.themoviedb.org/3';
@@ -91,5 +92,15 @@ module.exports = {
             reportError(file, '91', err, true);
 			socket.emit('err', {error: err});
 		}
-    }
+	},
+	getMovieDocs: async (socket, id) => {
+		console.log('getMovieDocs')
+		try {
+			let list = await Movie.find({listID: id});
+			socket.emit('getMovieDocs', list);
+		} catch (err) {
+			reportError(file, '101', err, true);
+			socket.emit('err', {error: err});
+		}
+	}
 }
