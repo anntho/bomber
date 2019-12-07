@@ -47,7 +47,7 @@ $(document).ready(async function() {
     refresh();
 
     async function refresh() {
-        list = await getMovieDocs('87545');
+        list = await getMovieDocs('109087');
         $('#list').text(list[0].list);
         let data = await update();
         updateTracking(data);
@@ -106,7 +106,8 @@ $(document).ready(async function() {
             socket.emit('close');
         } else {
             currentIndex = data.index;
-            setProgress(data.userProgress, data.oppProgress);
+            console.log('data index', data.index)
+            console.log('current index', currentIndex)
             if (data.bothWrong) {
                 feedback('info', 'Both Wrong!');
             }
@@ -120,12 +121,14 @@ $(document).ready(async function() {
         room = data.room;
 	});
 
-	socket.on('win', function() {
+	socket.on('win', function(data) {
         feedback('success', 'Correct!');
+        setProgress(data.uscore, data.oscore);
     });
 
-    socket.on('lose', function() {
+    socket.on('lose', function(data) {
         feedback('error', 'Too slow!');
+        setProgress(data.uscore, data.oscore);
     });
 
 	socket.on('gameover', function() {

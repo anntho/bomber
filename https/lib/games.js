@@ -136,7 +136,7 @@ module.exports = {
 			let userId = socket.request.session.user.id;
 			let rank = socket.request.session.user.rank;
 			let level = socket.request.session.user.level;
-			let defaultListId = '87545';
+			let defaultListId = '109087';
 
 			// 1. Find an open game
 			let open = await Game.findOne({status: 'open'});
@@ -242,10 +242,16 @@ module.exports = {
 					u.score += 10;
 
 					// Emit to Winner
-					socket.emit('win', u.score);
+					socket.emit('win', {
+						uscore: u.score,
+						oscore: o.score
+					});
 
 					// If there's a winner...there's a loser
-					io.to(o.socketId).emit('lose');
+					io.to(o.socketId).emit('lose', {
+						uscore: u.score,
+						oscore: o.score
+					});
 				} else {
 					console.log('guesses', movie.guesses.length);
 					if (movie.guesses.length >= 2) {
@@ -262,8 +268,6 @@ module.exports = {
 					console.log('advance');
 					io.to(room).emit('advance', {
 						index: game.index,
-						userProgress: u.score,
-						oppProgress: o.score,
 						bothWrong: bothWrong,
 					});
 				}
