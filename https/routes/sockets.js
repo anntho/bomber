@@ -142,14 +142,6 @@ io.on('connection', (socket) => {
 	socket.on('guess', async (data) => {
 		await games.guess(data, io, socket);
 	});
-
-	// socket.on('timeIn', async (data) => {
-	// 	await games.timeIn(data, socket);
-	// });
-
-	// socket.on('checkTime', async (data) => {
-	// 	await games.checkTime(data, socket);
-	// });
 });
 
 module.exports = router;

@@ -219,41 +219,48 @@ module.exports = {
 		}
 	},
 	guess: async (data, io, socket) => {
-		console.log('Guess route');
+		console.log('guess');
 		console.log(data);
 		try {
 			let userId = socket.request.session.user.id;
 			let room = socket.request.session.game.room;
 			let game = await Game.findOne({room: room});
 			let movie = game.list.find(m => m.id == data.id);
-			console.log(movie);
 			
 			if (movie && !movie.winner) {
 				let advance = true;
 				let bothWrong = false;
+				let gameover = false;
+				
 				movie.guesses.push(userId);
-				game.index = data.index + 1; // this may be controversial (movie.index = movie.index + 1 ???)
+				game.index = game.index + 1;
 
 				let u = game.players.find(p => p.userId == userId);
 				let o = game.players.find(p => p.userId != userId);
 
 				if (data.correct) {
 					movie.winner = userId;
-					u.score += 10;
+					u.score = u.score + 10;
+
+					if (u.score == 100) {
+						gameover = true;
+						game.status = 'closed';
+					}
 
 					// Emit to Winner
 					socket.emit('win', {
 						uscore: u.score,
-						oscore: o.score
+						oscore: o.score,
+						gameover: gameover
 					});
 
-					// If there's a winner...there's a loser
+					// Emit to loser
 					io.to(o.socketId).emit('lose', {
 						uscore: u.score,
-						oscore: o.score
+						oscore: o.score,
+						gameover: gameover
 					});
 				} else {
-					console.log('guesses', movie.guesses.length);
 					if (movie.guesses.length >= 2) {
 						bothWrong = true;
 					} else {

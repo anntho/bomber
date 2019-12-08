@@ -48,7 +48,6 @@ $(document).ready(async function() {
 
     async function refresh() {
         list = await getMovieDocs('109087');
-        $('#list').text(list[0].list);
         let data = await update();
         updateTracking(data);
         updateVisor(data);
