@@ -25,11 +25,14 @@ let gameSchema = new mongoose.Schema({
 	time: Number,
 	index: Number,
 	cIndex: Number,
-	list: [
+	list: [String],
+	turns: [
 		{
 			id: String,
-			winner: { type: Number, default: null },
-			guesses: [Number]
+			guesses: {
+				correct: Number,
+				incorrect: [Number]
+			}
 		}
 	],
 	players: [

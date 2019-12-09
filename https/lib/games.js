@@ -143,19 +143,14 @@ module.exports = {
 			
 			// 2. If no open games, create one and wait in new room
 			if (!open) {
-				console.log('No open games found..creating one');
 				let roomId = cryptoRandomString({length: 10});
 				let list = await Movie.find({listID: defaultListId});
-				let idList = [];
 
-				for (const i of list) {
-					idList.push({
-						id: i.altId,
-						winner: null
-					});
-				}
-				
+				let idList = [];
+				idList = list.map(i => i.altId);
 				shuffle(idList);
+
+				
 
 				let newGame = {
 					room: roomId,
@@ -171,7 +166,17 @@ module.exports = {
 						level: level,
 						score: 0
 					}],
-					list: idList
+					list: idList,
+					// add first ID to turns arr
+					turns: [
+						{
+							id: idList[0],
+							guesses: {
+								correct: null,
+								incorrect: [null]
+							}
+						}
+					]
 				}
 
 				let doc = new Game(newGame);
@@ -202,12 +207,12 @@ module.exports = {
 				socket.request.session.game = open;
 				socket.request.session.save(function(err) {
 					if (err) {
-						console.log('err saving session');
+						//console.log('err saving session');
 						return socket.emit('err', err);
 					}
 				});
 
-				console.log(open.room, open.idList, open.cIndex)
+				//console.log(open.room, open.idList, open.cIndex);
 
 				io.to(open.room).emit('connected', {
 					room: open.room
@@ -225,61 +230,65 @@ module.exports = {
 			let userId = socket.request.session.user.id;
 			let room = socket.request.session.game.room;
 			let game = await Game.findOne({room: room});
-			let movie = game.list.find(m => m.id == data.id);
-			
-			if (movie && !movie.winner) {
-				let advance = true;
-				let bothWrong = false;
-				let gameover = false;
-				
-				movie.guesses.push(userId);
-				game.index = game.index + 1;
+			let turn = game.turns.find(t => t.id == data.id);
+			let gameUser = game.players.find(p => p.userId == userId);
+			let gameOpponent = game.players.find(p => p.userId != userId);
 
-				let u = game.players.find(p => p.userId == userId);
-				let o = game.players.find(p => p.userId != userId);
+			let advance = true;
+			let bothWrong = false;
+			let gameover = false;
 
-				if (data.correct) {
-					movie.winner = userId;
-					u.score = u.score + 10;
+			if (!turn) {
+				game.turns.push({ id: data.id });
+				turn = game.turns.find(t => t.id == data.id);
+			}
 
-					if (u.score == 100) {
-						gameover = true;
+			if (data.correct) {
+				if (!turn.guesses.correct) {
+					turn.guesses.correct = userId;
+					gameUser.score = gameUser.score + 10;
+					console.log(gameUser.score);
+					if (gameUser.score >= 100) {
 						game.status = 'closed';
-					}
-
-					// Emit to Winner
-					socket.emit('win', {
-						uscore: u.score,
-						oscore: o.score,
-						gameover: gameover
-					});
-
-					// Emit to loser
-					io.to(o.socketId).emit('lose', {
-						uscore: u.score,
-						oscore: o.score,
-						gameover: gameover
-					});
-				} else {
-					if (movie.guesses.length >= 2) {
-						bothWrong = true;
-					} else {
-						advance = false;
+						gameover = true;
 					}
 				}
 
-				game.save();
+				socket.emit('win', {
+					userScore: gameUser.score,
+					opponentScore: gameOpponent.score
+				});
 
-				// Emit to room
+				io.to(gameOpponent.socketId).emit('lose', {
+					userScore: gameOpponent.score,
+					opponentScore: gameUser.score
+				});
+			} else {
+				turn.guesses.incorrect.push(userId);
+				if (turn.guesses.incorrect.length > 1) {
+					bothWrong = true;
+				} else {
+					advance = false;
+				}
+				socket.emit('wrong');
+			}
+
+			if (!gameover) game.index = game.index + 1;
+			game.save();
+
+			if (gameover) {
+				io.to(room).emit('gameover', {
+					turns: game.turns,
+					winner: userId,
+					ids: [gameUser.userId, gameOpponent.userId]
+				});
+			} else {
 				if (advance) {
-					console.log('advance');
 					io.to(room).emit('advance', {
 						index: game.index,
-						bothWrong: bothWrong,
+						bothWrong: bothWrong
 					});
 				}
-			} else {
-				console.log('Not a winner');
 			}
 		} catch (err) {
 			console.log(err);

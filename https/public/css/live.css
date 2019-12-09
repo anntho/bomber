@@ -60,6 +60,31 @@
     -moz-animation: spinPulse 1s infinite ease-in-out;
     -webkit-animation: spinPulse 1s infinite ease-in-out;
 }
+
+#tape {
+    display: none;
+}
+
+.tape {
+    display: flex;
+}
+
+.player-tape {
+    flex-basis: 50%;
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    font-size: .9rem;
+}
+
+.player-tape div {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
 /* ===================================================
 // Visor
    =================================================== */
@@ -129,11 +154,11 @@ img {
     background-color: #ffc107;
 }
 
-.progress.opp {
+.progress.opponent {
     background-color: #ffc107;
 }
 
-.progress.opp .determinate {
+.progress.opponent .determinate {
     background-color: #444444;
     width: 100%;
 }

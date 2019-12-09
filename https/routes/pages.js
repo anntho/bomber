@@ -70,6 +70,8 @@ router.get('/live/:id', setUser, async (req, res) => {
 		let game = await Game.findOne({room: room});
 		if (!game) {
 			res.redirect('/');
+		} else if (game.status == 'closed') {
+			res.status(200).send('this game is closed');
 		} else {
 			res.locals.game = game;
 			res.locals.file = 'live';
@@ -79,14 +81,6 @@ router.get('/live/:id', setUser, async (req, res) => {
 	} catch (err) {
 		res.redirect('/');
 	}
-});
-
-router.get('/win', (req, res) => {
-	res.send('you win!');
-});
-
-router.get('/lose', (req, res) => {
-	res.send('you lose!');
 });
 
 router.get('/bomber', setUser, (req, res) => {

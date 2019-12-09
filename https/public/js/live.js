@@ -36,6 +36,35 @@ $(document).ready(async function() {
         $('.button').prop('disabled', false);
     }
 
+    function rollTape(data, movies) {
+        let userId = $('#visorUser').attr('data-userId');
+        let player1Tape = document.getElementById('player1Tape');
+        let player2Tape = document.getElementById('player2Tape');
+        let player1 = userId;
+
+        for (const t of data.turns) {
+            let movie = movies.find(m => m.altId == t.id);
+            let p1Div = document.createElement('div');
+            let p2Div = document.createElement('div');
+            p1Div.innerHTML = movie.title;
+            p2Div.innerHTML = movie.title;
+            
+            if (t.guesses.correct == player1) {
+                p1Div.classList.add('green-text');
+                p2Div.classList.add('red-text');
+            } else if (t.guesses.correct) {
+                p1Div.classList.add('red-text');
+                p2Div.classList.add('green-text');
+            } else {
+                p1Div.classList.add('red-text');
+                p2Div.classList.add('red-text');
+            }
+
+            player1Tape.appendChild(p1Div);
+            player2Tape.appendChild(p2Div);
+        }
+    }
+
     // ===================================================
 	// Sockets
 	// ===================================================
@@ -61,7 +90,9 @@ $(document).ready(async function() {
 
     function updateVisor(data) {
         $('#visorUser').text(data.user.username);
+        $('#visorUser').attr('data-userId', data.user.id);
         $('#visorUserRank').text(`${data.user.rank} [${data.user.level}]`);
+
         $('#visorOpponent').text(data.opp.username);
         $('#visorOpponentRank').text(`${data.opp.rank} [${data.opp.level}]`);
 
@@ -86,57 +117,58 @@ $(document).ready(async function() {
         });
     }
 
-    function setProgress(uProgress, oProgress) {
-        console.log(uProgress, oProgress);
-        oProgress = 100 - oProgress;
-        $('#userProgress').width(`${uProgress}%`);
-        $('#opponentProgress').width(`${oProgress}%`);
+    function setProgress(u, o) {
+        console.log(u, o);
+
+        if (u == 100) {
+            $('.progress.user .determinate').css('background-color', '#01d277');
+            $('.progress.user').css('box-shadow', '0 0 10px #01d277');
+        }
+
+        if (o == 100) {
+            $('.progress.opponent').css('background-color', '#01d277');
+            $('.progress.opponent').css('box-shadow', '0 0 10px #01d277');
+        }
+
+        if (u < 101 && o < 101) {
+            o = 100 - o;
+            $('#userProgress').animate({width: `${u}%`}, 200);
+            $('#opponentProgress').animate({width: `${o}%`}, 200);
+        }
     }
 
     socket.on('advance', function(data) {
         console.log('advance');
         console.log(data);
-
-        if (data.userProgress == 100) {
-            location.href = '/win';
-            socket.emit('close');
-        } else if (data.oppProgress == 100) {
-            location.href = '/lose';
-            socket.emit('close');
-        } else {
-            currentIndex = data.index;
-            console.log('data index', data.index)
-            console.log('current index', currentIndex)
-            if (data.bothWrong) {
-                feedback('info', 'Both Wrong!');
-            }
-            load();
+        
+        currentIndex = data.index;
+        if (data.bothWrong) {
+            feedback('info', 'Both Wrong!');
         }
+
+        load();
     });
     
 	socket.on('connected', function(data) {
-        //console.log('connected');
-        //console.log(data);
         room = data.room;
 	});
 
 	socket.on('win', function(data) {
         feedback('success', 'Correct!');
-        setProgress(data.uscore, data.oscore);
+        setProgress(data.userScore, data.opponentScore);
     });
 
     socket.on('lose', function(data) {
         feedback('error', 'Too slow!');
-        setProgress(data.uscore, data.oscore);
+        setProgress(data.userScore, data.opponentScore);
     });
 
-	socket.on('gameover', function() {
-		$('#gameover').show();
+	socket.on('gameover', function(data) {
+        console.log('gameover');
+        $('.active-display').hide();
+        $('#tape').css('display', 'flex');
+        rollTape(data, list);
     });
-
-    // socket.on('next', function() {
-    //     currentIndex = currentIndex + 1;
-    // });
 
     // ===================================================
 	// Data Sockets
@@ -200,7 +232,7 @@ $(document).ready(async function() {
         //console.log(currentIndex);
         //console.log(idList);
 
-        let id = idList[currentIndex].id;
+        let id = idList[currentIndex];
         currentId = id;
 
         let movie = list.find(r => r.altId === id);
