@@ -248,7 +248,7 @@ module.exports = {
 					turn.guesses.correct = userId;
 					gameUser.score = gameUser.score + 10;
 					console.log(gameUser.score);
-					if (gameUser.score >= 20) {
+					if (gameUser.score >= 100) {
 						game.status = 'closed';
 						gameover = true;
 
