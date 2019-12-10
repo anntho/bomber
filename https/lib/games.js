@@ -224,8 +224,8 @@ module.exports = {
 		}
 	},
 	guess: async (data, io, socket) => {
-		console.log('guess');
-		console.log(data);
+		//console.log('guess');
+		//console.log(data);
 		try {
 			let userId = socket.request.session.user.id;
 			let room = socket.request.session.game.room;
@@ -248,9 +248,12 @@ module.exports = {
 					turn.guesses.correct = userId;
 					gameUser.score = gameUser.score + 10;
 					console.log(gameUser.score);
-					if (gameUser.score >= 100) {
+					if (gameUser.score >= 20) {
 						game.status = 'closed';
 						gameover = true;
+
+						socket.emit('winner');
+						io.to(gameOpponent.socketId).emit('loser');
 					}
 				}
 

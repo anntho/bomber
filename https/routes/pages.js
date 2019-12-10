@@ -68,15 +68,17 @@ router.get('/live/:id', setUser, async (req, res) => {
 	try {
 		let room = req.params.id;
 		let game = await Game.findOne({room: room});
-		if (!game) {
+		let participant = game.players.find(p => p.userId == req.session.user.id);
+
+		if (!game || game.status == 'closed') {
 			res.redirect('/');
-		} else if (game.status == 'closed') {
-			res.status(200).send('this game is closed');
-		} else {
+		} else if (game.status == 'active' && participant) {
 			res.locals.game = game;
 			res.locals.file = 'live';
 			res.locals.game = true;
 			res.render(res.locals.file);
+		} else {
+			res.redirect('/');
 		}
 	} catch (err) {
 		res.redirect('/');

@@ -38,30 +38,55 @@ $(document).ready(async function() {
 
     function rollTape(data, movies) {
         let userId = $('#visorUser').attr('data-userId');
-        let player1Tape = document.getElementById('player1Tape');
-        let player2Tape = document.getElementById('player2Tape');
+        let container = document.getElementById('tape');
         let player1 = userId;
 
         for (const t of data.turns) {
             let movie = movies.find(m => m.altId == t.id);
-            let p1Div = document.createElement('div');
-            let p2Div = document.createElement('div');
-            p1Div.innerHTML = movie.title;
-            p2Div.innerHTML = movie.title;
+            let tapeBox = document.createElement('div');
+            let tapeTitle = document.createElement('div');
+            let tapeIcon1 = document.createElement('div');
+            let tapeIcon2 = document.createElement('div');
+            let matIcon1 = document.createElement('i');
+            let matIcon2 = document.createElement('i');
+
+            tapeBox.classList.add('tape-box', 'flex');
+            tapeTitle.classList.add('tape-title', 'flex');
+            tapeIcon1.classList.add('tape-icon', 'flex');
+
+            matIcon1.classList.add('material-icons');
+            matIcon2.classList.add('material-icons');
+
+            tapeIcon2.classList.add('tape-icon', 'flex');
+
+            tapeTitle.innerHTML = movie.title;
             
             if (t.guesses.correct == player1) {
-                p1Div.classList.add('green-text');
-                p2Div.classList.add('red-text');
+                tapeIcon1.classList.add('correct');
+                tapeIcon2.classList.add('incorrect');
+
+                matIcon1.innerHTML = 'check_circle';
+                matIcon2.innerHTML = 'cancel';
             } else if (t.guesses.correct) {
-                p1Div.classList.add('red-text');
-                p2Div.classList.add('green-text');
+                tapeIcon1.classList.add('incorrect');
+                tapeIcon2.classList.add('correct');
+
+                matIcon1.innerHTML = 'cancel';
+                matIcon2.innerHTML = 'check_circle';
             } else {
-                p1Div.classList.add('red-text');
-                p2Div.classList.add('red-text');
+                tapeIcon1.classList.add('neutral');
+                tapeIcon2.classList.add('neutral');
+
+                matIcon1.innerHTML = 'remove_circle_outline';
+                matIcon2.innerHTML = 'remove_circle_outline';
             }
 
-            player1Tape.appendChild(p1Div);
-            player2Tape.appendChild(p2Div);
+            tapeIcon1.appendChild(matIcon1);
+            tapeBox.appendChild(tapeIcon1);
+            tapeBox.appendChild(tapeTitle);
+            tapeIcon2.appendChild(matIcon2);
+            tapeBox.appendChild(tapeIcon2);
+            container.appendChild(tapeBox);
         }
     }
 
@@ -163,10 +188,20 @@ $(document).ready(async function() {
         setProgress(data.userScore, data.opponentScore);
     });
 
+    socket.on('winner', function(data) {
+        $('#result').text('Congrats, you won!');
+        $('#result').css('color', '#01d277');
+    });
+
+    socket.on('loser', function(data) {
+        $('#result').text('You loose');
+        $('#result').css('color', '#f44336');
+    });
+
 	socket.on('gameover', function(data) {
         console.log('gameover');
         $('.active-display').hide();
-        $('#tape').css('display', 'flex');
+        $('#tape').show();
         rollTape(data, list);
     });
 

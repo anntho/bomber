@@ -18,14 +18,13 @@
 				<% include ./gameover %>
 				<div id="board" class="gcontainer z-index-4">
 					<% include ./visor %>
-					<div id="tape" class="row tape">
-						<div id="player1Tape" class="player-tape"></div>
-						<div id="player2Tape" class="player-tape"></div>
-					</div>
+					<div id="result" class="result"></div>
+					<div id="tape" class="row tape"></div>
 					<div class="active-display">
-						<p>
-							<a id="resign" class="point">Resign</a>
-						</p>
+						<a id="resign" class="btn-small purple point mb-2">
+							<i class="material-icons left small-icon">close</i>
+							Resign
+						</a>
 					</div>
 					<div id="prompts" class="row z-depth-2 active-display">
 						<div class="prompts-container">

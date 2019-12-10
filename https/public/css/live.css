@@ -61,28 +61,43 @@
     -webkit-animation: spinPulse 1s infinite ease-in-out;
 }
 
+.material-icons.small-icon {
+    font-size: 15px;
+}
+
+.result {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 5%;
+}
+
+/* ===================================================
+// Tape
+   =================================================== */
 #tape {
     display: none;
 }
 
-.tape {
+.tape-box {
     display: flex;
-}
-
-.player-tape {
-    flex-basis: 50%;
-    display: flex;
-    flex-wrap: wrap;
     padding-top: 2%;
     padding-bottom: 2%;
-    font-size: .9rem;
 }
 
-.player-tape div {
-    flex-basis: 100%;
-    display: flex;
-    justify-content: center;
-    align-content: center;
+.tape-icon {
+    flex-basis: 20%;
+}
+
+.tape-title {
+    flex-basis: 60%;
+}
+
+.tape-icon.correct .material-icons {
+    color: #01d277;
+}
+
+.tape-icon.incorrect .material-icons {
+    color: #f44336;
 }
 
 /* ===================================================
@@ -136,9 +151,14 @@ img {
 }
 
 .visor-rank {
-    font-size: .6rem;
+    font-size: .8rem;
     font-weight: 500;
-    text-transform: uppercase;
+    text-transform: capitalize;
+}
+
+.visor-username {
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
 .progress {
@@ -151,20 +171,16 @@ img {
 }
 
 .progress.user .determinate {
-    background-color: #ffc107;
+    background-color: #00bcd4;
 }
 
 .progress.opponent {
-    background-color: #ffc107;
+    background-color: #00bcd4;
 }
 
 .progress.opponent .determinate {
     background-color: #444444;
     width: 100%;
-}
-
-#opponentIcon {
-    opacity: .4;
 }
 
 @keyframes spinPulse {
