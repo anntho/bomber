@@ -85,5 +85,19 @@ module.exports = {
         } catch (err) {
             throw err;
         }
+    },
+    lookupCode: async (code) => {
+        try {
+            let proc = 'CALL sp_LookupCode(?)';
+            let inputs = [code];
+            let result = await procHandler(pagesPool, proc, inputs);
+            console.log(result);
+            return {
+                success: result[0].success,
+                userId: result[0].userId
+            }
+        } catch (err) {
+            throw err;
+        }
     }
 }

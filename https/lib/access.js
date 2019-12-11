@@ -32,6 +32,24 @@ async function emailAlertHTML(ip, username, verification) {
     return content;
 }
 
+function emailResetCode(ip, code) {
+    const now = new Date();
+    const dateString = now.toString();
+    const geo = geoip.lookup(ip);
+	const location = `${geo.city}, ${geo.region}`;
+	const link = config.socket.host + '/password/reset?c=' + code;
+
+	let content = `<p><h5>moviebomber.org | Password Reset Link</h5></p>`;
+	content += '<p>Please click the link below to reset your password:</p>';
+	content += `<p><a href="${link}">${link}</a></p>`;
+
+	content += `<ul style="font-size: 10px;"><li>Date/Time: ${dateString}</li>`;
+	content += `<li>IP Address (Location): ${ip} (${location})</li>`;
+	content += `</ul>`;
+
+    return content;
+}
+
 module.exports = {
     register: async (data, socket) => {
         console.log('new user request:');
@@ -131,5 +149,31 @@ module.exports = {
             reportError(file, '134', err, true);
             socket.emit('err', {error: err});
 		}
-    }
+	},
+	resetPt1: async (data, socket) => {
+		console.log('Password reset');
+		console.log(data);
+		try {
+			let code = randomString({length: 16});
+			let proc = 'CALL sp_InsertResetCode(?, ?)';
+			let inputs = [
+				code,
+				data.email
+			];
+			console.log(inputs);
+			let result = await procHandler(accessPool, proc, inputs);
+			console.log(result);
+			if (result[0].success == 1) {
+				socket.emit('success');
+				let ipAddress = socket.handshake.address.split(':')[3];
+				let html = await emailResetCode(ipAddress, code);
+				await sendEmail(data.email, 'Password reset link', html);
+			} else {
+				socket.emit('failure');
+			}
+		} catch (err) {
+			reportError(file, '147', err, true);
+			return socket.emit('err', {error: generic});
+		}
+	},
 }

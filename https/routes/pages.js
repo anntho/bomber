@@ -124,9 +124,49 @@ router.get('/logout', (req, res) => {
 
 router.get('/register', (req, res) => {
 	if (req.session.user) {
-		res.redirect('/home');
+		res.redirect('/');
 	} else {
 		res.locals.file = 'register';
+		res.render(res.locals.file);
+	}
+});
+
+router.get('/password/reset/verified/:code', async (req, res) => {
+	console.log('param route')
+	if (req.session.user) {
+		res.redirect('/');
+	} else {
+		try {
+			let code = req.params.code;
+			let { success, userId } = await pages.lookupCode(code);
+			console.log(code, success, userId);
+
+			res.locals.userId = null;
+			if (success == 1 && userId) {
+				res.locals.userId = userId;
+				res.locals.step2 = true;
+				res.locals.code = code;
+				res.locals.file = 'reset';
+				res.render(res.locals.file);
+			} else {
+				return res.redirect('/password/reset');
+			}
+		} catch (err) {
+			reportError(file, '151', err, true);
+			res.sendStatus(500);
+		}
+	}
+});
+
+router.get('/password/reset', (req, res) => {
+	console.log('plain route')
+	if (req.session.user) {
+		res.redirect('/');
+	} else {
+		res.locals.userId = null;
+		res.locals.code = null;
+		res.locals.step2 = false;
+		res.locals.file = 'reset';
 		res.render(res.locals.file);
 	}
 });

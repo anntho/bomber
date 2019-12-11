@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | reset password</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="Movies, Trivia, Free Trivia, Free Movie Trivia">
+	<meta name="description" content="Log in to your free account on moviebomber.org">
+	<% include ./robots %>
+	<% include ./styles %>
+	<% include ./fonts %>
+</head>
+<body>
+	<% include ./nav %>
+
+	<main>
+		<div class="top-wrapper row">
+			<br>
+			<div class="content-wrapper">
+				<div class="login">
+					<div class="row">
+                    	<div class="col s12">
+							<h5 class="left">
+								<a href="/reset">Reset password</a>
+							</h5>
+						</div>
+                        <% if (!userId) { %>
+                            <div class="col s12">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input id="email" name="email" type="email" class="login" required>
+                                        <label for="email">Email</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <a id="reset" class="waves-effect waves-light btn-large purple">Send link</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="col s12">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input id="password1" name="password1" type="password" class="login" required>
+                                        <label for="password1">Password</label>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <input id="password2" name="password2" type="password" class="login" required>
+                                        <label for="password2">Confirm Password</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <a id="submit" class="waves-effect waves-light btn-large purple">Submit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<% include ./footer %>
+
+	<script>
+		var socketString = <%-JSON.stringify(socket)%>;
+	</script>
+	<script src="/js/jquery.slim.min.js"></script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/reset.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+</body>
+</html>

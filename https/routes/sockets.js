@@ -93,6 +93,10 @@ io.on('connection', (socket) => {
 		await access.register(data, socket);
 	});
 
+	socket.on('resetPt1', async (data) => {
+		await access.resetPt1(data, socket);
+	});
+
 	// ===================================================
 	// Prefereces
 	// ===================================================
