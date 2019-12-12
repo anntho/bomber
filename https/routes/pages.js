@@ -3,10 +3,8 @@ const router = express.Router();
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
 const { setUser } = require('../bin/auth');
-const { Game, Round } = require('../models/models');
+const { Game } = require('../models/models');
 const file = 'routes/pages.js';
-
-
 
 router.get('/', setUser, async (req, res) => {
 	try {
@@ -26,40 +24,6 @@ router.get('/board', setUser, async (req, res) => {
 		res.render(res.locals.file);
 	} catch (err) {
 		reportError(file, '33', err, true);
-		res.sendStatus(500);
-	}
-});
-
-router.get('/blog', setUser, async (req, res) => {
-	try {
-		res.locals.articles = await pages.getArticles();
-		res.locals.file = 'blog';
-		res.render(res.locals.file);
-	} catch (err) {
-		reportError(file, '44', err, true);
-		res.sendStatus(500);
-	}
-});
-
-router.get('/trivia', setUser, async (req, res) => {
-	try {
-		res.locals.questions = await pages.getQuestions();
-		res.locals.file = 'trivia';
-		res.locals.game = true;
-		res.render(res.locals.file);
-	} catch (err) {
-		reportError(file, '56', err, true);
-		res.sendStatus(500);
-	}
-});
-
-router.get('/article/:id', setUser, async (req, res) => {
-	try {
-		res.locals.article = await pages.getArticle(req.params.id);
-		res.locals.file = 'article';
-		res.render(res.locals.file);
-	} catch (err) {
-		reportError(file, '67', err, true);
 		res.sendStatus(500);
 	}
 });

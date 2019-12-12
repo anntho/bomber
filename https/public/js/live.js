@@ -116,10 +116,10 @@ $(document).ready(async function() {
     function updateVisor(data) {
         $('#visorUser').text(data.user.username);
         $('#visorUser').attr('data-userId', data.user.id);
-        $('#visorUserRank').text(`${data.user.rank} [${data.user.level}]`);
+        $('#visorUserRank').text(`${data.user.rank} [${data.user.elo}]`);
 
         $('#visorOpponent').text(data.opp.username);
-        $('#visorOpponentRank').text(`${data.opp.rank} [${data.opp.level}]`);
+        $('#visorOpponentRank').text(`${data.opp.rank} [${data.opp.elo}]`);
 
         setProgress(data.u.score, data.opp.score);
     }

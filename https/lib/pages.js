@@ -8,24 +8,11 @@ module.exports = {
     siteMetrics: async () => {
         try {
             let newUsers = [];
-            let obj = {};
             let getNewUsers = await procHandler(pagesPool, 'CALL sp_GetNewUsers()', null);
-            let siteMetrics = await procHandler2(pagesPool, 'CALL sp_SiteMetrics()', null);
-            let articles = await Article.find({}).exec();
-            let bomberTotal = siteMetrics[0].find(m => m.mode === 'bomber');
-            let classicTotal = siteMetrics[0].find(m => m.mode === 'classic');
-            let triviaTotal = siteMetrics[0].find(m => m.mode === 'trivia');
-            let usersTotal = siteMetrics[1][0];
             newUsers = getNewUsers.map(x => x.username);
-            obj = {
-                bomber: (bomberTotal) ? bomberTotal.total : 0,
-                classic: (classicTotal) ? classicTotal.total : 0,
-                trivia: (triviaTotal) ? triviaTotal.total : 0,
-                articles: articles.length || 0,
-                users: (usersTotal) ? usersTotal.total : 0,
+            return {
                 newUsers: newUsers
-            }
-            return obj;
+            };
         } catch (err) {
             throw err;
         }

@@ -30,15 +30,18 @@ canvas {
 }
 
 .newUser i.material-icons {
-    color: #607d8b;
     font-size: 20px;
 }
 
 .newUser a {
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .modal, 
 .modal .modal-footer {
     background-color: #292929;
+}
+
+.btn-large:hover {
+    background-color: #00BCD4;
 }

@@ -31,10 +31,10 @@ $(document).ready(function() {
     let myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Bomber', 'Classic', 'Trivia', 'Community', 'Articles'],
+            labels: ['Blitz', 'Bomber', 'Classic'],
             datasets: [{
                 label: 'Totals',
-                data: [metrics.bomber, metrics.classic, metrics.trivia, 0, metrics.articles],
+                data: [10, 10, 10, 0, 10],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',

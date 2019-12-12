@@ -18,15 +18,7 @@
 				<% } %>
 			</ul>
 
-			<ul class="right hide-on-med-and-down other">
-				<li><a href="/bomber">bomber</a></li>
-				<li><a href="/classic">classic</a></li>
-				<li><a href="/trivia">trivia</a></li>
-				<li><a href="/board">board</a></li>
-				<li><a href="/blog">blog</a></li>
-			</ul>
-
-			<ul class="right hide-on-med-and-down">
+			<ul class="right hide-on-small-only">
 				<li>
 					<input id="navSearch" type="text" placeholder="search">
 				</li>
@@ -45,7 +37,6 @@
 <ul class="sidenav" id="mobile-demo">
 	<h4><a class="valign-wrapper"><i class="material-icons left purple-text">bookmark</i>nav</a></h4>
 	<% if (!user) { %>
-		<li><a href="/register">Register</a></li>
 		<li><a href="/login">Login</a></li>
 	<% } else { %>
 		<li><a href="/account/preferences"><%-username%></a></li>
@@ -53,8 +44,6 @@
 	<li><a href="/">Home</a></li>
 	<li><a href="/bomber">Bomber</a></li>
 	<li><a href="/classic">Classic</a></li>
-	<li><a href="/trivia">Trivia</a></li>
-	<li><a href="/blog">Blog</a></li>
 	<li><a href="/board">Leaderboard</a></li>
 	<% if (user) { %>
 		<li><a href="/logout">Logout</a></li>

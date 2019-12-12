@@ -27,66 +27,44 @@
 							<span id="dateJoined" class="data"><%-new Date(thisUser.created).toISOString().split('T')[0];%></span>
 						</div>
 					</div>
+
+					<div class="row valign-wrapper line">
+						<div class="col s4 m2">
+							<span>Elo</span>
+						</div>
+						<div class="col s8 m4">
+							<span id="rank" class="data"><%-thisUser.elo%></span>
+						</div>
+						<div class="col s8 m6"></div>
+					</div>
+
 					<div class="row valign-wrapper line">
 						<div class="col s4 m2">
 							<span>Rank</span>
 						</div>
 						<div class="col s8 m4">
-							<span id="rank" class="data"><%-rank.currentRank.toUpperCase()%></span>
+							<span id="rank" class="data"><%-rank.rank.toUpperCase()%></span>
 						</div>
 						<div class="col s8 m6">
-							<span class="progress-data"><%-rank.nextRank.toUpperCase()%> <%-rank.totalUserPts%>/<%-rank.nextRankFloor%></span>
+							<span class="progress-data">
+								<%-rank.nextRank.toUpperCase()%> <%-games%>/<%-rank.nextFloor%>
+							</span>
+							
 							<div class="progress">
-								<div class="determinate" style="width: <%-rank.rankPctString%>%"></div>
-							</div>
-						</div>
-					</div>
-					<div class="row valign-wrapper line">
-						<div class="col s4 m2">
-							<span>Level</span>
-						</div>
-						<div class="col s8 m4">
-							<span id="rank" class="data"><%-rank.currentLevel.toUpperCase()%></span>
-						</div>
-						<div class="col s8 m6">
-							<span class="progress-data"><%-rank.nextLevel.toUpperCase()%> <%-rank.totalUserPts%>/<%-rank.nextLevelFloor%></span>
-							<div class="progress">
-								<div class="determinate" style="width: <%-rank.levelPctString%>%"></div>
+								<div class="determinate" style="width: <%-rank.pct%>%"></div>
 							</div>
 						</div>
 					</div>
 	
 					<div class="row">
-						<div class="chart"><canvas id="userChart"></canvas></div>
+						<div class="chart">
+							<canvas id="userChart">
+						</canvas></div>
 					</div>
 					
 					<div class="row">
 						<div class="col s12">
 							<span class="mb-orange-text bold title">GAME LOG</span>
-						</div>
-						<div class="col s12">
-							<table class="responsive-table">
-								<thead>
-									<tr>
-										<th>Score</th>
-										<th>Type</th>
-										<th>Date</th>
-										<th>Log</th>
-									</tr>
-								</thead>
-								<tbody>
-									<% if (games && games.length) { %>
-										<% games[0].forEach(game => { %>
-											<tr>
-												<td><%-game.score%></td>
-												<td><%-game.mode%></td>
-												<td><%-new Date(game.created).toISOString().split('T')[0];%></td>
-												<td><a href="/game/<%-game.sid%>">view</a></td>
-											</tr>
-										<% }); %>
-									<% } %>
-								</tbody>
-							</table>
 						</div>
 					</div>
 				</div>
@@ -98,7 +76,6 @@
 
 	<script>
 		const socketString = <%-JSON.stringify(socket)%>;
-		const chart = <%-JSON.stringify(chart)%>;
 	</script>
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/Chart.bundle.min.js"></script>

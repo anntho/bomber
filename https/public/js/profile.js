@@ -1,14 +1,14 @@
 $(document).ready(async function() {
 	let socket = io.connect(socketString);
 
-	var ctx = $('#userChart');
-    var myChart = new Chart(ctx, {
+	let ctx = $('#userChart');
+    let myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Bomber', 'Classic', 'Trivia', 'Articles'],
+            labels: ['Blitz (head 2 head)', 'Bomber (solo)', 'Classic (solo)'],
             datasets: [{
                 label: 'Totals',
-                data: [chart.bomber, chart.classic, chart.trivia, 0],
+                data: [1, 1, 1, 1],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',

@@ -1,9 +1,9 @@
-.mb-orange-text {
-    color: #ff9800;
-}
-
 .mb-red-text {
     color: #f44336;
+}
+
+.dark-light {
+    background-color: rgba(255, 255, 255, 0.07);
 }
 
 ::-webkit-input-placeholder { color: #717171; }

@@ -14,10 +14,9 @@
 	<% include ./nav %>
 
 	<main>
-		<div class="top-wrapper row">
+		<div class="top-wrapper row mt-3">
 			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
 				<br>
-
 				<div id="searchModal" class="modal">
 					<div class="modal-content">
 						<h5 class="mb-2">Searching for a game...</h5>
@@ -30,25 +29,38 @@
 					</div>
 				</div>
 
-				<div class="mb-3">
-					<a id="beta" class="btn-large purple">2 Player [BETA]</a>
+				<div class="row mb-3">
+					<div class="col s4">
+						<a id="beta" class="col s12 btn-large dark-light waves-effect">blitz</a>
+					</div>
+					<div class="col s4">
+						<a href="/bomber" class="col s12 btn-large dark-light waves-effect">bomber</a>
+					</div>
+					<div class="col s4">
+						<a href="/classic" class="col s12 btn-large dark-light waves-effect">classic</a>
+					</div>
+				</div>
+
+				<br>
+
+				<div class="row">
+					<div class="col s12">
+						<h5 class="valign-wrapper">
+							<i class="material-icons left cyan-text">equalizer</i>
+							Site Metrics
+						</h5>
+						<canvas id="myChart" class="mb-3"></canvas>
+					</div>
 				</div>
 
 				<h5 class="valign-wrapper">
-					<i class="material-icons left mb-orange-text">equalizer</i>
-					Site Metrics
-				</h5>
-				<canvas id="myChart"></canvas>
-
-				<br>
-				<h5 class="valign-wrapper">
-					<i class="material-icons left mb-orange-text">people</i>
+					<i class="material-icons left cyan-text">people</i>
 					New Users
 				</h5>
-				<% if (metrics.newUsers) { %>
+				<% if (metrics && metrics.newUsers) { %>
 					<% metrics.newUsers.forEach(u => { %>
 						<p class="valign-wrapper newUser">
-							<i class="material-icons left">exposure_plus_1</i>
+							<i class="material-icons left blue-grey-text">exposure_plus_1</i>
 							<a href="/@/<%-u%>">[<%-u%>]</a>
 						</p>
 					<% }); %>
