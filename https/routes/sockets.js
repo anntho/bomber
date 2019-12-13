@@ -135,8 +135,8 @@ io.on('connection', (socket) => {
 		await games.find(io, socket);
 	});
 
-	socket.on('update', async (data) => {
-		await games.update(data, socket);
+	socket.on('update', async () => {
+		await games.update(socket);
 	});
 
 	socket.on('addList', async (data) => {

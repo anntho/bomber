@@ -22,7 +22,6 @@ let movieSchema = new mongoose.Schema({
 let gameSchema = new mongoose.Schema({
 	room: String,
 	status: String,
-	time: Number,
 	index: Number,
 	cIndex: Number,
 	list: [String],
@@ -42,7 +41,7 @@ let gameSchema = new mongoose.Schema({
 			socketId: String,
 			score: { type: Number, default: 0 },
 			rank: String,
-			level: String
+			elo: Number
 		}
 	]
 });

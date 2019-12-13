@@ -90,6 +90,49 @@ $(document).ready(async function() {
         }
     }
 
+    function setProgress(u, o) {
+        if (u == 100) {
+            $('.progress.user .determinate').css('background-color', '#01d277');
+            $('.progress.user').css('box-shadow', '0 0 10px #01d277');
+        }
+
+        if (o == 100) {
+            $('.progress.opponent').css('background-color', '#01d277');
+            $('.progress.opponent').css('box-shadow', '0 0 10px #01d277');
+        }
+
+        if (u < 101 && o < 101) {
+            o = 100 - o;
+            $('#userProgress').animate({width: `${u}%`}, 200);
+            $('#opponentProgress').animate({width: `${o}%`}, 200);
+        }
+    }
+
+    function updateVisor(data) {
+        $('#visorUser').text(data.userData.username);
+        $('#visorUser').attr('data-userId', data.userData.userId);
+        $('#userRank').text(`[${data.userData.rank}]`);
+        $('#userElo').text(`[${data.userData.elo}]`);
+
+        $('#visorOpponent').text(data.opponentData.username);
+        $('#opponentRank').text(`[${data.opponentData.rank}]`);
+        $('#opponentElo').text(`[${data.opponentData.elo}]`);
+        setProgress(data.userData.score, data.opponentData.score);
+    }
+
+    function updateVisorElo(userElo, opponentElo, result) {
+        let userColor = (result == 1) ? '#01d277' : '#f44336';
+        let opponentColor = (result == 0) ? '#01d277' : '#f44336';
+
+        $('#userElo').text(`[${userElo.elo}]`);
+        $('#userEloPoints').text(`[${userElo.points}]`);
+        $('#userEloPoints').css('color', userColor);
+
+        $('#opponentElo').text(`[${opponentElo.elo}]`);
+        $('#opponentEloPoints').text(`[${opponentElo.points}]`);
+        $('#opponentEloPoints').css('color', opponentColor);
+    }
+
     // ===================================================
 	// Sockets
 	// ===================================================
@@ -98,30 +141,9 @@ $(document).ready(async function() {
         feedback('error', 'Error', JSON.stringify(err));
     });
 
-    refresh();
-
-    async function refresh() {
-        list = await getMovieDocs('109087');
-        let data = await update();
-        updateTracking(data);
-        updateVisor(data);
-        load();
-    }
-
     function updateTracking(data) {
         idList = data.game.list;
         currentIndex = data.game.index;
-    }
-
-    function updateVisor(data) {
-        $('#visorUser').text(data.user.username);
-        $('#visorUser').attr('data-userId', data.user.id);
-        $('#visorUserRank').text(`${data.user.rank} [${data.user.elo}]`);
-
-        $('#visorOpponent').text(data.opp.username);
-        $('#visorOpponentRank').text(`${data.opp.rank} [${data.opp.elo}]`);
-
-        setProgress(data.u.score, data.opp.score);
     }
 
     async function update() {
@@ -140,26 +162,6 @@ $(document).ready(async function() {
                 res(data);
             });
         });
-    }
-
-    function setProgress(u, o) {
-        console.log(u, o);
-
-        if (u == 100) {
-            $('.progress.user .determinate').css('background-color', '#01d277');
-            $('.progress.user').css('box-shadow', '0 0 10px #01d277');
-        }
-
-        if (o == 100) {
-            $('.progress.opponent').css('background-color', '#01d277');
-            $('.progress.opponent').css('box-shadow', '0 0 10px #01d277');
-        }
-
-        if (u < 101 && o < 101) {
-            o = 100 - o;
-            $('#userProgress').animate({width: `${u}%`}, 200);
-            $('#opponentProgress').animate({width: `${o}%`}, 200);
-        }
     }
 
     socket.on('advance', function(data) {
@@ -191,11 +193,13 @@ $(document).ready(async function() {
     socket.on('winner', function(data) {
         $('#result').text('Congrats, you won!');
         $('#result').css('color', '#01d277');
+        updateVisorElo(data.elo, data.opponentElo, 1);
     });
 
     socket.on('loser', function(data) {
-        $('#result').text('You loose');
+        $('#result').text('You loose.');
         $('#result').css('color', '#f44336');
+        updateVisorElo(data.elo, data.opponentElo, 0);
     });
 
 	socket.on('gameover', function(data) {
@@ -204,60 +208,6 @@ $(document).ready(async function() {
         $('#tape').show();
         rollTape(data, list);
     });
-
-    // ===================================================
-	// Data Sockets
-    // ===================================================
-
-    // ===================================================
-	// Timer
-    // ===================================================
-    function updateClock(c) {
-        let { minutes, seconds } = secondsToMinutesaAndSeconds(c);
-        $('#clockMinutes').text(minutes);
-        $('#clockSeconds').text(seconds);
-    }
-
-    let step = () => {
-        counter--;
-        updateClock(counter);
-        if (counter === 0) {
-            log('time up', null, false);
-            resetTimer();
-            // this will be game over
-        }
-    }
-
-    let startTimer = () => {
-        if (timer !== null) return;
-        log('starting timer', null, false);
-        timer = setInterval(step, interval);
-    }
-
-    let stopTimer = () => {
-        log('stopping timer', null, false);
-        resetTimer();
-    }
-    
-    let resetTimer = () => {
-        clearInterval(timer);
-        timer = null;
-        counter = counterDefault;
-        updateClock(counter);
-    }
-
-    // ===================================================
-	// Game Over
-    // ===================================================
-
-
-
-    // ===================================================
-	// Stats 
-    // ===================================================
-
-
-
 
     // ===================================================
 	// Package
@@ -316,21 +266,6 @@ $(document).ready(async function() {
     }
 
     // ===================================================
-	// Logic
-    // ===================================================
-
-
-
-
-    // ===================================================
-	// Restart
-    // ===================================================
-
-
-
-
-
-    // ===================================================
 	// Event Listeners & Buttons
     // ===================================================
     $('.button').click(async function() {
@@ -355,12 +290,10 @@ $(document).ready(async function() {
         });
     });
 
-
     // ===================================================
 	// Immediate
     // ===================================================
     let logic = async (correct) => {
-        
         socket.emit('guess', {
             index: currentIndex,
             id: currentId
@@ -374,5 +307,14 @@ $(document).ready(async function() {
         }
 
         return correct;
+    }
+
+    refresh();
+    async function refresh() {
+        list = await getMovieDocs('109087');
+        let data = await update();
+        updateTracking(data);
+        updateVisor(data);
+        load();
     }
 });

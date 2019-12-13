@@ -2,9 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
-const { setUser } = require('../bin/auth');
+const { authenticated, setUser } = require('../bin/auth');
 const { Game } = require('../models/models');
 const file = 'routes/pages.js';
+
+const config = require('../bin/config');
+const mysql = require('mysql');
+const pagesPool = mysql.createPool(config.mysql);
+const { procHandler, procHandler2 } = require('../lib/sql');
 
 router.get('/', setUser, async (req, res) => {
 	try {
@@ -28,7 +33,7 @@ router.get('/board', setUser, async (req, res) => {
 	}
 });
 
-router.get('/live/:id', setUser, async (req, res) => {
+router.get('/live/:id', [authenticated, setUser], async (req, res) => {
 	try {
 		let room = req.params.id;
 		let game = await Game.findOne({room: room});

@@ -156,6 +156,10 @@ img {
     text-transform: capitalize;
 }
 
+.visor-rank span {
+    margin-right: 5px;
+}
+
 .visor-username {
     font-weight: 700;
     letter-spacing: 1px;

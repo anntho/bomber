@@ -16,47 +16,6 @@ module.exports = {
 		console.log('Game data:');
 		console.log(data);
 		console.log(line);
-
-		let userId = null;
-
-		if (socket.request.session &&
-			socket.request.session.user) {
-			console.log(socket.request.session.user.username);
-			console.log(line);
-			userId = socket.request.session.user.id;
-		} else {
-			return false;
-		}
-
-		try {
-			if (!data.sid && data.event === 'start') {
-				let sid = randomString({length: 32});
-				let proc = 'CALL sp_InsertGame(?, ?, ?, ?, ?, ?)';
-				let inputs = [sid, userId, data.score, data.event, data.mode, data.participants];
-				let results = await procHandler(gamesPool, proc, inputs);
-				let newRowId = results[0].newRowId;
-				if (newRowId) {
-					socket.emit('game', sid);
-				}
-			} else if (data.sid && data.event === 'end') {
-				let updateProc = 'CALL sp_UpdateGame(?, ?, ?)';
-				let updateInputs = [data.sid, data.event, data.score];
-				await procHandler(gamesPool, updateProc, updateInputs);
-
-				if (data.package) {
-					let insertProc = 'CALL sp_InsertPackage(?, ?)';
-					let uglyPackage = JSON.stringify(data.package);
-					let insertInputs = [data.sid, uglyPackage];
-					await procHandler(gamesPool, insertProc, insertInputs);
-					socket.emit('complete');
-				}
-			} else {
-				socket.emit('err');
-			}
-		} catch (err) {
-			console.log(err);
-			socket.emit('err');
-		}
 	},
 	// ===================================================
 	// Live Games
@@ -97,25 +56,34 @@ module.exports = {
 			}
 		}
 	},
-	update: async (data, socket) => {
+	update: async (socket) => {
 		if (socket.request.session.game.room) {
 			// 1. Update the user's socket id
 			try {
 				let room = socket.request.session.game.room;
 				let user = socket.request.session.user;
 				let game = await Game.findOne({room: room});
+
 				let userData = game.players.find(p => p.userId == user.id);
+				let opponentData = game.players.find(p => p.userId != user.id);
+
+				let userElo = await getElo(userData.userId);
+				let opponentElo = await getElo(opponentData.userId);
+
+				userData.elo = userElo[0].elo;
+				opponentData.elo = opponentElo[0].elo;
+
 				userData.socketId = socket.id;
 				game.save();
 				
-				let u = game.players.find(p => p.userId == user.id);
-				let opp = game.players.find(p => p.userId != user.id);
+				let reUserData = game.players.find(p => p.userId == userData.userId);
+				let reOpponentData = game.players.find(p => p.userId == opponentData.userId);
 
 				socket.join(room); // re-join room
 				socket.emit('update', {
 					user: user,
-					u: u,
-					opp: opp,
+					userData: reUserData,
+					opponentData: reOpponentData,
 					game: game
 				});
 			} catch (err) {
@@ -135,7 +103,7 @@ module.exports = {
 			let username = socket.request.session.user.username;
 			let userId = socket.request.session.user.id;
 			let rank = socket.request.session.user.rank;
-			let level = socket.request.session.user.level;
+			let elo = socket.request.session.user.elo;
 			let defaultListId = '109087';
 
 			// 1. Find an open game
@@ -150,12 +118,9 @@ module.exports = {
 				idList = list.map(i => i.altId);
 				shuffle(idList);
 
-				
-
 				let newGame = {
 					room: roomId,
 					status: 'open',
-					time: 60, //seconds
 					index: 0,
 					cIndex: Math.floor(Math.random() * 3),
 					players: [{
@@ -163,7 +128,7 @@ module.exports = {
 						userId: userId,
 						socketId: socket.id,
 						rank: rank,
-						level: level,
+						elo: elo,
 						score: 0
 					}],
 					list: idList,
@@ -173,7 +138,7 @@ module.exports = {
 							id: idList[0],
 							guesses: {
 								correct: null,
-								incorrect: [null]
+								incorrect: []
 							}
 						}
 					]
@@ -198,7 +163,7 @@ module.exports = {
 					userId: userId,
 					socketId: socket.id,
 					rank: rank,
-					level: level,
+					elo: elo,
 					score: 0
 				});
 				open.save();
@@ -247,13 +212,39 @@ module.exports = {
 				if (!turn.guesses.correct) {
 					turn.guesses.correct = userId;
 					gameUser.score = gameUser.score + 10;
-					console.log(gameUser.score);
-					if (gameUser.score >= 100) {
+					if (gameUser.score >= 10) {
 						game.status = 'closed';
 						gameover = true;
 
-						socket.emit('winner');
-						io.to(gameOpponent.socketId).emit('loser');
+						// should probably also check ..
+						// rank level up (games played)
+
+						let eloData = await updateElo(
+							parseInt(userId),
+							parseInt(gameOpponent.userId)
+						);
+
+						socket.emit('winner', {
+							elo: {
+								elo: eloData[0].userElo,
+								points: eloData[0].userPoints
+							},
+							opponentElo: {
+								elo: eloData[0].opponentElo,
+								points: eloData[0].opponentPoints,
+							}
+						});
+
+						io.to(gameOpponent.socketId).emit('loser', {
+							elo: {
+								elo: eloData[0].opponentElo,
+								points: eloData[0].opponentPoints,
+							},
+							opponentElo: {
+								elo: eloData[0].userElo,
+								points: eloData[0].userPoints
+							}
+						});
 					}
 				}
 
@@ -267,7 +258,9 @@ module.exports = {
 					opponentScore: gameUser.score
 				});
 			} else {
+				console.log('incorrect');
 				turn.guesses.incorrect.push(userId);
+				console.log(turn.guesses.incorrect);
 				if (turn.guesses.incorrect.length > 1) {
 					bothWrong = true;
 				} else {
@@ -297,5 +290,27 @@ module.exports = {
 			console.log(err);
 			return socket.emit('err', err);
 		}
+	}
+}
+
+async function updateElo(userId, opponentId) {
+	try {
+		let proc = 'CALL sp_UpdateElo(?, ?)';
+		let inputs = [userId, opponentId];
+		let data = await procHandler(gamesPool, proc, inputs);
+		return data;
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function getElo(userId) {
+	try {
+		let proc = 'CALL sp_GetUserElo(?)';
+		let inputs = [userId];
+		let data = await procHandler(gamesPool, proc, inputs);
+		return data;
+	} catch (err) {
+		throw err;
 	}
 }
