@@ -25,7 +25,6 @@ const pagesRouter = require('./routes/pages');
 const socketsRouter = require('./routes/sockets');
 const usersRouter = require('./routes/users');
 const accountsRouter = require('./routes/accounts');
-const gamesRouter = require('./routes/games');
 
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -66,7 +65,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Attach Routes
 app.use('/', pagesRouter);
-app.use('/game', gamesRouter);
 app.use('/data', dataRouter);
 app.use('/sockets', socketsRouter);
 app.use('/@', usersRouter);

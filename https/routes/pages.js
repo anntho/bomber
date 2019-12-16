@@ -40,7 +40,7 @@ router.get('/live/:id', [authenticated, setUser], async (req, res) => {
 		let participant = game.players.find(p => p.userId == req.session.user.id);
 
 		if (!game || game.status == 'closed') {
-			res.redirect('/');
+			res.json(game);
 		} else if (game.status == 'active' && participant) {
 			res.locals.game = game;
 			res.locals.file = 'live';
@@ -52,18 +52,6 @@ router.get('/live/:id', [authenticated, setUser], async (req, res) => {
 	} catch (err) {
 		res.redirect('/');
 	}
-});
-
-router.get('/bomber', setUser, (req, res) => {
-	res.locals.file = 'bomber';
-	res.locals.game = true;
-	res.render(res.locals.file);
-});
-
-router.get('/classic', setUser, (req, res) => {
-	res.locals.file = 'classic';
-	res.locals.game = true;
-	res.render(res.locals.file);
 });
 
 router.get('/terms', setUser, (req, res) => {

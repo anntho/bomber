@@ -164,10 +164,7 @@ $(document).ready(async function() {
         });
     }
 
-    socket.on('advance', function(data) {
-        console.log('advance');
-        console.log(data);
-        
+    socket.on('advance', function(data) {        
         currentIndex = data.index;
         if (data.bothWrong) {
             feedback('info', 'Both Wrong!');

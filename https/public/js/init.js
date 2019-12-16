@@ -1,5 +1,7 @@
 $(document).ready(function() {
-    $('.modal').modal();
+    $('.modal').modal({
+        dismissible: false
+    });
     $('.sidenav').sidenav();
     $('select').formSelect();
     $('.collapsible').collapsible();

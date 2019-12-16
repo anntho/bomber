@@ -16,7 +16,9 @@
 				<div class="col s12">
 					<div class="row">
 						<div class="col s6">
-							<span id="username" class="mb-orange-text bold"><%-thisUser.username%></span>
+							<div id="username" class="cyan-text bold">
+								<%-thisUser.username%>
+							</div>
 						</div>
 					</div>
 					<div class="row valign-wrapper line">
@@ -30,10 +32,10 @@
 
 					<div class="row valign-wrapper line">
 						<div class="col s4 m2">
-							<span>Elo</span>
+							<span>Rating</span>
 						</div>
 						<div class="col s8 m4">
-							<span id="rank" class="orange-text data"><%-thisUser.elo%></span>
+							<span id="rank" class="data"><%-thisUser.elo%></span>
 						</div>
 						<div class="col s8 m6"></div>
 					</div>
@@ -43,11 +45,11 @@
 							<span>Rank</span>
 						</div>
 						<div class="col s8 m4">
-							<span id="rank" class="orange-text data"><%-rank.rank.toUpperCase()%></span>
+							<span id="rank" class="data"><%-rank.rank.toUpperCase()%></span>
 						</div>
 						<div class="col s8 m6">
 							<span class="progress-data">
-								<%-rank.nextRank.toUpperCase()%> <%-games%>/<%-rank.nextFloor%>
+								<%-rank.nextRank.toUpperCase()%> <%-gamesPlayed%>/<%-rank.nextFloor%>
 							</span>
 							
 							<div class="progress">
@@ -55,10 +57,48 @@
 							</div>
 						</div>
 					</div>
-	
-					<!-- chart will go here -->
-					
-					<!-- game log will go here -->
+
+					<div class="row valign-wrapper line">
+						<div class="col s12">
+							<div class="cyan-text bold">games</div>
+						</div>
+					</div>
+					<div class="row valign-wrapper line">
+						<div class="col s12">
+							<table>
+								<thead>
+									<tr>
+										<th>Played</th>
+										<th class="hide-on-small-only">Summary</th>
+									</tr>
+								</thead>
+								<tbody id="games">
+									<% games.forEach(game => { %>
+										<tr id="<%-game.room%>">
+											<td><%-game.date%></td>
+											<td class="hide-on-small-only">
+												<span>
+													<span><%-game.gameUser.username%></span>
+													<span><%-game.gameUser.new.elo%></span>
+													<span class="<%-game.userColor%>">
+														[<%-game.gameUser.new.points%>]
+													</span>
+												</span>
+												<span class="cyan-text">vs.</span>
+												<span>
+													<span><%-game.gameOpponent.username%></span>
+													<span><%-game.gameOpponent.new.elo%></span>
+													<span class="<%-game.opponentColor%>">
+														[<%-game.gameOpponent.new.points%>]
+													</span>
+												</span>
+											</td>
+										</tr>
+									<% }); %>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -18,7 +18,7 @@
 				<div class="sub-wrapper">
 					<h5>
 						<a href="/board" class="valign-wrapper">
-							<i class="material-icons left mb-orange-text">insert_chart</i>
+							<i class="material-icons left purple-text">insert_chart</i>
 							Leaderboard
 						</a>
 					</h5>
@@ -34,29 +34,22 @@
 	<script src="/js/jquery.dataTables.min.js"></script>
 	<script>
 		let socketString = <%-JSON.stringify(socket)%>;
-		let uriString = window.location.href;
-		let uri = new URL(uriString);
-		let user = uri.searchParams.get('u');
-
 		let data = <%- JSON.stringify(scores) %>
+
 		$('#leaderboard').DataTable({
 			bLengthChange: false,
 			bSort: true,
 			data: data,
 			columns: [
-				{ title: 'Name', data: 'username' },
-				{ title: 'Score', data: 'score' },
-				{ title: 'Mode', data: 'mode' }
+				{ title: 'Player', data: 'username' },
+				{ title: 'Rating', data: 'elo' },
+				{ title: 'Mode', defaultContent: 'blitz' }
 			],
 			columnDefs: [
 				{ 'className': 'dt-center', 'targets': '_all' }
 			],
 			order: [[1, "desc"]]
 		});
-		if (user) {
-			let table = $('#board1').DataTable();
-			table.search(user).draw();
-		}
 	</script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
 	<script src="/js/nav.js"></script>

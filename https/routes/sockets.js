@@ -135,6 +135,10 @@ io.on('connection', (socket) => {
 		await games.find(io, socket);
 	});
 
+	socket.on('joinById', async(data) => {
+		await games.joinById(io, socket, data);
+	});
+
 	socket.on('update', async () => {
 		await games.update(socket);
 	});
@@ -145,6 +149,10 @@ io.on('connection', (socket) => {
 
 	socket.on('guess', async (data) => {
 		await games.guess(data, io, socket);
+	});
+
+	socket.on('lobby', async (data) => {
+		await games.lobby(data, socket);
 	});
 });
 

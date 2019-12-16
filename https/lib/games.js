@@ -12,19 +12,41 @@ const line = '---------------------------------';
 const file = 'lib/games.js';
 
 module.exports = {
-    saveGame: async (data, socket) => {
-		console.log('Game data:');
-		console.log(data);
-		console.log(line);
+	lobby: async (data, socket) => {
+		try {
+			let games = await Game.find({status: 'open'});
+			let expires = 300000;
+			let now = new Date();
+			let timeNow = now.getTime();
+
+			if (games) {
+				for (const game of games) {
+					let timestamp = game._id.getTimestamp();
+					let date = new Date(timestamp);
+					let timeGame = date.getTime();
+					let diff = timeNow - timeGame;
+	
+					if (diff > expires) { // 5 min
+						game.status = 'expired';
+						game.save();
+					}
+				}
+				let openGames = games.filter(g => g.status == 'open');
+				socket.emit('lobby', openGames);
+			}
+		} catch (err) {
+			console.log(err);
+			return socket.emit('err', err);
+		}
 	},
-	// ===================================================
-	// Live Games
-	// ===================================================
 	cancel: async (socket) => {
 		if (socket.request.session.game) {
 			try {
 				let game = socket.request.session.game;
 				if (game.status == 'open') {
+					socket.emit('removeFromLobby', {
+						room: game.room
+					});
 					await Game.deleteOne({room: game.room});
 					socket.request.session.game = null;
 					socket.request.session.save();
@@ -92,6 +114,49 @@ module.exports = {
 			}
 		}
 	},
+	joinById: async (io, socket, data) => {
+		try {
+			if (!socket.request.session.user) {
+				return socket.emit('liveCheckUser', false);
+			}
+
+			let username = socket.request.session.user.username;
+			let userId = socket.request.session.user.id;
+			let rank = socket.request.session.user.rank;
+			let elo = socket.request.session.user.elo;
+
+			let game = await Game.findOne({room: data.room});
+			
+			if (game && game.status == 'open') {
+				console.log('game found')
+				game.status = 'active';
+				game.players.push({
+					username: username,
+					userId: userId,
+					socketId: socket.id,
+					rank: rank,
+					elo: elo,
+					score: 0
+				});
+				game.save();
+	
+				socket.join(game.room);
+				socket.request.session.game = game;
+				socket.request.session.save(function(err) {
+					if (err) {
+						return socket.emit('err', err);
+					}
+				});
+
+				io.to(game.room).emit('connected', {
+					room: game.room
+				});
+			}
+		} catch (err) {
+			console.log(err);
+			return socket.emit('err', err);
+		}
+	},
 	find: async (io, socket) => {
 		if (!socket.request.session.user) {
 			return socket.emit('liveCheckUser', false);
@@ -120,7 +185,9 @@ module.exports = {
 
 				let newGame = {
 					room: roomId,
+					mode: 'blitz',
 					status: 'open',
+					winner: null,
 					index: 0,
 					cIndex: Math.floor(Math.random() * 3),
 					players: [{
@@ -129,7 +196,8 @@ module.exports = {
 						socketId: socket.id,
 						rank: rank,
 						elo: elo,
-						score: 0
+						score: 0,
+						new: null
 					}],
 					list: idList,
 					// add first ID to turns arr
@@ -155,33 +223,39 @@ module.exports = {
 					}
 				});
 			} else {
-				// 3. Join open game
-				console.log('Joining open game');
-				open.status = 'active';
-				open.players.push({
-					username: username,
-					userId: userId,
-					socketId: socket.id,
-					rank: rank,
-					elo: elo,
-					score: 0
-				});
-				open.save();
+				let myGame = open.players.find(p => p.userId == userId);
+				if (!myGame) {
+					// 3. Join open game
+					console.log('Joining open game');
+					open.status = 'active';
+					open.players.push({
+						username: username,
+						userId: userId,
+						socketId: socket.id,
+						rank: rank,
+						elo: elo,
+						score: 0,
+						new: null
+					});
+					open.save();
 
-				socket.join(open.room);
-				socket.request.session.game = open;
-				socket.request.session.save(function(err) {
-					if (err) {
-						//console.log('err saving session');
-						return socket.emit('err', err);
-					}
-				});
+					socket.join(open.room);
+					socket.request.session.game = open;
+					socket.request.session.save(function(err) {
+						if (err) {
+							//console.log('err saving session');
+							return socket.emit('err', err);
+						}
+					});
 
-				//console.log(open.room, open.idList, open.cIndex);
+					socket.emit('removeFromLobby', {
+						room: open.room
+					});
 
-				io.to(open.room).emit('connected', {
-					room: open.room
-				});
+					io.to(open.room).emit('connected', {
+						room: open.room
+					});
+				}
 			}
 		} catch (err) {
 			console.log(err);
@@ -212,8 +286,9 @@ module.exports = {
 				if (!turn.guesses.correct) {
 					turn.guesses.correct = userId;
 					gameUser.score = gameUser.score + 10;
-					if (gameUser.score >= 10) {
+					if (gameUser.score >= 100) {
 						game.status = 'closed';
+						game.winner = userId;
 						gameover = true;
 
 						// should probably also check ..
@@ -223,6 +298,11 @@ module.exports = {
 							parseInt(userId),
 							parseInt(gameOpponent.userId)
 						);
+
+						gameUser.new.elo = eloData[0].userElo;
+						gameUser.new.points = eloData[0].userPoints;
+						gameOpponent.new.elo = eloData[0].opponentElo;
+						gameOpponent.new.points = eloData[0].opponentPoints;
 
 						socket.emit('winner', {
 							elo: {

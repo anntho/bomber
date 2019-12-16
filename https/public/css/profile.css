@@ -3,15 +3,6 @@
     padding-bottom: 15px;
 }
 
-.data, th {
-    font-weight: 700;
-}
-
-.chart {
-    max-width: 700px;
-
-}
-
 .title {
     padding-left: 5px;
 }
@@ -29,3 +20,18 @@
     font-weight: 500;
 }
 
+.correct {
+    color: #01d277;
+}
+
+.incorrect {
+    color: #f44336;
+}
+
+td span {
+    margin-right: 1%;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.01);
+}

@@ -1,40 +1,32 @@
-span {
-    font-size: 4rem;
+.lobby-container {
+    width: 100%;
+    min-height: 200px;
+    max-height: 400px;
+    overflow: scroll;
+    border: 1px dashed #4a4a4a;
+    padding-left: 2%;
 }
 
-#response {
-    display: none;
-    -webkit-animation-name: fadeIn;
-            animation-name: fadeIn;
-    -webkit-animation-duration: 10s;
-            animation-duration: 10s;
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.01);
 }
 
-@-webkit-keyframes fadeIn {
-    0% { opacity: 0 }
-    100% { opacity: 1 }
-}
- 
-@keyframes fadeIn {
-    0% { opacity: 0 }
-    100% { opacity: 1 }
+td, th {
+    border-radius: 0;
 }
 
-a#what {
-    font-size: .6rem;
-    text-decoration: underline;
-}
-
-canvas {
-    max-width: 800px;
+.newUser a {
+    font-size: 14px;
 }
 
 .newUser i.material-icons {
     font-size: 20px;
 }
 
-.newUser a {
-    font-size: 14px;
+.new-users-container {
+    width: 100%;
+    border: 1px dashed #4a4a4a;
+    padding: 2%;
 }
 
 .modal, 
@@ -42,6 +34,35 @@ canvas {
     background-color: #292929;
 }
 
+.modal .modal-close {
+    font-weight: 700;
+}
+
 .btn-large:hover {
     background-color: #00BCD4;
+}
+
+.dark-icon {
+    color: #555555;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #00BCD4; 
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #00BCD4; 
 }

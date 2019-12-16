@@ -4,7 +4,11 @@ const fs = require('fs');
 
 module.exports = {
 	catch404: (req, res, next) => {
-		console.log(req.headers['x-forwarded-for'] || req.connection.remoteAddress);
+		let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		if (ip.includes('41.250.89.73')) {
+			console.log('IP Blocked', ip);
+			res.end();
+		}
 		next(createError(404));
 	},
 	errorHandler: (err, req, res, next) => {

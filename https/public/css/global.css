@@ -114,6 +114,17 @@ input[type=search]:not(.browser-default) {
 	color: #fafafa;
 }
 
+
+input[type=search]:not(.browser-default):focus:not([readonly])+label {
+    color: #fafafa;
+}
+
+input[type=search]:not(.browser-default):focus:not([readonly]) {
+    border-bottom: 1px solid #00bcd4 ;
+    -webkit-box-shadow: 0 1px 0 0 #00bcd4 ;
+    box-shadow: 0 1px 0 0 #00bcd4;
+}
+
 a.paginate_button {
 	color: #fafafa;
 	padding-right: 10px;

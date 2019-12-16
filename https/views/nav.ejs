@@ -35,15 +35,13 @@
 </ul>
 
 <ul class="sidenav" id="mobile-demo">
-	<h4><a class="valign-wrapper"><i class="material-icons left purple-text">bookmark</i>nav</a></h4>
+	<h4><a class="valign-wrapper"><i class="material-icons left cyan-text">bookmark</i>nav</a></h4>
 	<% if (!user) { %>
-		<li><a href="/login">Login</a></li>
+		<li><a href="/login">Sign in</a></li>
 	<% } else { %>
 		<li><a href="/account/preferences"><%-username%></a></li>
 	<% } %>
 	<li><a href="/">Home</a></li>
-	<li><a href="/bomber">Bomber</a></li>
-	<li><a href="/classic">Classic</a></li>
 	<li><a href="/board">Leaderboard</a></li>
 	<% if (user) { %>
 		<li><a href="/logout">Logout</a></li>

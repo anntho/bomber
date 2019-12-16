@@ -25,19 +25,13 @@
   						</div>
 					</div>
 					<div class="modal-footer">
-						<a id="cancel" class="modal-close waves-effect waves-green btn-flat mb-orange-text">Cancel</a>
+						<a id="cancel" class="modal-close waves-effect waves-green btn-flat purple-text">Cancel</a>
 					</div>
 				</div>
 
 				<div class="row mb-3">
-					<div class="col s4">
-						<a id="beta" class="col s12 btn-large dark-light waves-effect">blitz</a>
-					</div>
-					<div class="col s4">
-						<a href="/bomber" class="col s12 btn-large dark-light waves-effect">bomber</a>
-					</div>
-					<div class="col s4">
-						<a href="/classic" class="col s12 btn-large dark-light waves-effect">classic</a>
+					<div class="col s12 m6">
+						<a id="blitz" class="col s12 btn-large dark-light waves-effect">blitz</a>
 					</div>
 				</div>
 
@@ -46,25 +40,43 @@
 				<div class="row">
 					<div class="col s12">
 						<h5 class="valign-wrapper">
-							<i class="material-icons left cyan-text">equalizer</i>
-							Site Metrics
+							<i class="material-icons left cyan-text">domain</i>
+							Lobby
 						</h5>
-						<canvas id="myChart" class="mb-3"></canvas>
+						<div class="lobby-container">
+							<table>
+								<thead>
+									<tr>
+										<th>Player</th>
+										<th>Rating</th>
+										<th>Rank</th>
+										<th>Mode</th>
+									</tr>
+								</thead>
+								<tbody id="lobby"></tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 
-				<h5 class="valign-wrapper">
-					<i class="material-icons left cyan-text">people</i>
-					New Users
-				</h5>
-				<% if (metrics && metrics.newUsers) { %>
-					<% metrics.newUsers.forEach(u => { %>
-						<p class="valign-wrapper newUser">
-							<i class="material-icons left blue-grey-text">exposure_plus_1</i>
-							<a href="/@/<%-u%>">[<%-u%>]</a>
-						</p>
-					<% }); %>
-				<% } %>
+				<div class="row">
+					<div class="col s12">
+						<h5 class="valign-wrapper">
+							<i class="material-icons left cyan-text">people</i>
+							New Users
+						</h5>
+						<div class="new-users-container">
+							<% if (metrics && metrics.newUsers) { %>
+								<% metrics.newUsers.forEach(u => { %>
+									<p class="valign-wrapper newUser">
+										<i class="material-icons left dark-icon">exposure_plus_1</i>
+										<a href="/@/<%-u%>">[<%-u%>]</a>
+									</p>
+								<% }); %>
+							<% } %>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</main>
@@ -75,8 +87,8 @@
 		const socketString = <%-JSON.stringify(socket)%>;
 		const metrics = <%-JSON.stringify(metrics)%>;
 	</script>
-	<script src="/js/jquery.slim.min.js"></script>
-	<script src="/js/Chart.bundle.min.js"></script>
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/jquery.dataTables.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>

@@ -17,34 +17,9 @@ module.exports = {
             throw err;
         }
     },
-    getArticles: async () => {
-        try {
-            const results = await Article.find({}).sort({date: -1}).exec();
-            return results;
-        } catch (err) {
-            throw err;
-        }
-    },
-    getArticle: async (id) => {
-        try {
-            const results = await Article.findOne({id: id}).exec();
-            return results;
-        } catch (err) {
-            throw err;
-        }
-    },
-    getQuestions: async () => {
-        try {
-            const proc = 'CALL sp_GetQuestions()';
-            const results = await procHandler(pagesPool, proc, null);
-            return results;
-        } catch (err) {
-            throw err;
-        }
-    },
     getScores: async () => {
         try {
-            const proc = 'CALL sp_GetAllScores()';
+            const proc = 'CALL sp_Leaderboard()';
             const results = await procHandler(pagesPool, proc, null);
             return results;
         } catch (err) {
