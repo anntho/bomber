@@ -186,21 +186,3 @@ img {
     background-color: #444444;
     width: 100%;
 }
-
-@keyframes spinPulse {
-    0% {transform: rotate(0deg) scale(1) }
-    50% { transform: rotate(15deg) scale(1.8) }
-    100% { transform: rotate(360deg) scale(1) }
-}
-
-@-webkit-keyframes spinPulse {
-    0% { -webkit-transform: rotate(0deg) scale(1) }
-    50% { -webkit-transform: rotate(15deg) scale(1.8) }
-    100% { -webkit-transform: rotate(360deg) scale(1) }
-}
-
-@-moz-keyframes spinPulse {
-    0% { -moz-transfrom: rotate(0deg) scale(1) }
-    50% { -moz-transform: rotate(15deg) scale(1.8) }
-    100% { -moz-transform: rotate(360deg) scale(1) }
-}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | Game Summary</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="Movies, Trivia, Free Trivia, Free Movie Trivia">
+	<meta name="description" content="Free online multiplayer movie trivia server.">
+	<% include ./robots %>
+	<% include ./styles %>
+	<% include ./fonts %>
+</head>
+<body>
+	<% include ./nav %>
+	<main>
+		<div class="top-wrapper row">
+			<div class="content-wrapper">
+				<div id="board" class="gcontainer z-index-4">
+					<% include ./visor %>
+					<div id="result" class="result"></div>
+					<div id="tape" class="row tape"></div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<% include ./footer %>
+
+	<script>
+		let socketString = <%-JSON.stringify(socket)%>;
+        let gameData = <%-JSON.stringify(game)%>;
+	</script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/recap.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+</body>
+</html>
