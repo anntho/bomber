@@ -1,6 +1,28 @@
 $(document).ready(function() {
-    load(gameData);
-    function load(game) {
+    // ===================================================
+	// Connect Socket
+	// ===================================================
+    let socket = io.connect(socketString);
+
+    // ===================================================
+	// Logic
+	// ===================================================
+    load();
+    async function load() {
+        let movies = await getMovieDocs('109087');
+        display(gameData, movies);
+    }
+
+    async function getMovieDocs(id) {
+        socket.emit('getMovieDocs', id);
+        return new Promise((res, rej) => {
+            socket.on('getMovieDocs', (data) => {
+                res(data);
+            });
+        });
+    }
+
+    function display(game, movies) {
         let player1 = game.players[0];
         let player2 = game.players[1];
 
@@ -16,6 +38,7 @@ $(document).ready(function() {
         let result = (player1.userId == game.winner) ? 1 : 0;
         updateVisorElo(player1.new, player2.new, result);
         setProgress(player1.score, player2.score);
+        rollTape(player1.userId, game, movies);
     }
 });
 
@@ -51,11 +74,8 @@ function setProgress(u, o) {
     }
 }
 
-function rollTape(data, movies) {
-    let userId = $('#visorUser').attr('data-userId');
+function rollTape(player1, data, movies) {
     let container = document.getElementById('tape');
-    let player1 = userId;
-
     for (const t of data.turns) {
         let movie = movies.find(m => m.altId == t.id);
         let tapeBox = document.createElement('div');

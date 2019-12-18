@@ -13,10 +13,6 @@ $(document).ready(async function() {
     let currentId = '';
     let cIndex = 0;
     let idList = [];
-    let timer = null;
-    let counterDefault = 60;
-    let counter = 60; // will need to move this to set via sockets initially
-    let interval = 1000;
 
     // ===================================================
 	// Helpers

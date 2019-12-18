@@ -1,4 +1,29 @@
 /* ===================================================
+// Tape
+   =================================================== */
+.tape-box {
+    display: flex;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.tape-icon {
+    flex-basis: 20%;
+}
+
+.tape-title {
+    flex-basis: 60%;
+}
+
+.tape-icon.correct .material-icons {
+    color: #01d277;
+}
+
+.tape-icon.incorrect .material-icons {
+    color: #f44336;
+}
+
+/* ===================================================
 // Visor
    =================================================== */
    img {
