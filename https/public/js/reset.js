@@ -4,16 +4,39 @@ $(document).ready(async function() {
 	// ===================================================
     let socket = io.connect(socketString);
 
-    $('#reset').click(function() {
-        console.log('sending')
-        socket.emit('resetPt1', {
+    $('#link').click(function() {
+        socket.emit('reset:step1', {
             email: $('#email').val()
         });
     });
 
-    socket.on('success', function() {
+    $('#reset').click(function() {
+        let pass1 = $('#password1').val();
+        let pass2 = $('#password2').val();
+
+        if (code && pass1 && pass2) {
+            socket.emit('reset:step2', {
+                code: code,
+                pass1: pass1,
+                pass2: pass2
+            });
+        }
+    });
+
+    socket.on('success:step1', function() {
         $('#email').val('');
         report('success', 'Success', 'Please check your email for the link');
+    });
+
+    socket.on('success:step2', function() {
+        return swal({
+            icon: 'success',
+            title: 'Success!',
+            text: 'You will now be redirected to the login page.',
+            closeOnClickOutside: false
+        }).then(function() {
+            location.href = '/login';
+        });
     });
 
     socket.on('failure', function() {

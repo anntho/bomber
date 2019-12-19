@@ -37,7 +37,7 @@ function emailResetCode(ip, code) {
     const dateString = now.toString();
     const geo = geoip.lookup(ip);
 	const location = `${geo.city}, ${geo.region}`;
-	const link = config.socket.host + '/password/reset?c=' + code;
+	const link = `${config.socket.host}/password/reset/verified/${code}`;
 
 	let content = `<p><h5>moviebomber.org | Password Reset Link</h5></p>`;
 	content += '<p>Please click the link below to reset your password:</p>';
@@ -150,8 +150,8 @@ module.exports = {
             socket.emit('err', {error: err});
 		}
 	},
-	resetPt1: async (data, socket) => {
-		console.log('Password reset');
+	resetStep1: async (data, socket) => {
+		console.log('password reset | step 1');
 		console.log(data);
 		try {
 			let code = randomString({length: 16});
@@ -164,7 +164,7 @@ module.exports = {
 			let result = await procHandler(accessPool, proc, inputs);
 			console.log(result);
 			if (result[0].success == 1) {
-				socket.emit('success');
+				socket.emit('success:step1');
 				let ipAddress = socket.handshake.address.split(':')[3];
 				let html = await emailResetCode(ipAddress, code);
 				await sendEmail(data.email, 'Password reset link', html);
@@ -173,6 +173,38 @@ module.exports = {
 			}
 		} catch (err) {
 			reportError(file, '147', err, true);
+			return socket.emit('err', {error: generic});
+		}
+	},
+	resetStep2: async (data, socket) => {
+		console.log('password reset | step 2');
+		console.log(data);
+		try {
+			if (data.pass1 == data.pass2) {
+				// 1. Get user by code
+				let codeLookupQuery = 'CALL sp_LookupCode(?)';
+				let CodeLookupInputs = [data.code];
+
+				let result = await procHandler(accessPool, codeLookupQuery, CodeLookupInputs);
+				if (result && result[0] && result[0].used == 0) {
+					let salt = await bcrypt.genSaltSync(10);
+					let hash = await bcrypt.hashSync(data.pass1, salt);
+					
+					let resetQuery = 'CALL sp_UpdatePassword(?, ?)';
+					let resetInputs = [hash, result[0].userId];
+
+					let expireQuery = 'CALL sp_ExpireResetCode(?)';
+					let expireInputs = [result[0].code];
+
+					await procHandler(accessPool, resetQuery, resetInputs);
+					await procHandler(accessPool, expireQuery, expireInputs);
+					socket.emit('success:step2');
+				} else {
+					socket.emit('failure');
+				}
+			}
+		} catch (err) {
+			reportError(file, '201', err, true);
 			return socket.emit('err', {error: generic});
 		}
 	},

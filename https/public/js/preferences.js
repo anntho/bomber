@@ -60,30 +60,6 @@ $(document).ready(async function() {
 	$('.alert-icon').click(function() {
 		$('.alert').hide();
 	});
-
-	// ==========================================================================
-	// Username 
-	// ==========================================================================
-	$('#username').keypress(function(e) {
-		if (e.which == 13) editUsername();
-	});
-
-	$('#editUsername').click(function() {editUsername()});
-
-	let editUsername = () => {
-		let invalid = /[^0-9a-z_]/gi;
-		if ($('#username').val()) {
-			let name = $('#username').val();
-			if (name.match(invalid)) {
-				sweetalert('error', 'Error', 'Invalid name format', null, [false, true]);
-			} else if (name.length < 5 || name.length > 15 ) {
-				sweetalert('error', 'Error', 'Usernames must be between 5 and 15 characters long', null, [false, true]);
-			} else {
-				console.log('sending username..')
-				socket.emit('editUsername', {username: name});
-			}
-		}
-	}
   
 	// ==========================================================================
 	// Email 

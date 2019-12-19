@@ -2,14 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
-const { authenticated, update, setUser } = require('../bin/auth');
+const { update, setUser } = require('../bin/auth');
 const { Game } = require('../models/models');
 const file = 'routes/pages.js';
-
-const config = require('../bin/config');
-const mysql = require('mysql');
-const pagesPool = mysql.createPool(config.mysql);
-const { procHandler, procHandler2 } = require('../lib/sql');
 
 router.get('/', setUser, async (req, res) => {
 	try {
@@ -99,24 +94,20 @@ router.get('/register', (req, res) => {
 });
 
 router.get('/password/reset/verified/:code', async (req, res) => {
-	console.log('param route')
 	if (req.session.user) {
 		res.redirect('/');
 	} else {
 		try {
 			let code = req.params.code;
-			let { success, userId } = await pages.lookupCode(code);
-			console.log(code, success, userId);
-
-			res.locals.userId = null;
-			if (success == 1 && userId) {
-				res.locals.userId = userId;
-				res.locals.step2 = true;
-				res.locals.code = code;
+			let result = await pages.lookupCode(code);
+			console.log(result);
+			if (result && result[0] && result[0].used == 0) {
+				res.locals.verified = true;
+				res.locals.code = result[0].code;
 				res.locals.file = 'reset';
 				res.render(res.locals.file);
 			} else {
-				return res.redirect('/password/reset');
+				res.redirect('/password/reset');
 			}
 		} catch (err) {
 			reportError(file, '151', err, true);

@@ -53,11 +53,7 @@ module.exports = {
             let proc = 'CALL sp_LookupCode(?)';
             let inputs = [code];
             let result = await procHandler(pagesPool, proc, inputs);
-            console.log(result);
-            return {
-                success: result[0].success,
-                userId: result[0].userId
-            }
+            return result;
         } catch (err) {
             throw err;
         }

@@ -93,17 +93,17 @@ io.on('connection', (socket) => {
 		await access.register(data, socket);
 	});
 
-	socket.on('resetPt1', async (data) => {
-		await access.resetPt1(data, socket);
+	socket.on('reset:step1', async (data) => {
+		await access.resetStep1(data, socket);
 	});
+
+	socket.on('reset:step2', async (data) => {
+		await access.resetStep2(data, socket);
+	}); 
 
 	// ===================================================
 	// Prefereces
 	// ===================================================
-	socket.on('editUsername', async (data) => {
-		await preferences.editUsername(data, socket);
-	});
-
 	socket.on('editEmail', async (data) => {
 		await preferences.editEmail(data, socket);
 	});

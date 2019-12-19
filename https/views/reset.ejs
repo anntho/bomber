@@ -24,7 +24,25 @@
 								<a href="/reset">Reset password</a>
 							</h5>
 						</div>
-                        <% if (!userId) { %>
+                        <% if (verified && code) { %>
+                            <div class="col s12">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input id="password1" name="password1" type="password" class="login" required>
+                                        <label for="password1">New Password</label>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <input id="password2" name="password2" type="password" class="login" required>
+                                        <label for="password2">Confirm New Password</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <a id="reset" class="waves-effect waves-light btn-large purple">Submit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } else { %>
                             <div class="col s12">
                                 <div class="row">
                                     <div class="input-field col s12">
@@ -34,25 +52,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <a id="reset" class="waves-effect waves-light btn-large purple">Send link</a>
-                                    </div>
-                                </div>
-                            </div>
-                        <% } else { %>
-                            <div class="col s12">
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input id="password1" name="password1" type="password" class="login" required>
-                                        <label for="password1">Password</label>
-                                    </div>
-                                    <div class="input-field col s12">
-                                        <input id="password2" name="password2" type="password" class="login" required>
-                                        <label for="password2">Confirm Password</label>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <a id="submit" class="waves-effect waves-light btn-large purple">Submit</a>
+                                        <a id="link" class="waves-effect waves-light btn-large purple">Send link</a>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +66,8 @@
 	<% include ./footer %>
 
 	<script>
-		var socketString = <%-JSON.stringify(socket)%>;
+		let socketString = <%-JSON.stringify(socket)%>;
+		let code = <%-(code) ? JSON.stringify(code) : null%>;
 	</script>
 	<script src="/js/jquery.slim.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>

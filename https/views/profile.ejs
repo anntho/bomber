@@ -16,8 +16,8 @@
 				<div class="col s12">
 					<div class="row">
 						<div class="col s6">
-							<div id="username" class="cyan-text bold">
-								<%-thisUser.username%>
+							<div id="username" class="amber-text bold">
+								[<%-thisUser.username%>]
 							</div>
 						</div>
 					</div>
@@ -45,7 +45,7 @@
 							<span>Rank</span>
 						</div>
 						<div class="col s8 m4">
-							<span id="rank" class="data"><%-rank.rank.toUpperCase()%></span>
+							<span id="rank" class="data"><%-rank.rank.toLowerCase()%></span>
 						</div>
 						<div class="col s8 m6">
 							<span class="progress-data">
@@ -60,7 +60,7 @@
 
 					<div class="row valign-wrapper line">
 						<div class="col s12">
-							<div class="cyan-text bold">games</div>
+							<div class="amber-text bold">[games]</div>
 						</div>
 					</div>
 					<div class="row valign-wrapper line">
@@ -78,7 +78,9 @@
 										<tr id="<%-game.room%>">
 											<td><%-game.date%></td>
 											<td><%-game.gameOpponent.username%></td>
-											<td class="<%-game.userColor%>"><%-(game.winner) ? 'W' : 'L'%></td>
+											<td class="<%-game.userColor%>">
+												<%-(game.winner) ? `W [+${game.gameUser.new.points}]` : `L [${game.gameUser.new.points}]`%>
+											</td>
 										</tr>
 									<% }); %>
 								</tbody>
