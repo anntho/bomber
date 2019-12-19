@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
-const { authenticated, setUser } = require('../bin/auth');
+const { authenticated, update, setUser } = require('../bin/auth');
 const { Game } = require('../models/models');
 const file = 'routes/pages.js';
 
@@ -33,11 +33,14 @@ router.get('/board', setUser, async (req, res) => {
 	}
 });
 
-router.get('/live/:id', [authenticated, setUser], async (req, res) => {
+router.get('/live/:id', [update, setUser], async (req, res) => {
 	try {
 		let room = req.params.id;
 		let game = await Game.findOne({room: room});
-		let participant = game.players.find(p => p.userId == req.session.user.id);
+		let participant = null;
+		if (req.session.user) {
+			game.players.find(p => p.userId == req.session.user.id);
+		}
 
 		if (game && game.status == 'closed') {
 			game.status == 'closed';
@@ -56,6 +59,7 @@ router.get('/live/:id', [authenticated, setUser], async (req, res) => {
 			res.redirect('/');
 		}
 	} catch (err) {
+		console.log(err);
 		res.redirect('/');
 	}
 });

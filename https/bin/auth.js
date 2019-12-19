@@ -10,6 +10,13 @@ module.exports.authenticated = async (req, res, next) => {
 	}
 }
 
+module.exports.update = async (req, res, next) => {
+	if (req.session.user) {
+		await updateSessionHTTP(req);
+	}
+	next();
+}
+
 module.exports.setUser = (req, res, next) => {
 	if (req.session.user) {
 		res.locals.user = true;
