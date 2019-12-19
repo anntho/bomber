@@ -69,30 +69,16 @@
 								<thead>
 									<tr>
 										<th>Played</th>
-										<th class="hide-on-small-only">Summary</th>
+										<th>Opponent</th>
+										<th>Outcome</th>
 									</tr>
 								</thead>
 								<tbody id="games">
 									<% games.forEach(game => { %>
 										<tr id="<%-game.room%>">
 											<td><%-game.date%></td>
-											<td class="hide-on-small-only">
-												<span>
-													<span><%-game.gameUser.username%></span>
-													<span><%-game.gameUser.new.elo%></span>
-													<span class="<%-game.userColor%>">
-														[<%-game.gameUser.new.points%>]
-													</span>
-												</span>
-												<span class="cyan-text">vs.</span>
-												<span>
-													<span><%-game.gameOpponent.username%></span>
-													<span><%-game.gameOpponent.new.elo%></span>
-													<span class="<%-game.opponentColor%>">
-														[<%-game.gameOpponent.new.points%>]
-													</span>
-												</span>
-											</td>
+											<td><%-game.gameOpponent.username%></td>
+											<td class="<%-game.userColor%>"><%-(game.winner) ? 'W' : 'L'%></td>
 										</tr>
 									<% }); %>
 								</tbody>

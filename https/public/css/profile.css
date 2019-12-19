@@ -28,6 +28,10 @@
     color: #f44336;
 }
 
+td {
+    font-size: .8rem;
+}
+
 td span {
     margin-right: 1%;
 }

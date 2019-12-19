@@ -28,19 +28,22 @@ router.get('/:id', [setUser], async (req, res) => {
 			}).exec();
 			let slim = [];
 			for (const game of games) {
-				let date = new Date(game._id.getTimestamp())
+				let date = new Date(game._id.getTimestamp());
 				let str = date.toString().split('T')[0];
 				let gameUser = game.players.find(p => p.username == username);
 				let gameOpponent = game.players.find(p => p.username != username);
 				let userColor = 'incorrect';
 				let opponentColor = 'incorrect';
+				let winner = false;
 				if (game.winner == user[0].id) {
+					winner = true;
 					userColor = 'correct';
 					opponentColor = 'incorrect';
 				}
 				slim.push({
 					room: game.room,
 					date: str,
+					winner: winner,
 					gameUser: gameUser,
 					userColor: userColor,
 					gameOpponent: gameOpponent,
