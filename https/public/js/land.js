@@ -15,6 +15,11 @@ $(document).ready(function() {
         socket.emit('find');
     });
 
+    $('.search').click(function() {
+        console.log($(this).attr('data-count'))
+        console.log($(this).attr('data-type'))
+    })
+
     $('#cancel').click(function() {
         socket.emit('cancel');
     });

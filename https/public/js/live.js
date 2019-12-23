@@ -55,7 +55,7 @@ $(document).ready(async function() {
 
             tapeIcon2.classList.add('tape-icon', 'flex');
 
-            tapeTitle.innerHTML = movie.title;
+            tapeTitle.innerHTML = `${movie.title} (${movie.year})`;
             
             if (t.guesses.correct == player1) {
                 tapeIcon1.classList.add('correct');
@@ -238,7 +238,7 @@ $(document).ready(async function() {
     }
 
     let prompt = (data) => {
-        $('#prompt').text(data.title);
+        $('#prompt').text(`${data.title} (${data.year})`);
     }
 
     let buttons = (data) => {
