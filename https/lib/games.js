@@ -196,6 +196,9 @@ module.exports = {
 					case 'horror':
 						listId = '127700';
 						break;
+					case '90s':
+						listId = '84651';
+						break;
 				}
 
 				let idList = [];

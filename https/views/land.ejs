@@ -32,7 +32,7 @@
 					<div class="col s12">
 						<h5 class="valign-wrapper">
 							<i class="material-icons left cyan-text">flash_on</i>
-							Blitz
+							{ blitz }
 						</h5>
 						<div class="button-container">
 							<div 
@@ -40,28 +40,48 @@
 								data-mode="popular" 
 								class="search point z-depth-4 waves-effect"
 							>
-								10 | Popular
-							</div>
-							<div
-								data-count="10"
-								data-mode="horror"
-								class="search point z-depth-4 waves-effect"
-							>
-								10 | Horror
+								<div class="count">10</div>
+								<div class="mode">popular</div>
 							</div>
 							<div
 								data-count="30"
 								data-mode="popular"
 								class="search point z-depth-4 waves-effect"
 							>
-								30 | Popular
+								<div class="count">30</div>
+								<div class="mode">popular</div>
+							</div>
+							<div
+								data-count="10"
+								data-mode="horror"
+								class="search point z-depth-4 waves-effect"
+							>
+								<div class="count">10</div>
+								<div class="mode">horror</div>
 							</div>
 							<div
 								data-count="30"
 								data-mode="horror"
 								class="search point z-depth-4 waves-effect"
 							>
-								30 | Horror
+								<div class="count">30</div>
+								<div class="mode">horror</div>
+							</div>
+							<div 
+								data-count="10" 
+								data-mode="90s" 
+								class="search point z-depth-4 waves-effect"
+							>
+								<div class="count">10</div>
+								<div class="mode">90s Movies</div>
+							</div>
+							<div 
+								data-count="10" 
+								data-mode="90s"
+								class="search point z-depth-4 waves-effect"
+							>
+								<div class="count">30</div>
+								<div class="mode">90s Movies</div>
 							</div>
 						</div>
 					</div>
@@ -71,7 +91,7 @@
 					<div class="col s12">
 						<h5 class="valign-wrapper">
 							<i class="material-icons left cyan-text">domain</i>
-							Lobby
+							{ lobby }
 						</h5>
 						<div class="lobby-container">
 							<table>
@@ -93,7 +113,7 @@
 					<div class="col s12">
 						<h5 class="valign-wrapper">
 							<i class="material-icons left cyan-text">people</i>
-							New Users
+							{ new users }
 						</h5>
 						<div class="new-users-container">
 							<% if (metrics && metrics.newUsers) { %>

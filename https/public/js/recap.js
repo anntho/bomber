@@ -9,7 +9,7 @@ $(document).ready(function() {
 	// ===================================================
     load();
     async function load() {
-        let movies = await getMovieDocs('109087');
+        let movies = await getMovieDocs(gameData.parameters.listId);
         display(gameData, movies);
     }
 
@@ -57,6 +57,8 @@ function updateVisorElo(userElo, opponentElo, result) {
 
 
 function setProgress(u, o) {
+    u = u * 10;
+    o = o * 10;
     if (u == 100) {
         $('.progress.user .determinate').css('background-color', '#01d277');
         $('.progress.user').css('box-shadow', '0 0 10px #01d277');
@@ -94,7 +96,7 @@ function rollTape(player1, data, movies) {
 
         tapeIcon2.classList.add('tape-icon', 'flex');
 
-        tapeTitle.innerHTML = movie.title;
+        tapeTitle.innerHTML = `${movie.title} (${movie.year})`;
         
         if (t.guesses.correct == player1) {
             tapeIcon1.classList.add('correct');
