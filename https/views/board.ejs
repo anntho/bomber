@@ -18,8 +18,8 @@
 				<div class="sub-wrapper">
 					<h5>
 						<a href="/board" class="valign-wrapper">
-							<i class="material-icons left purple-text">insert_chart</i>
-							Leaderboard
+							<i class="material-icons left cyan-text">insert_chart</i>
+							{ leaderboard }
 						</a>
 					</h5>
 					<table id="leaderboard" class="table leaderboard" style="width:100%"></table>
@@ -42,8 +42,7 @@
 			data: data,
 			columns: [
 				{ title: 'Player', data: 'username' },
-				{ title: 'Rating', data: 'elo' },
-				{ title: 'Mode', defaultContent: 'blitz' }
+				{ title: 'Rating', data: 'elo' }
 			],
 			columnDefs: [
 				{ 'className': 'dt-center', 'targets': '_all' }
