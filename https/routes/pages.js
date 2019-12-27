@@ -29,12 +29,13 @@ router.get('/board', setUser, async (req, res) => {
 });
 
 router.get('/live/:id', [update, setUser], async (req, res) => {
+	console.log('live route');
 	try {
 		let room = req.params.id;
 		let game = await Game.findOne({room: room});
 		let participant = null;
 		if (req.session.user) {
-			game.players.find(p => p.userId == req.session.user.id);
+			participant = game.players.find(p => p.userId == req.session.user.id);
 		}
 
 		if (game && game.status == 'closed') {
@@ -121,6 +122,7 @@ router.get('/password/reset', (req, res) => {
 	if (req.session.user) {
 		res.redirect('/');
 	} else {
+		res.locals.verified = false;
 		res.locals.userId = null;
 		res.locals.code = null;
 		res.locals.step2 = false;

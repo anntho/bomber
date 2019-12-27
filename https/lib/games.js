@@ -115,6 +115,7 @@ module.exports = {
 		}
 	},
 	joinById: async (io, socket, data) => {
+		console.log('joinById');
 		try {
 			if (!socket.request.session.user) {
 				return socket.emit('liveCheckUser', false);
@@ -157,7 +158,9 @@ module.exports = {
 			return socket.emit('err', err);
 		}
 	},
-	find: async (io, socket) => {
+	search: async (io, socket, data) => {
+		console.log('game search')
+		console.log(data)
 		if (!socket.request.session.user) {
 			return socket.emit('liveCheckUser', false);
 		} else {
@@ -169,24 +172,46 @@ module.exports = {
 			let userId = socket.request.session.user.id;
 			let rank = socket.request.session.user.rank;
 			let elo = socket.request.session.user.elo;
-			let defaultListId = '109087';
+			let mode = data.mode;
+			let count = data.count;
+			let listId = '';
 
-			// 1. Find an open game
-			let open = await Game.findOne({status: 'open'});
+			console.log('variables: ', mode, count)
+
+			// 1. Find an open game w/matching params
+			let open = await Game.findOne({ 
+				'status': 'open',
+				'parameters.mode': mode,
+				'parameters.count': count
+			});
 			
 			// 2. If no open games, create one and wait in new room
 			if (!open) {
 				let roomId = cryptoRandomString({length: 10});
-				let list = await Movie.find({listID: defaultListId});
+				
+				switch (mode) {
+					case 'popular':
+						listId = '96725';
+						break;
+					case 'horror':
+						listId = '127700';
+						break;
+				}
 
 				let idList = [];
+				let list = await Movie.find({'lists.altId': listId});
 				idList = list.map(i => i.altId);
 				shuffle(idList);
+				idList = idList.slice(0, 50); // don't store hundreds of ids
 
 				let newGame = {
 					room: roomId,
-					mode: 'blitz',
 					status: 'open',
+					parameters: {
+						mode: String(mode),
+						count: parseInt(count),
+						listId: String(listId)
+					},
 					winner: null,
 					index: 0,
 					cIndex: Math.floor(Math.random() * 3),
@@ -262,7 +287,7 @@ module.exports = {
 			return socket.emit('err', err);
 		}
 	},
-	guess: async (data, io, socket) => {
+	guess: async (io, socket, data) => {
 		//console.log('guess');
 		//console.log(data);
 		try {
@@ -285,8 +310,9 @@ module.exports = {
 			if (data.correct) {
 				if (!turn.guesses.correct) {
 					turn.guesses.correct = userId;
-					gameUser.score = gameUser.score + 10;
-					if (gameUser.score >= 100) {
+					gameUser.score = gameUser.score + 1;
+
+					if (gameUser.score === game.parameters.count) {
 						game.status = 'closed';
 						game.winner = userId;
 						gameover = true;

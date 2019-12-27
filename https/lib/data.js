@@ -94,9 +94,8 @@ module.exports = {
 		}
 	},
 	getMovieDocs: async (socket, id) => {
-		console.log('getMovieDocs')
 		try {
-			let list = await Movie.find({listID: id});
+			let list = await Movie.find({'lists.altId': id});
 			socket.emit('getMovieDocs', list);
 		} catch (err) {
 			reportError(file, '101', err, true);

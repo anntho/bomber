@@ -11,14 +11,12 @@ $(document).ready(function() {
         clearInterval(refreshInterval);
     }
 
-    $('#blitz').click(function() {
-        socket.emit('find');
-    });
-
     $('.search').click(function() {
-        console.log($(this).attr('data-count'))
-        console.log($(this).attr('data-type'))
-    })
+        socket.emit('search', {
+            count: $(this).attr('data-count'),
+            mode: $(this).attr('data-mode')
+        });
+    });
 
     $('#cancel').click(function() {
         socket.emit('cancel');
@@ -84,7 +82,7 @@ function makeLobby(data) {
             username.innerHTML = game.players[0].username;
             elo.innerHTML = game.players[0].elo;
             rank.innerHTML = game.players[0].rank;
-            mode.innerHTML = 'blitz';
+            mode.innerHTML = `${game.parameters.count} | ${game.parameters.mode}`;
             row.appendChild(username);
             row.appendChild(elo);
             row.appendChild(rank);

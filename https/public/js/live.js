@@ -87,6 +87,8 @@ $(document).ready(async function() {
     }
 
     function setProgress(u, o) {
+        u = u * 10;
+        o = o * 10;
         if (u == 100) {
             $('.progress.user .determinate').css('background-color', '#01d277');
             $('.progress.user').css('box-shadow', '0 0 10px #01d277');
@@ -206,9 +208,9 @@ $(document).ready(async function() {
 	// Package
     // ===================================================
     let organize = () => {
-        //console.log('organize');
-        //console.log(currentIndex);
-        //console.log(idList);
+        // console.log('organize');
+        // console.log(currentIndex);
+        // console.log(idList);
 
         let id = idList[currentIndex];
         currentId = id;
@@ -304,8 +306,8 @@ $(document).ready(async function() {
 
     refresh();
     async function refresh() {
-        list = await getMovieDocs('109087');
         let data = await update();
+        list = await getMovieDocs(data.game.parameters.listId);
         updateTracking(data);
         updateVisor(data);
         load();

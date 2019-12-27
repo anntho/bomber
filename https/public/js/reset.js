@@ -4,11 +4,21 @@ $(document).ready(async function() {
 	// ===================================================
     let socket = io.connect(socketString);
 
+    $('#email').on('keypress', function(e) {
+        if (e.which == 13) {
+            getLink();
+        }
+    });
+
     $('#link').click(function() {
+        getLink();
+    });
+
+    function getLink() {
         socket.emit('reset:step1', {
             email: $('#email').val()
         });
-    });
+    }
 
     $('#reset').click(function() {
         let pass1 = $('#password1').val();

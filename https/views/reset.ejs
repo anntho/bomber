@@ -67,7 +67,7 @@
 
 	<script>
 		let socketString = <%-JSON.stringify(socket)%>;
-		let code = <%-(code) ? JSON.stringify(code) : null%>;
+		let code = <%-JSON.stringify(code)%>;
 	</script>
 	<script src="/js/jquery.slim.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>

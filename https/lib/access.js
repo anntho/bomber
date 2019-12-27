@@ -40,9 +40,7 @@ function emailResetCode(ip, code) {
 	const link = `${config.socket.host}/password/reset/verified/${code}`;
 
 	let content = `<p><h5>moviebomber.org | Password Reset Link</h5></p>`;
-	content += '<p>Please click the link below to reset your password:</p>';
-	content += `<p><a href="${link}">${link}</a></p>`;
-
+	content += `<p>Please click <a href="${link}">here</a> to reset your password.</p>`;
 	content += `<ul style="font-size: 10px;"><li>Date/Time: ${dateString}</li>`;
 	content += `<li>IP Address (Location): ${ip} (${location})</li>`;
 	content += `</ul>`;

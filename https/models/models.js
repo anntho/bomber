@@ -21,9 +21,13 @@ let movieSchema = new mongoose.Schema({
 
 let gameSchema = new mongoose.Schema({
 	room: String,
-	created: { type: Date, default: Date.now },
-	mode: String,
 	status: String,
+	created: { type: Date, default: Date.now },
+	parameters: {
+		mode: String,
+		count: Number,
+		listId: String
+	},
 	winner: Number,
 	index: Number,
 	cIndex: Number,
