@@ -5,8 +5,8 @@ $(document).ready(async function() {
         report('error', 'Whoops!', data.error);
     });
 
-    socket.on('success', function() {
-        window.location.href = '/account/preferences';
+    socket.on('success', function(data) {
+        window.location.href = `/@/${data.username}`;
     });
 
     $('#submit').click(async function() {

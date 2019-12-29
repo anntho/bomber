@@ -136,7 +136,9 @@ module.exports = {
 	                    	socket.request.session.user = user[0];
 	                    	socket.request.session.save();
 	                    	//console.log(socket.request.session);
-	                        socket.emit('success');
+	                        socket.emit('success', {
+								username: user[0].username
+							});
 	                    } else {
 	                        socket.emit('err', {error: 'Incorrect password'});
 	                    }
