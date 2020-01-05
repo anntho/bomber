@@ -23,9 +23,7 @@ module.exports = {
 		let diff = timeNow - timeGame;
 
 		if (diff > expiration) {
-			expired = true;
-			game.status = 'expired';
-			game.save();
+			await game.deleteOne({room: game.room}).exec();
 		}
 		return expired;
 	},
