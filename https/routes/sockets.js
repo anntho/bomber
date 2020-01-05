@@ -131,6 +131,10 @@ io.on('connection', (socket) => {
 		await games.close(socket);
 	});
 
+	socket.on('resign', async (data) => {
+		await games.resign(io, socket, data);
+	});
+
 	socket.on('search', async (data) => {
 		await games.search(io, socket, data);
 	});

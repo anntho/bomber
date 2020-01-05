@@ -186,3 +186,8 @@ img {
     background-color: #444444;
     width: 100%;
 }
+
+.resign {
+    font-size: .9rem;
+    text-decoration: underline;
+}

@@ -28,7 +28,10 @@ let gameSchema = new mongoose.Schema({
 		count: Number,
 		listId: String
 	},
-	winner: Number,
+	outcome: {
+		winner: Number,
+		resigned: Number
+	},
 	index: Number,
 	cIndex: Number,
 	list: [String],
@@ -38,7 +41,8 @@ let gameSchema = new mongoose.Schema({
 			guesses: {
 				correct: Number,
 				incorrect: [Number]
-			}
+			},
+			detail: String
 		}
 	],
 	players: [

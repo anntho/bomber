@@ -285,6 +285,12 @@ $(document).ready(async function() {
         });
     });
 
+    $('#resign').click(function() {
+        socket.emit('resign', {
+            id: currentId
+        });
+    });
+
     // ===================================================
 	// Immediate
     // ===================================================
