@@ -21,13 +21,12 @@ router.get('/:id', [setUser], async (req, res) => {
 			res.locals.file = '404';
 			res.render(res.locals.file);
 		} else {
-			let games = await Game.find({
-				'players': {$elemMatch: {username: username}}
-			}).sort({
-				created: 'desc'
-			}).exec();
+			let playerQuery = {'players': {$elemMatch: {username: username}}};
+			let sortQuery = {created: 'desc'};
+			let games = await Game.find(playerQuery).sort(sortQuery).exec();
+			let closedGames = games.filter(g => g.status == 'closed');
 			let slim = [];
-			for (const game of games) {
+			for (const game of closedGames) {
 				let date = new Date(game._id.getTimestamp());
 				let str = date.toString().split('T')[0];
 				let gameUser = game.players.find(p => p.username == username);
@@ -51,7 +50,7 @@ router.get('/:id', [setUser], async (req, res) => {
 				});
 			}
 	
-			let gamesPlayed = (games) ? games.length : 0;
+			let gamesPlayed = (games && closedGames) ? closedGames.length : 0;
 			
 			// not sure if we need to recalc this everytime
 			let rankProc = 'CALL sp_GetRank(?)';
