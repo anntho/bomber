@@ -417,7 +417,7 @@ async function endGame(io, game, winner, loser, resigned) {
 	game.outcome.winner = winner.userId;
 	
 	if (resigned) {
-		game.outcome.resigned = loser.id;
+		game.outcome.resigned = loser.userId;
 	}
 
 	let eloData = await updateElo(
@@ -429,7 +429,7 @@ async function endGame(io, game, winner, loser, resigned) {
 	winner.new.points = eloData.winnerPoints;
 	loser.new.elo = eloData.loserElo;
 	loser.new.points = eloData.loserPoints;
-	game.save();
+	await game.save();
 
 	io.to(winner.socketId).emit('winner', {
 		elo: winner.new,
