@@ -1,6 +1,7 @@
 .line {
     border-bottom: 1px solid #474747;
-    padding-bottom: 15px;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
 .title {
@@ -39,3 +40,24 @@ td span {
 tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.01);
 }
+
+.row.line {
+    background-color: #212121;
+}
+
+.profile-header {
+    height: 100px;
+    background-color: #2f2f2f;
+}
+
+.profile-action-buttons a {
+    color: grey;
+    text-decoration: underline;
+}
+
+.profile-action-buttons a:hover {
+    color: #00bcd4;
+    text-decoration: underline;
+}
+
+
