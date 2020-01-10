@@ -15,7 +15,13 @@ router.get('/:id', [setUser], async (req, res) => {
 		let userProc = 'CALL sp_GetUser(?)';
 		let userInputs = [username];
 		let user = await procHandler(usersPool, userProc, userInputs);
-		console.log(user)
+
+		if (res.locals.user) {
+			let followerProc = 'CALL sp_GetFollowers(?)';
+			let followerInputs = [res.locals.userId];
+			let followers = await procHandler(usersPool, followerProc, followerInputs);
+			console.log(followers);
+		}
 		
 		if (!user[0]) {
 			res.locals.file = '404';
