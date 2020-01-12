@@ -53,6 +53,8 @@ $(document).ready(function() {
 
     socket.emit('lobby');
     socket.on('lobby', function(data) {
+        console.log(socket.io.uri)
+        console.log(data)
         makeLobby(data);
     });
 });

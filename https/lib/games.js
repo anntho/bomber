@@ -29,6 +29,9 @@ module.exports = {
 	},
 	lobby: async (data, socket) => {
 		try {
+			console.log('lobby');
+			console.log(socket.io.uri);
+			console.log(line);
 			let games = await Game.find({status: 'open'});
 			if (games) {
 				for (const game of games) {
