@@ -37,7 +37,7 @@ $(document).ready(function() {
         // 2. elo
         let result = (player1.userId == game.winner) ? 1 : 0;
         updateVisorElo(player1.new, player2.new, result);
-        setProgress(player1.score, player2.score);
+        setProgress(player1.score, player2.score, game.parameters.count);
         rollTape(player1.userId, game, movies);
     }
 });
@@ -56,23 +56,27 @@ function updateVisorElo(userElo, opponentElo, result) {
 }
 
 
-function setProgress(u, o) {
-    u = u * 10;
-    o = o * 10;
-    if (u == 100) {
+function setProgress(u, o, c) {
+    let total = c;
+    let userScore = u;
+    let opponentScore = o;
+    let userPercent = (userScore / total) * 100;
+    let opponentPercent = (opponentScore / total) * 100;
+
+    if (userPercent == 100) {
         $('.progress.user .determinate').css('background-color', '#01d277');
         $('.progress.user').css('box-shadow', '0 0 10px #01d277');
     }
 
-    if (o == 100) {
+    if (opponentPercent == 100) {
         $('.progress.opponent').css('background-color', '#01d277');
         $('.progress.opponent').css('box-shadow', '0 0 10px #01d277');
     }
 
-    if (u < 101 && o < 101) {
-        o = 100 - o;
-        $('#userProgress').animate({width: `${u}%`}, 200);
-        $('#opponentProgress').animate({width: `${o}%`}, 200);
+    if (userScore <= 100 && opponentScore <= 100) {
+        opponentPercent = 100 - opponentPercent;
+        $('#userProgress').animate({width: `${userPercent}%`}, 100);
+        $('#opponentProgress').animate({width: `${opponentPercent}%`}, 100);
     }
 }
 

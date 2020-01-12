@@ -86,24 +86,27 @@ $(document).ready(async function() {
         }
     }
 
-    function setProgress(u, o) {
-        console.log('setting progress', u, o)
-        u = u * 10;
-        o = o * 10;
-        if (u == 100) {
+    function setProgress(u, o, c) {
+        let total = c;
+        let userScore = u;
+        let opponentScore = o;
+        let userPercent = (userScore / total) * 100;
+        let opponentPercent = (opponentScore / total) * 100;
+
+        if (userPercent == 100) {
             $('.progress.user .determinate').css('background-color', '#01d277');
             $('.progress.user').css('box-shadow', '0 0 10px #01d277');
         }
 
-        if (o == 100) {
+        if (opponentPercent == 100) {
             $('.progress.opponent').css('background-color', '#01d277');
             $('.progress.opponent').css('box-shadow', '0 0 10px #01d277');
         }
 
-        if (u < 101 && o < 101) {
-            o = 100 - o;
-            $('#userProgress').animate({width: `${u}%`}, 200);
-            $('#opponentProgress').animate({width: `${o}%`}, 200);
+        if (userScore <= 100 && opponentScore <= 100) {
+            opponentPercent = 100 - opponentPercent;
+            $('#userProgress').animate({width: `${userPercent}%`}, 100);
+            $('#opponentProgress').animate({width: `${opponentPercent}%`}, 100);
         }
     }
 
@@ -116,7 +119,7 @@ $(document).ready(async function() {
         $('#visorOpponent').text(data.opponentData.username);
         $('#opponentRank').text(`[${data.opponentData.rank}]`);
         $('#opponentElo').text(`[${data.opponentData.elo}]`);
-        setProgress(data.userData.score, data.opponentData.score);
+        setProgress(data.userData.score, data.opponentData.score, data.game.parameters.count);
     }
 
     function updateVisorElo(userElo, opponentElo, result) {
@@ -178,12 +181,12 @@ $(document).ready(async function() {
 
 	socket.on('win', function(data) {
         feedback('success', 'Correct!');
-        setProgress(data.userScore, data.opponentScore);
+        setProgress(data.userScore, data.opponentScore, data.count);
     });
 
     socket.on('lose', function(data) {
         feedback('error', 'Too slow!');
-        setProgress(data.userScore, data.opponentScore);
+        setProgress(data.userScore, data.opponentScore, data.count);
     });
 
     socket.on('winner', function(data) {
@@ -193,7 +196,7 @@ $(document).ready(async function() {
     });
 
     socket.on('loser', function(data) {
-        $('#result').text('You loose.');
+        $('#result').text('Sorry, you lost.');
         $('#result').css('color', '#f44336');
         updateVisorElo(data.elo, data.opponentElo, 0);
     });
@@ -209,10 +212,6 @@ $(document).ready(async function() {
 	// Package
     // ===================================================
     let organize = () => {
-        // console.log('organize');
-        // console.log(currentIndex);
-        // console.log(idList);
-
         let id = idList[currentIndex];
         currentId = id;
 

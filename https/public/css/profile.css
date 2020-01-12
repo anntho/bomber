@@ -29,6 +29,10 @@
     color: #f44336;
 }
 
+th {
+    font-size: .9rem;
+}
+
 td {
     font-size: .8rem;
 }

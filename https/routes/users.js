@@ -35,18 +35,20 @@ router.get('/:id', [setUser], async (req, res) => {
 			for (const game of closedGames) {
 				let date = new Date(game._id.getTimestamp());2
 				let str = date.toString().split('T')[0];
+				let mode = `${game.parameters.count} ${game.parameters.mode}`;
 				let gameUser = game.players.find(p => p.username == username);
 				let gameOpponent = game.players.find(p => p.username != username);
 				let userColor = 'incorrect';
 				let opponentColor = 'incorrect';
 				let winner = false;
-				if (game.winner == user[0].id) {
+				if (game.outcome.winner == user[0].id) {
 					winner = true;
 					userColor = 'correct';
 					opponentColor = 'incorrect';
 				}
 				slim.push({
 					room: game.room,
+					mode: mode,
 					date: str,
 					winner: winner,
 					gameUser: gameUser,

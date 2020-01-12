@@ -9,7 +9,7 @@ app.set('port', port);
 
 const server = https.createServer(config.credentials, app);
 
-server.listen(port, () => console.log(`server listening on ${port}`));
+server.listen(port, () => console.log(`Server Listening | Port: ${port} | Env: ${process.env.NODE_ENV}`));
 server.on('error', onError);
 server.on('listening', onListening);
 

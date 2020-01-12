@@ -1,6 +1,5 @@
 $(document).ready(function() {
     let socket = io.connect(socketString);
-    console.log(socket);
     let refreshTime = 5000;
     let refreshInterval = setInterval(updateLobby, refreshTime);
     
@@ -54,8 +53,6 @@ $(document).ready(function() {
 
     socket.emit('lobby');
     socket.on('lobby', function(data) {
-        console.log(socket.io.uri)
-        console.log(data)
         makeLobby(data);
     });
 });

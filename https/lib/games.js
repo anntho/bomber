@@ -29,7 +29,8 @@ module.exports = {
 	},
 	lobby: async (data, socket) => {
 		try {
-			let games = await Game.find({status: 'open'});
+			let env = process.env.NODE_ENV || 'development';
+			let games = await Game.find({status: 'open', env: env});
 			if (games) {
 				for (const game of games) {
 					await module.exports.checkExpired(game);
@@ -186,15 +187,14 @@ module.exports = {
 				socket.emit('liveCheckUser', true);
 			}
 
+			let env = process.env.NODE_ENV || 'development';
 			let userId = socket.request.session.user.id;
 			let mode = data.mode;
 			let count = data.count;
 			let listId = getListId(mode);
-			let open = await findOpenGame(mode, count);
+			let open = await findOpenGame(mode, count, env);
 
 			if (!open) {
-				console.log('creating a new game');
-				console.log(line);
 				let roomId = cryptoRandomString({length: 10});
 				let idList = await makeIdList(listId);
 				let newGame = createNewGame(
@@ -247,10 +247,10 @@ module.exports = {
 			}
 
 			if (data.correct) {
-				emitGuessResponse(io, gameUser, gameOpponent);
 				if (!turn.guesses.correct) {
 					turn.guesses.correct = userId;
 					gameUser.score++;
+					emitGuessResponse(io, gameUser, gameOpponent, game.parameters.count);
 					if (gameUser.score === game.parameters.count) {
 						gameover = true;
 						await endGame(io, game, gameUser, gameOpponent, false);
@@ -289,9 +289,10 @@ function getListId(mode) {
 	return listId;
 }
 
-async function findOpenGame(mode, count) {
+async function findOpenGame(mode, count, env) {
 	return await Game.findOne({
 		'status': 'open',
+		'env': env,
 		'parameters.mode': mode,
 		'parameters.count': count
 	});
@@ -306,8 +307,10 @@ async function makeIdList(listId) {
 
 function createNewGame(socket, roomId, mode, count, listId, idList) {
 	let user = socket.request.session.user;
+	let env = process.env.NODE_ENV || 'development';
 	return {
 		room: roomId,
+		env: env,
 		status: 'open',
 		parameters: {
 			mode: String(mode),
@@ -378,15 +381,17 @@ async function advance(io, game, bothWrong) {
 	});
 }
 
-function emitGuessResponse(io, winner, loser) {
+function emitGuessResponse(io, winner, loser, count) {
 	io.to(winner.socketId).emit('win', {
 		userScore: winner.score,
-		opponentScore: loser.score
+		opponentScore: loser.score,
+		count: count
 	});
 
 	io.to(loser.socketId).emit('lose', {
 		userScore: loser.score,
-		opponentScore: winner.score
+		opponentScore: winner.score,
+		count: count
 	});
 }
 

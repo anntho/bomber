@@ -41,7 +41,7 @@
 							</div>
 						</div>
 						<div class="modal-footer">
-							<a id="messageButton" class="btn modal-close green">Submit</a>
+							<a id="messageButton" class="btn modal-close purple">Submit</a>
 							<a id="cancel" class="modal-close btn-flat grey-text">Cancel</a>
 						</div>
 					</div>
@@ -96,6 +96,7 @@
 								<thead>
 									<tr>
 										<th>Played</th>
+										<th>Mode</th>
 										<th>Opponent</th>
 										<th>Outcome</th>
 									</tr>
@@ -104,6 +105,7 @@
 									<% games.forEach(game => { %>
 										<tr id="<%-game.room%>">
 											<td><%-game.date%></td>
+											<td><%-game.mode%></td>
 											<td><%-game.gameOpponent.username%></td>
 											<td class="<%-game.userColor%>">
 												<%-(game.winner) ? `W [+${game.gameUser.new.points}]` : `L [${game.gameUser.new.points}]`%>
