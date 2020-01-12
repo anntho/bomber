@@ -1,5 +1,6 @@
 $(document).ready(function() {
     let socket = io.connect(socketString);
+    console.log(socket);
     let refreshTime = 5000;
     let refreshInterval = setInterval(updateLobby, refreshTime);
     

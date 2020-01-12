@@ -93,6 +93,7 @@ td, th {
 .search .mode {
     flex-basis: 70%;
     justify-content: flex-start;
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: .9rem;
+    font-weight: 700;
+    text-transform: uppercase;
 }

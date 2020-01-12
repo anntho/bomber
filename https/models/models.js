@@ -21,6 +21,7 @@ let movieSchema = new mongoose.Schema({
 
 let gameSchema = new mongoose.Schema({
 	room: String,
+	env: String,
 	status: String,
 	created: { type: Date, default: Date.now },
 	parameters: {
