@@ -87,6 +87,7 @@ $(document).ready(async function() {
     }
 
     function setProgress(u, o) {
+        console.log('setting progress', u, o)
         u = u * 10;
         o = o * 10;
         if (u == 100) {

@@ -14,6 +14,7 @@ const config = require('./bin/config');
 const session = require('./bin/session');
 const { catch404, errorHandler } = require('./lib/errors');
 const socket = `${config.socket.host}:${config.socket.port}`;
+console.log(socket);
 
 // MongoDB Connection to Atlas
 const mongoose = require('mongoose');

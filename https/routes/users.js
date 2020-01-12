@@ -33,7 +33,7 @@ router.get('/:id', [setUser], async (req, res) => {
 			let closedGames = games.filter(g => g.status == 'closed');
 			let slim = [];
 			for (const game of closedGames) {
-				let date = new Date(game._id.getTimestamp());
+				let date = new Date(game._id.getTimestamp());2
 				let str = date.toString().split('T')[0];
 				let gameUser = game.players.find(p => p.username == username);
 				let gameOpponent = game.players.find(p => p.username != username);
