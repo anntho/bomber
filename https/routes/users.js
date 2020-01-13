@@ -67,14 +67,14 @@ router.get('/:id', [setUser], async (req, res) => {
 		let userProc = 'CALL sp_GetUser(?)';
 		let userInputs = [username];
 		let user = await procHandler(usersPool, userProc, userInputs);
+		let isFollowing = null;
 
 		// for logged in user
 		if (res.locals.user) {
 			let followingProc = 'CALL sp_GetFollowing(?)';
 			let followingInputs = [res.locals.userId];
 			let following = await procHandler(usersPool, followingProc, followingInputs);
-			let isFollowing = following.find(f => f.id = user[0].id);
-			res.locals.isFollowing = isFollowing;
+			isFollowing = following.find(f => f.id = user[0].id);
 		}
 		
 		if (!user[0]) {
@@ -139,6 +139,7 @@ router.get('/:id', [setUser], async (req, res) => {
 			res.locals.thisUser.activeGame = activeGame[0];
 			res.locals.thisUser.rank = rank[0];
 			res.locals.thisUser.games = slim;
+			res.locals.isFollowing = isFollowing;
 
 			res.render(res.locals.file);
 		}
