@@ -346,7 +346,7 @@ function createNewGame(socket, roomId, mode, count, listId, idList) {
 }
 
 function saveToSocket(socket, game) {
-	console.log(game)
+	console.log('saving socket', game);
 	socket.join(game.room);
 	socket.request.session.game = game;
 	socket.request.session.save();

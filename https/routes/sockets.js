@@ -7,6 +7,7 @@ const preferences = require('../lib/preferences');
 const access = require('../lib/access');
 const data = require('../lib/data');
 const games = require('../lib/games');
+const users = require('../lib/users');
 const metrics = require('../lib/metrics');
 
 // Bin
@@ -99,7 +100,7 @@ io.on('connection', (socket) => {
 
 	socket.on('reset:step2', async (data) => {
 		await access.resetStep2(data, socket);
-	}); 
+	});
 
 	// ===================================================
 	// Prefereces
@@ -114,6 +115,13 @@ io.on('connection', (socket) => {
 
 	socket.on('deleteAccount', async (data) => {
 		await preferences.deleteAccount(data, socket);
+	});
+
+	// ===================================================
+	// Users
+	// ===================================================
+	socket.on('follow', async (data) => {
+		await users.follow(data, socket);
 	});
 
 	// ===================================================

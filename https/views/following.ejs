@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | <%-thisUser.username%> | Following</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex,nofollow">
+	<% include ./styles %>
+	<% include ./fonts %>
+</head>
+<body>
+	<% include ./nav %>
+	<main>
+		<div class="top-wrapper row">
+			<div class="content-wrapper">
+				<div class="col s12">
+					<div class="row profile-header mb-0">
+						<div class="col s6 mt-1">
+							<h5 id="username" class="cyan-text bold" data-id="<%-thisUser.id%>">
+								{ <span class="grey-text"><%-thisUser.username%></span> }
+							</h5>
+						</div>
+                        <div class="col s12 mt-2 profile-action-buttons">
+                            <span class="grey-text">Following</span>
+                        </div>
+					</div>
+                    <% if (thisUser.following) { %>
+                        <% thisUser.following.forEach(f => { %>
+                            <div class="row valign-wrapper line mb-0">
+                                <div class="col s12">
+                                    <a href="/@/<%-f.username%>"><%-f.username%></a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } %>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<% include ./footer %>
+
+	<script>
+		const socketString = <%-JSON.stringify(socket)%>;
+	</script>
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/Chart.bundle.min.js"></script>
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/sweetalert.min.js"></script>
+</body>
+</html>

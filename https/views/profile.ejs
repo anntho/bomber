@@ -16,15 +16,25 @@
 				<div class="col s12">
 					<div class="row profile-header mb-0">
 						<div class="col s6 mt-1">
-							<h5 id="username" class="cyan-text bold">
+							<h5 id="username" class="cyan-text bold" data-id="<%-thisUser.id%>">
 								{ <span class="grey-text"><%-thisUser.username%></span> }
 							</h5>
 						</div>
-						<div class="col s12 mt-2 profile-action-buttons">
-							<a id="follow" class="point mr-1">follow</a>
-							<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">message</a>
-							<a id="challenge" class="point mr-1">challenge</a>
-						</div>
+						<% if (userId != thisUser.id) { %>
+							<div class="col s12 mt-2 profile-action-buttons">
+								<% if (isFollowing) { %>
+									<a class="mr-1">following</a>
+								<% } else { %>
+									<a id="follow" class="point mr-1">follow</a>
+								<% } %>
+								<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">message</a>
+								<a id="challenge" class="point mr-1">challenge</a>
+							</div>
+						<% } else { %>
+							<div class="col s12 mt-2 profile-action-buttons">
+								<span class="grey-text">Welcome back, <%-username%></span>
+							</div>
+						<% } %>
 					</div>
 					<div id="messageModal" class="modal mt-2">
 						<div class="modal-content">
@@ -70,17 +80,41 @@
 							<span>Rank</span>
 						</div>
 						<div class="col s8 m4">
-							<span id="rank" class="data"><%-rank.rank.toLowerCase()%></span>
+							<span id="rank" class="data"><%-thisUser.rank.rank.toLowerCase()%></span>
 						</div>
 						<div class="col s8 m6">
 							<span class="progress-data">
-								<%-rank.nextRank.toUpperCase()%> <%-gamesPlayed%>/<%-rank.nextFloor%>
+								<%-thisUser.rank.nextRank.toUpperCase()%> <%-thisUser.gamesPlayed%>/<%-thisUser.rank.nextFloor%>
 							</span>
 							
 							<div class="progress">
-								<div class="determinate" style="width: <%-rank.pct%>%"></div>
+								<div class="determinate" style="width: <%-thisUser.rank.pct%>%"></div>
 							</div>
 						</div>
+					</div>
+
+					<div class="row valign-wrapper line mb-0">
+						<div class="col s4 m2">
+							<span>Followers</span>
+						</div>
+						<div class="col s8 m4">
+							<span id="followers" class="data">
+								<a class="follow" href="/@/<%-thisUser.username%>/followers"><%-thisUser.followers.length%></a>
+							</span>
+						</div>
+						<div class="col s8 m6"></div>
+					</div>
+
+					<div class="row valign-wrapper line mb-0">
+						<div class="col s4 m2">
+							<span>Following</span>
+						</div>
+						<div class="col s8 m4">
+							<span id="following" class="data correct">
+								<a class="follow" href="/@/<%-thisUser.username%>/following"><%-thisUser.following.length%></a>
+							</span>
+						</div>
+						<div class="col s8 m6"></div>
 					</div>
 
 					<div class="row valign-wrapper profile-header mb-0">
@@ -90,6 +124,20 @@
 							</h5>
 						</div>
 					</div>
+					<% if (thisUser.activeGame) { %>
+						<div class="row valign-wrapper line mb-0">
+							<div class="col s12">
+								<% if (user && username == thisUser.username) { %>
+									<a class="active-game valign-wrapper" href="/live/<%-thisUser.activeGame.room%>">
+										<i class="material-icons left">brightness_1</i>
+										Join Active Game
+									</a>
+								<% } else { %>
+									<a class="active-game">1 Active Game</a>
+								<% } %>
+							</div>
+						</div>
+					<% } %>
 					<div class="row valign-wrapper line">
 						<div class="col s12">
 							<table>
@@ -102,13 +150,13 @@
 									</tr>
 								</thead>
 								<tbody id="games">
-									<% games.forEach(game => { %>
+									<% thisUser.games.forEach(game => { %>
 										<tr id="<%-game.room%>">
 											<td><%-game.date%></td>
 											<td><%-game.mode%></td>
 											<td><%-game.gameOpponent.username%></td>
 											<td class="<%-game.userColor%>">
-												<%-(game.winner) ? `W [+${game.gameUser.new.points}]` : `L [${game.gameUser.new.points}]`%>
+												<%-(game.winner) ? `Won [+${game.gameUser.new.points}]` : `Lost [${game.gameUser.new.points}]`%>
 											</td>
 										</tr>
 									<% }); %>
