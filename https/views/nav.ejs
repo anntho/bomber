@@ -35,12 +35,18 @@
 <ul id="user" class="dropdown-content">
 	<li><a href="/account/profile"><i class="material-icons cyan-text">person</i>Profile</a></li>
 	<li><a href="/account/preferences"><i class="material-icons cyan-text">settings</i>Settings</a></li>
+	<li><a href="/account/inbox"><i class="material-icons cyan-text">mail</i>Inbox</a></li>
 	<li class="divider" tabindex="-1"></li>
 	<li><a href="/logout"><i class="material-icons purple-text">power_settings_new</i>Sign out</a></li>
 </ul>
 
 <ul class="sidenav" id="mobile-demo">
-	<h4><a class="valign-wrapper"><i class="material-icons left cyan-text">bookmark</i>nav</a></h4>
+	<h4>
+		<a class="valign-wrapper">
+			<i class="material-icons left cyan-text">bookmark</i>
+			nav
+		</a>
+	</h4>
 	<% if (!user) { %>
 		<li><a href="/login">Sign in</a></li>
 	<% } else { %>

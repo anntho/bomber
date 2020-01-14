@@ -1,0 +1,89 @@
+.line {
+    border-bottom: 1px solid #474747;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.title {
+    padding-left: 5px;
+}
+
+.progress {
+    background-color: #444444;
+}
+
+.progress .determinate {
+    background-color: #01d277;
+}
+
+.progress-data {
+    font-size: .8rem;
+    font-weight: 500;
+}
+
+.active-game {
+    color: #01d277;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.active-game i.material-icons {
+    font-size: 15px;
+}
+
+.correct {
+    color: #01d277;
+}
+
+.incorrect {
+    color: #f44336;
+}
+
+th {
+    font-size: .9rem;
+}
+
+td {
+    font-size: .8rem;
+}
+
+td span {
+    margin-right: 1%;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.01);
+}
+
+.row.line {
+    background-color: #212121;
+}
+
+.profile-header {
+    height: 100px;
+    background-color: #2f2f2f;
+}
+
+.profile-action-buttons a {
+    color: grey;
+    text-decoration: underline;
+}
+
+.profile-action-buttons a:hover {
+    color: #00bcd4;
+    text-decoration: underline;
+}
+
+.modal {
+    border: 2px solid #00bcd4;
+}
+
+.modal .modal-content {
+    background-color: #1b1b1b;
+}
+
+.modal .modal-footer {
+    background-color: #131313;
+}
+
+

@@ -8,6 +8,11 @@ router.get('/preferences', [authenticated, setUser], async (req, res) => {
 	res.render(res.locals.file);
 });
 
+router.get('/inbox', [authenticated, setUser], async (req, res) => {
+	res.locals.file = 'inbox';
+	res.render(res.locals.file);
+});
+
 router.get('/profile', [authenticated, setUser], async (req, res) => {
 	console.log(req.session.user);
 	res.redirect('/@/' + req.session.user.username);

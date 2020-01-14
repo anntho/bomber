@@ -124,6 +124,18 @@ io.on('connection', (socket) => {
 		await users.follow(data, socket);
 	});
 
+	socket.on('unfollow', async (data) => {
+		await users.unfollow(data, socket);
+	});
+
+	socket.on('messsage', async (data) => {
+		await users.message(data, socket);
+	});
+
+	socket.on('challenge', async (data) => {
+		await users.challenge(data, socket);
+	});
+
 	// ===================================================
 	// Games
 	// ===================================================

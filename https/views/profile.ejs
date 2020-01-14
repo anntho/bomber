@@ -23,7 +23,7 @@
 						<% if (userId != thisUser.id) { %>
 							<div class="col s12 mt-2 profile-action-buttons">
 								<% if (isFollowing) { %>
-									<a class="mr-1">following</a>
+									<a id="unfollow" class="mr-1">unfollow</a>
 								<% } else { %>
 									<a id="follow" class="point mr-1">follow</a>
 								<% } %>
@@ -43,7 +43,7 @@
 								<form class="col s12">
 									<div class="row">
 										<div class="input-field col s12">
-											<textarea id="textarea1" class="materialize-textarea"></textarea>
+											<textarea id="textarea1" class="materialize-textarea" maxlength="250"></textarea>
 											<label for="textarea1">Type a message..</label>
 										</div>
 									</div>
@@ -97,24 +97,19 @@
 						<div class="col s4 m2">
 							<span>Followers</span>
 						</div>
-						<div class="col s8 m4">
+						<div class="col s4">
 							<span id="followers" class="data">
 								<a class="follow" href="/@/<%-thisUser.username%>/followers"><%-thisUser.followers.length%></a>
 							</span>
 						</div>
-						<div class="col s8 m6"></div>
-					</div>
-
-					<div class="row valign-wrapper line mb-0">
 						<div class="col s4 m2">
 							<span>Following</span>
 						</div>
-						<div class="col s8 m4">
+						<div class="col s4">
 							<span id="following" class="data correct">
 								<a class="follow" href="/@/<%-thisUser.username%>/following"><%-thisUser.following.length%></a>
 							</span>
 						</div>
-						<div class="col s8 m6"></div>
 					</div>
 
 					<div class="row valign-wrapper profile-header mb-0">
