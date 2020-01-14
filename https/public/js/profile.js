@@ -18,8 +18,22 @@ $(document).ready(async function() {
         });
     });
 
+    socket.on('follow', function() {
+        $('#follow').text('unfollow');
+        $('#follow').attr('id', 'unfollow');
+        feedback('success', 'Success!');
+    });
+
     socket.on('unfollow', function() {
         $('#unfollow').text('follow');
         $('#unfollow').attr('id', 'follow');
+        feedback('success', 'Success!');
     });
+
+    function feedback(icon, title) {
+		swal({
+			icon: icon,
+			title: title
+		});
+	}
 });

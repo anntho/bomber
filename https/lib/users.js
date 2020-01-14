@@ -15,10 +15,11 @@ module.exports = {
                 let userId = socket.request.session.user.id;
                 let userToFollowId = data.userId;
     
-                let proc = 'CALL sp_InsertFollower(?, ?)';
+                let proc = 'CALL sp_Follow(?, ?)';
                 let inputs = [userToFollowId, userId];
     
                 await procHandler(usersLibPool, proc, inputs);
+                socket.emit('follow');
             } catch (err) {
                 reportError(file, '23', err, false);
             }
@@ -27,16 +28,16 @@ module.exports = {
     unfollow: async (data, socket) => {
         if (socket.request.session.user) {
             try {
+                let userId = socket.request.session.user.id;
+                let userToUnfollow = data.userId;
+    
+                let proc = 'CALL sp_Unfollow(?, ?)';
+                let inputs = [userToUnfollow, userId];
+    
+                await procHandler(usersLibPool, proc, inputs);
                 socket.emit('unfollow');
-                // let userId = socket.request.session.user.id;
-                // let userToFollowId = data.userId;
-    
-                // let proc = 'CALL sp_DeleteFollower(?, ?)';
-                // let inputs = [userToFollowId, userId];
-    
-                // await procHandler(usersLibPool, proc, inputs);
             } catch (err) {
-                reportError(file, '38', err, false);
+                reportError(file, '39', err, false);
             }
         }
     },
