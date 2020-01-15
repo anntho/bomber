@@ -74,6 +74,11 @@ tbody tr:hover {
     text-decoration: underline;
 }
 
+.profile-action-buttons a#block:hover {
+    color: #f44336;
+    text-decoration: underline;
+}
+
 .modal {
     border: 2px solid #00bcd4;
 }

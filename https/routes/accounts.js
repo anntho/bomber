@@ -14,15 +14,19 @@ router.get('/preferences', [authenticated, setUser], async (req, res) => {
 router.get('/inbox', [authenticated, setUser], async (req, res) => {
 	try {
 		let messages = await users.getMessages(res.locals.userId);
-		for (const message of messages[0]) {
-			let mostRecent = messages[1].find(m => m.sender == message.sender);
-			message.message = mostRecent.message;
-			message.read = mostRecent.read;
+		let uniqueList = messages[0];
+		for (const unique of uniqueList) {
+			let newest = messages[1].find(m => m.sender == unique.sender);
+			let unread = messages[1].filter(m => (m.sender == unique.sender) && m.read == 0);
+			unique.message = newest.message;
+			unique.read = newest.read;
+			unique.unread = unread.length;
 		}
 		res.locals.messages = messages[0];
 		res.locals.file = 'inbox';
 		res.render(res.locals.file);
 	} catch (err) {
+		console.log(err);
 		res.sendStatus(500);
 	}
 });

@@ -46,11 +46,11 @@ module.exports = {
     message: async (data, socket) => {
         if (socket.request.session.user) {
             try {
+                console.log('here')
                 const userId = socket.request.session.user.id;
                 const message = data.message.trim().replace(/[|&;$%@"<>()+,]/g, '');
                 const proc = 'CALL sp_InsertMessage(?, ?, ?)';
                 const inputs = [userId, data.recipientId, message];
-
                 await procHandler(usersLibPool, proc, inputs);
                 socket.emit('message');
             } catch (err) {

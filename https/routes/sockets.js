@@ -128,7 +128,7 @@ io.on('connection', (socket) => {
 		await users.unfollow(data, socket);
 	});
 
-	socket.on('messsage', async (data) => {
+	socket.on('message', async (data) => {
 		await users.message(data, socket);
 	});
 

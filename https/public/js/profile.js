@@ -37,7 +37,7 @@ $(document).ready(async function() {
         feedback('success', 'Success!', null);
     });
 
-    socket.on('#message', function() {
+    socket.on('message', function() {
         feedback('success', 'Success!', 'Message sent.');
     });
 
