@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { authenticated, setUser } = require('../bin/auth');
+const users = require('../lib/users');
+
+const file = 'routes/accounts.js';
 
 router.get('/preferences', [authenticated, setUser], async (req, res) => {
 	res.locals.file = 'preferences';
@@ -9,8 +12,19 @@ router.get('/preferences', [authenticated, setUser], async (req, res) => {
 });
 
 router.get('/inbox', [authenticated, setUser], async (req, res) => {
-	res.locals.file = 'inbox';
-	res.render(res.locals.file);
+	try {
+		let messages = await users.getMessages(res.locals.userId);
+		for (const message of messages[0]) {
+			let mostRecent = messages[1].find(m => m.sender == message.sender);
+			message.message = mostRecent.message;
+			message.read = mostRecent.read;
+		}
+		res.locals.messages = messages[0];
+		res.locals.file = 'inbox';
+		res.render(res.locals.file);
+	} catch (err) {
+		res.sendStatus(500);
+	}
 });
 
 router.get('/profile', [authenticated, setUser], async (req, res) => {

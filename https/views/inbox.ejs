@@ -21,15 +21,32 @@
 							</h5>
 						</div>
                         <div class="col s12 mt-2 profile-action-buttons">
-                            <span class="grey-text">Followers</span>
+                            <span class="grey-text">Messages</span>
                         </div>
                     </div>
                     
-                    <div class="row valign-wrapper line mb-0">
-                        <div class="col s12">
-                            <a>fdfd</a>
-                        </div>
-                    </div>
+					<% if (typeof messages != 'undefined') { %>
+						<% messages.forEach(m => { %>
+							<div class="row valign-wrapper line mb-0">
+								<div class="col s8 m2">
+									<a class="point" href="/@/<%-m.username%>" data-sender="<%-m.sender%>"><%-m.username%></a>
+								</div>
+								<div class="col s6 hide-on-small-only">
+									<a class="grey-text point"><%-`${m.message.substring(0, 25)}...`%></a>
+								</div>
+								<div class="col s2">
+									<% if (m.read == 1) { %>
+										<a><i class="material-icons grey-text">update</i></a>
+									<% } else { %>
+										<a><i class="material-icons correct">fiber_new</i></a>
+									<% } %>
+								</div>
+								<div class="col s2">
+									<a class="point"><i class="material-icons red-text">delete</i></a>
+								</div>
+							</div>
+						<% }); %> 
+					<% } %>
                 </div>
 			</div>
 		</div>
@@ -47,6 +64,7 @@
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
 	<script src="/js/nav.js"></script>
+	<script src="/js/inbox.js"></script>
 	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

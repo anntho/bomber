@@ -18,22 +18,34 @@ $(document).ready(async function() {
         });
     });
 
+    $('#sendMessage').on('click', function() {
+        socket.emit('message', {
+            recipientId: $('#username').attr('data-id'),
+            message: $('#messageTextarea').val()
+        });
+    });
+
     socket.on('follow', function() {
         $('#follow').text('unfollow');
         $('#follow').attr('id', 'unfollow');
-        feedback('success', 'Success!');
+        feedback('success', 'Success!', null);
     });
 
     socket.on('unfollow', function() {
         $('#unfollow').text('follow');
         $('#unfollow').attr('id', 'follow');
-        feedback('success', 'Success!');
+        feedback('success', 'Success!', null);
     });
 
-    function feedback(icon, title) {
+    socket.on('#message', function() {
+        feedback('success', 'Success!', 'Message sent.');
+    });
+
+    function feedback(icon, title, text) {
 		swal({
 			icon: icon,
-			title: title
+            title: title,
+            text: text
 		});
 	}
 });
