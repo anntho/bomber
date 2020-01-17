@@ -136,6 +136,14 @@ io.on('connection', (socket) => {
 		await users.challenge(data, socket);
 	});
 
+	socket.on('block', async (data) => {
+		await users.block(data, socket);
+	});
+
+	socket.on('unblock', async (data) => {
+		await users.unblock(data, socket);
+	});
+
 	// ===================================================
 	// Games
 	// ===================================================

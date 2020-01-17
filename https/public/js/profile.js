@@ -25,6 +25,38 @@ $(document).ready(async function() {
         });
     });
 
+    $('#block').on('click', function() {
+        let username = $('#username span').text();
+        swal({
+            text: `Are you sure that you want to block ${username}?`,
+            icon: 'warning',
+            buttons: true
+        })
+        .then((proceed) => {
+            if (proceed) {
+                socket.emit('block', {
+                    userId: $('#username').attr('data-id')
+                });
+            }
+        });
+    });
+
+    $('#unblock').on('click', function() {
+        let username = $('#username span').text();
+        swal({
+            text: `Are you sure that you want to unblock ${username}?`,
+            icon: 'warning',
+            buttons: true
+        })
+        .then((proceed) => {
+            if (proceed) {
+                socket.emit('unblock', {
+                    userId: $('#username').attr('data-id')
+                });
+            }
+        });
+    });
+
     socket.on('follow', function() {
         $('#follow').text('unfollow');
         $('#follow').attr('id', 'unfollow');
@@ -39,6 +71,18 @@ $(document).ready(async function() {
 
     socket.on('message', function() {
         feedback('success', 'Success!', 'Message sent.');
+    });
+
+    socket.on('block', function() {
+        $('#block').text('unblock');
+        $('#block').attr('id', 'unblock');
+        feedback('success', 'Success!', null);
+    });
+
+    socket.on('unblock', function() {
+        $('#unblock').text('block');
+        $('#unblock').attr('id', 'block');
+        feedback('success', 'Success!', null);
     });
 
     function feedback(icon, title, text) {

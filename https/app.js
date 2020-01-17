@@ -12,7 +12,7 @@ app.use(helmet());
 
 const config = require('./bin/config');
 const session = require('./bin/session');
-const { catch404, errorHandler } = require('./lib/errors');
+const { catch404, defender, errorHandler } = require('./lib/errors');
 const socket = `${config.socket.host}:${config.socket.port}`;
 
 // MongoDB Connection to Atlas
@@ -73,6 +73,7 @@ app.use('/account', accountsRouter);
 app.use('/jobs', jobsRouter);
 
 // Error Handling
+app.use(defender);
 app.use(catch404);
 app.use(errorHandler);
 

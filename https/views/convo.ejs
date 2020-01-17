@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>moviebomber.org | <%-username%> | Inbox</title>
+	<title>moviebomber.org | <%-username%></title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
@@ -17,38 +17,33 @@
 					<div class="row profile-header mb-0">
 						<div class="col s6 mt-1">
 							<h5 id="username" class="cyan-text">
-								{ <span class="grey-text">Inbox</span> }
+								{ <span class="grey-text">Conversation</span> }
 							</h5>
 						</div>
                         <div class="col s12 mt-2 profile-action-buttons">
                             <span class="grey-text">Messages</span>
                         </div>
                     </div>
-                    
-					<% if (typeof inbox != 'undefined') { %>
-						<% inbox.forEach(m => { %>
-							<div class="row valign-wrapper line mb-0">
-								<div class="col s8 m2">
-									<a class="point" href="/@/<%-m.username%>" data-sender="<%-m.sender%>"><%-m.username%></a>
-								</div>
-								<div class="col s6 hide-on-small-only">
-									<a href="/account/inbox/<%-m.sid%>" class="grey-text point"><%-`${m.message.substring(0, 25)}...`%></a>
-								</div>
-								<div class="col s2">
-									<% if (m.read == 1) { %>
-										<a><i class="material-icons grey-text">update</i></a>
-									<% } else { %>
-										<a class="valign-wrapper">
-											<i class="material-icons correct">fiber_new</i>
-										</a>
-									<% } %>
-								</div>
-								<div class="col s2">
-									<a class="point valign-wrapper"><i class="material-icons red-text">delete</i></a>
-								</div>
-							</div>
-						<% }); %>
+
+					<% if (typeof messages != 'undefined') { %>
+						<% messages.forEach(m => { %>
+
+								<% if (m.sender == userId) { %>
+									<div id="Fdsf">
+										<%-m.message%>
+									</div>
+								<% } else { %>
+									<div class="secondary-label">
+										<span><%-m.username%></span>
+									</div>	
+									<div class="secondary">
+										<span><%-m.message%></span>
+									</div>		
+								<% } %>
+
+						<% }); %> 
 					<% } %>
+
                 </div>
 			</div>
 		</div>
@@ -66,7 +61,6 @@
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
 	<script src="/js/nav.js"></script>
-	<script src="/js/inbox.js"></script>
 	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

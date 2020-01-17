@@ -16,7 +16,7 @@
 				<div class="col s12">
 					<div class="row profile-header mb-0">
 						<div class="col s6 mt-1">
-							<h5 id="username" class="cyan-text bold" data-id="<%-thisUser.id%>">
+							<h5 id="username" class="cyan-text" data-id="<%-thisUser.id%>">
 								{ <span class="grey-text"><%-thisUser.username%></span> }
 							</h5>
 						</div>
@@ -27,9 +27,15 @@
 								<% } else { %>
 									<a id="follow" class="point mr-1">follow</a>
 								<% } %>
-								<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">message</a>
-								<a id="challenge" class="point mr-1">challenge</a>
-								<a id="block" class="point mr-1">block</a>
+								<% if (!restricted && !blocked) { %>
+									<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">message</a>
+									<a id="challenge" class="point mr-1">challenge</a>
+								<% } %>
+								<% if (blocked) { %>
+									<a id="unblock" class="point mr-1">unblock</a>
+								<% } else { %>
+									<a id="block" class="point mr-1">block</a>
+								<% } %>
 							</div>
 						<% } else { %>
 							<div class="col s12 mt-2 profile-action-buttons">
@@ -85,7 +91,7 @@
 						</div>
 						<div class="col s8 m6">
 							<span class="progress-data">
-								<%-thisUser.rank.nextRank.toUpperCase()%> <%-thisUser.gamesPlayed%>/<%-thisUser.rank.nextFloor%>
+								<%-thisUser.rank.nextRank.toUpperCase()%> <%-thisUser.total%>/<%-thisUser.rank.nextFloor%>
 							</span>
 							
 							<div class="progress">
@@ -115,7 +121,7 @@
 
 					<div class="row valign-wrapper profile-header mb-0">
 						<div class="col s12">
-							<h5 id="username" class="amber-text bold">
+							<h5 class="amber-text">
 								{ <span class="grey-text">games</span> }
 							</h5>
 						</div>
