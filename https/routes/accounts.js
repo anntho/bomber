@@ -19,13 +19,12 @@ router.get('/preferences', [authenticated, setUser], async (req, res) => {
 router.get('/inbox/:id', [authenticated, setUser], async (req, res) => {
 	try {
 		let sid = req.params.id;
-		console.log('HIT', sid);
-		let messages = await users.getMessages(sid);
-		res.locals.messages = messages;
+		await users.markRead(res.locals.userId, sid);
+		res.locals.sid = sid;
 		res.locals.file = 'convo';
 		res.render(res.locals.file);
 	} catch (err) {
-		reportError(file, '23', err, false);
+		reportError(file, '29', err, false);
 		res.sendStatus(500);
 	}
 });
@@ -37,9 +36,11 @@ router.get('/inbox', [authenticated, setUser], async (req, res) => {
 		for (const unique of uniqueList) {
 			let newest = inbox[1].find(m => m.sender == unique.sender);
 			let unread = inbox[1].filter(m => (m.sender == unique.sender) && m.read == 0);
-			unique.message = newest.message;
-			unique.read = newest.read;
-			unique.unread = unread.length;
+			if (newest) {
+				unique.message = newest.message;
+				unique.read = newest.read;
+				unique.unread = unread.length;
+			}
 		}
 		res.locals.inbox = inbox[0];
 		res.locals.file = 'inbox';

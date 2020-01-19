@@ -1,66 +1,5 @@
-.line {
-    border-bottom: 1px solid #474747;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
-
-.title {
-    padding-left: 5px;
-}
-
-.progress {
-    background-color: #444444;
-}
-
-.progress .determinate {
-    background-color: #01d277;
-}
-
-.progress-data {
-    font-size: .8rem;
-    font-weight: 500;
-}
-
-.active-game {
-    color: #01d277;
-    font-weight: 500;
-    font-size: 15px;
-}
-
-.active-game i.material-icons {
-    font-size: 15px;
-}
-
-.correct {
-    color: #01d277;
-}
-
-.incorrect {
-    color: #f44336;
-}
-
-th {
-    font-size: .9rem;
-}
-
-td {
-    font-size: .8rem;
-}
-
-td span {
-    margin-right: 1%;
-}
-
-tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.01);
-}
-
-.row.line {
-    background-color: #212121;
-}
-
 .profile-header {
-    height: 100px;
+    height: 80px;
     background-color: #2f2f2f;
 }
 
@@ -70,33 +9,62 @@ tbody tr:hover {
 }
 
 .profile-action-buttons a:hover {
-    color: #00bcd4;
+    color: #f44336;
     text-decoration: underline;
 }
 
-.modal {
-    border: 2px solid #00bcd4;
+.container {
+    width: 100%;
+    max-height: 400px;
+    word-break: break-word;
+    overflow: overlay;
 }
 
-.modal .modal-content {
-    background-color: #1b1b1b;
+.message-wrapper {
+    display: flex;
+    padding: 2%;
+    border-bottom: 1px solid lightgrey;
+    background-color: #212121;
 }
 
-.modal .modal-footer {
-    background-color: #131313;
+.message-wrapper.primary {
+    justify-content: flex-end;
 }
 
-
-.primary {
-    text-align: right;
-}
-
-.secondary {
-    text-align: left;
+.bubble-wrapper {
+    flex-basis: 75%;
 }
 
 .bubble {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.bubble span {
+    flex-basis: 100%;
+    margin-top: 5px;
+}
+
+.message-wrapper.primary span.text {
+    border: 2px solid cyan;
+    background-color: #0e5454;
+}
+
+.message-wrapper.secondary span.text {
+    border: 2px solid purple;
+    background-color: #430643;
+}
+
+span.text {
+    display: inline-table;
+    padding: 2%;
     border-radius: 5px;
 }
+
+.label {
+    font-size: .7rem;
+    color: #9e9e9e;
+}
+
 
 

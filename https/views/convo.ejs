@@ -14,36 +14,24 @@
 		<div class="top-wrapper row">
 			<div class="content-wrapper">
 				<div class="col s12">
-					<div class="row profile-header mb-0">
+					<div class="profile-header mb-0">
 						<div class="col s6 mt-1">
 							<h5 id="username" class="cyan-text">
 								{ <span class="grey-text">Conversation</span> }
 							</h5>
 						</div>
-                        <div class="col s12 mt-2 profile-action-buttons">
-                            <span class="grey-text">Messages</span>
-                        </div>
                     </div>
 
-					<% if (typeof messages != 'undefined') { %>
-						<% messages.forEach(m => { %>
-
-								<% if (m.sender == userId) { %>
-									<div id="Fdsf">
-										<%-m.message%>
-									</div>
-								<% } else { %>
-									<div class="secondary-label">
-										<span><%-m.username%></span>
-									</div>	
-									<div class="secondary">
-										<span><%-m.message%></span>
-									</div>		
-								<% } %>
-
-						<% }); %> 
-					<% } %>
-
+					<div id="container" class="container"></div>
+					<div class="mt-2">
+						<div class="input-field col s8">
+							<textarea id="newMessage" class="materialize-textarea"></textarea>
+							<label for="textarea1">Reply</label>
+						</div>
+						<div class="input-field col s2">
+							<a id="send" class="btn cyan">Send</a>
+						</div>
+					</div>
                 </div>
 			</div>
 		</div>
@@ -55,12 +43,14 @@
 		let socketString = <%-JSON.stringify(socket)%>;
 		let usernameString = <%-JSON.stringify(username)%>;
 		let userIdString = <%-JSON.stringify(userId)%>;
+		let sid = <%-JSON.stringify(sid)%>;
 	</script>
 	<script src="/js/jquery.slim.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
 	<script src="/js/nav.js"></script>
+	<script src="/js/convo.js"></script>
 	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

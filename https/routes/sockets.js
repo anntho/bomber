@@ -144,6 +144,14 @@ io.on('connection', (socket) => {
 		await users.unblock(data, socket);
 	});
 
+	socket.on('getMessages', async (data) => {
+		await users.getMessages(data, socket);
+	});
+
+	socket.on('deleteConversation', async (data) => {
+		await users.deleteConversation(data, socket);
+	});
+
 	// ===================================================
 	// Games
 	// ===================================================

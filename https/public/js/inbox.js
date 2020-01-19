@@ -1,9 +1,18 @@
 $(document).ready(async function() {
     let socket = io.connect(socketString);
 
-    $('#games').on('click', 'tr', function() {
-        let id = $(this).attr('id');
-        location.href = `/live/${id}`;
+    $('.delete').on('click', function() {
+        let sid = $(this).attr('id');
+        console.log(sid);
+        socket.emit('deleteConversation', {
+            sid: sid
+        });
+    });
+
+    socket.on('deleteConversation', function(data) {
+        let selector = `#${data.sid}`;
+        $(selector).remove();
+        feedback('success', 'Success');
     });
 
     function feedback(icon, title) {

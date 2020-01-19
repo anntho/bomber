@@ -99,13 +99,15 @@ module.exports = {
             throw err;
         }
     },
-    getMessages: async (sid) => {
+    getMessages: async (data, socket) => {
         try {
             const proc = 'CALL sp_GetMessages(?)';
-            const inputs = [sid];
-            return await procHandler(usersLibPool, proc, inputs);
+            const inputs = [data.sid];
+            const messages = await procHandler(usersLibPool, proc, inputs);
+            socket.emit('getMessages', messages);
         } catch (err) {
-            throw err;
+            socket.emit('err');
+            reportError(file, '109', err, false);
         }
     },
     getGames: async (userId) => {
@@ -190,6 +192,31 @@ module.exports = {
             return await procHandler(usersLibPool, proc, inputs);
         } catch (err) {
             throw err;
+        }
+    },
+    markRead: async (userId, sid) => {
+        try {
+            const proc = 'CALL sp_MarkRead(?, ?)';
+            const inputs = [userId, sid];
+            return await procHandler(usersLibPool, proc, inputs);
+        } catch (err) {
+            throw err;
+        }
+    },
+    deleteConversation: async (data, socket) => {
+        if (socket.request.session.user) {
+            try {
+                const userId = socket.request.session.user.id;
+                const proc = 'CALL sp_DeleteConversation(?, ?)';
+                const inputs = [userId, data.sid];
+                await procHandler(usersLibPool, proc, inputs);
+                socket.emit('deleteConversation', {
+                    sid: data.sid
+                });
+            } catch (err) {
+                socket.emit('err');
+                reportError(file, '205', err, false);
+            }
         }
     }
 }
