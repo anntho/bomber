@@ -17,7 +17,10 @@ const socket = `${config.socket.host}:${config.socket.port}`;
 
 // MongoDB Connection to Atlas
 const mongoose = require('mongoose');
-mongoose.connect(config.atlas.URI, {useNewUrlParser: true});
+mongoose.connect(config.atlas.URI, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+});
 
 // Require Routes
 const dataRouter = require('./routes/data');

@@ -29,13 +29,13 @@
 						<% inbox.forEach(m => { %>
 							<div class="row valign-wrapper line mb-0">
 								<div class="col s8 m2">
-									<a class="point" href="/@/<%-m.username%>" data-sender="<%-m.sender%>"><%-m.username%></a>
+									<a class="point" href="/@/<%-m.sender%>" data-sender="<%-m.sender%>"><%-m.senderUsername%></a>
 								</div>
 								<div class="col s6 hide-on-small-only">
-									<a href="/account/inbox/<%-m.sid%>" class="grey-text point"><%-`${m.message.substring(0, 25)}...`%></a>
+									<a href="/account/inbox/<%-m.sid%>" class="grey-text point"><%-`${m.messagePreview}..`%></a>
 								</div>
 								<div class="col s2">
-									<% if (m.read == 1) { %>
+									<% if (m.new == false) { %>
 										<a><i class="material-icons grey-text">update</i></a>
 									<% } else { %>
 										<a class="valign-wrapper">

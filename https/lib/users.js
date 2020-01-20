@@ -100,14 +100,17 @@ module.exports = {
         }
     },
     getMessages: async (data, socket) => {
-        try {
-            const proc = 'CALL sp_GetMessages(?)';
-            const inputs = [data.sid];
-            const messages = await procHandler(usersLibPool, proc, inputs);
-            socket.emit('getMessages', messages);
-        } catch (err) {
-            socket.emit('err');
-            reportError(file, '109', err, false);
+        if (socket.request.session.user) {
+            try {
+                const userId = socket.request.session.user.id;
+                const proc = 'CALL sp_GetMessages(?, ?)';
+                const inputs = [userId, data.sid];
+                const messages = await procHandler(usersLibPool, proc, inputs);
+                socket.emit('getMessages', messages);
+            } catch (err) {
+                socket.emit('err');
+                reportError(file, '109', err, false);
+            }
         }
     },
     getGames: async (userId) => {

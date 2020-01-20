@@ -18,6 +18,7 @@
     max-height: 400px;
     word-break: break-word;
     overflow: overlay;
+
 }
 
 .message-wrapper {
@@ -43,6 +44,10 @@
 .bubble span {
     flex-basis: 100%;
     margin-top: 5px;
+}
+
+.primary .bubble span {
+    text-align: right;
 }
 
 .message-wrapper.primary span.text {

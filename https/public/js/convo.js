@@ -9,10 +9,7 @@ $(document).ready(async function() {
 		});
 	});
 	
-	socket.emit('getMessages', {
-		sid: sid
-	});
-
+	socket.emit('getMessages', {sid: sid});
 	socket.on('getMessages', function(data) {
 		fillContainer(data);
 	});
@@ -42,15 +39,15 @@ $(document).ready(async function() {
 			dateLine.classList.add('label');
 			textLine.classList.add('text', 'z-depth-2');
 
-			if (m.sender == userIdString)  {
+			if (m.sender == userIdString) {
 				messageWrapper.classList.add('primary');
 			} else {
 				messageWrapper.classList.add('secondary');
 			}
 
-			usernameLine.textContent = m.username;
+			usernameLine.textContent = m.senderUsername;
 			textLine.textContent = m.message;
-			dateLine.textContent = new Date(m.created).toString().split('G')[0];
+			dateLine.textContent = new Date(m.messageCreated).toString().split('G')[0];
 
 			textWrapper.appendChild(textLine);
 			bubble.appendChild(usernameLine);

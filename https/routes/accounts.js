@@ -24,7 +24,7 @@ router.get('/inbox/:id', [authenticated, setUser], async (req, res) => {
 		res.locals.file = 'convo';
 		res.render(res.locals.file);
 	} catch (err) {
-		reportError(file, '29', err, false);
+		reportError(file, '27', err, false);
 		res.sendStatus(500);
 	}
 });
@@ -32,21 +32,24 @@ router.get('/inbox/:id', [authenticated, setUser], async (req, res) => {
 router.get('/inbox', [authenticated, setUser], async (req, res) => {
 	try {
 		let inbox = await users.getInbox(res.locals.userId);
-		let uniqueList = inbox[0];
-		for (const unique of uniqueList) {
-			let newest = inbox[1].find(m => m.sender == unique.sender);
-			let unread = inbox[1].filter(m => (m.sender == unique.sender) && m.read == 0);
-			if (newest) {
-				unique.message = newest.message;
-				unique.read = newest.read;
-				unique.unread = unread.length;
+		let SIDS = inbox[0].map(i => i.sid);
+		let uniqueSIDS = [...new Set(SIDS)];
+		let slim = [];
+		for (const i of uniqueSIDS) {
+			let newest = inbox[0].find(m => m.sid == i);
+			newest.new = false;
+			if (newest && newest.read == 0) {
+				if (newest.sender != res.locals.userId) {
+					newest.new = true;
+				}
 			}
+			slim.push(newest);
 		}
-		res.locals.inbox = inbox[0];
+		res.locals.inbox = slim;
 		res.locals.file = 'inbox';
 		res.render(res.locals.file);
 	} catch (err) {
-		reportError(file, '45', err, false);
+		reportError(file, '53', err, false);
 		res.sendStatus(500);
 	}
 });
@@ -55,7 +58,7 @@ router.get('/profile', [authenticated, setUser], async (req, res) => {
 	try {
 		res.redirect('/@/' + req.session.user.username);
 	} catch (err) {
-		reportError(file, '43', err, false);
+		reportError(file, '62', err, false);
 		res.sendStatus(500);
 	}
 });
