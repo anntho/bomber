@@ -15,18 +15,18 @@
 			<div class="content-wrapper">
 				<div class="col s12">
 					<div class="profile-header mb-0">
-						<div class="col s6 mt-1">
+						<div class="col s12 mt-1">
 							<h5 id="username" class="cyan-text">
-								{ <span class="grey-text">Conversation</span> }
+								{ <span class="grey-text">Chat with <span data-friendId id="friend" class="friend"></span></span> }
 							</h5>
 						</div>
                     </div>
 
 					<div id="container" class="container"></div>
-					<div class="reply-container" class="mt-2">
+					<div class="reply-container mt-3" class="mt-2">
 						<div class="input-field col s8">
-							<textarea id="newMessage" class="materialize-textarea"></textarea>
-							<label for="textarea1">Reply</label>
+							<input id="message" type="text" maxlength="100"></textarea>
+							<label for="message">Reply</label>
 						</div>
 						<div class="input-field col s2">
 							<a id="send" class="btn cyan">Send</a>
@@ -50,7 +50,7 @@
 	<script src="/js/materialize.min.js"></script>
 	<script src="/js/init.js"></script>
 	<script src="/js/nav.js"></script>
-	<script src="/js/convo.js"></script>
+	<script src="/js/chat.js"></script>
 	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

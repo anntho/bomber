@@ -35,14 +35,6 @@ nav ul a:hover {
 	background-color: transparent;
 }
 
-.sidenav .nav-image {
-	background-image: url(/images/wick.jpg);
-	background-position: top;
-	background-size: cover;
-	height: 100px;
-	width: 100%;
-}
-
 ul.sidenav:not(.browser-default) > li {
 	list-style-type: hiragana;
 }
@@ -63,20 +55,11 @@ ul.sidenav:not(.browser-default) {
 	background-color: transparent;
 }
 
-input[type=email]:not(.browser-default):focus:not([readonly])+label,
-input[type=text]:not(.browser-default):focus:not([readonly])+label,
-input[type=password]:not(.browser-default):focus:not([readonly])+label {
-    color: #00bcd4;
+.dropdown-trigger i.material-icons {
+	color: #01d277;
+	font-size: 14px;
+	display: none;
 }
-
-input[type=email]:not(.browser-default):focus:not([readonly]),
-input[type=text]:not(.browser-default):focus:not([readonly]),
-input[type=password]:not(.browser-default):focus:not([readonly]) {
-    border-bottom: 1px solid #00bcd4;
-    -webkit-box-shadow: 0 1px 0 0 #00bcd4;
-    box-shadow: 0 1px 0 0 #00bcd4;
-}
-
 
 @media (min-width: 993px) {
 	nav .brand-logo { padding-left: 5% }

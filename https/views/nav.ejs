@@ -18,7 +18,10 @@
 					</li>
 				<% } else { %>
 					<li>
-						<a id="navUsername" class="dropdown-trigger" href="#" data-target="user"><%-username%></a>
+						<a id="navUsername" class="dropdown-trigger" href="#" data-target="user">
+							<%-username%>
+							<i class="material-icons right">add_alert</i>
+						</a>
 					</li>
 				<% } %>
 			</ul>
@@ -35,7 +38,7 @@
 <ul id="user" class="dropdown-content">
 	<li><a href="/account/profile"><i class="material-icons cyan-text">person</i>Profile</a></li>
 	<li><a href="/account/preferences"><i class="material-icons cyan-text">settings</i>Settings</a></li>
-	<li><a href="/account/inbox"><i class="material-icons cyan-text">mail</i>Inbox</a></li>
+	<li><a href="/account/inbox"><i class="material-icons amber-text">mail</i>Inbox</a></li>
 	<li class="divider" tabindex="-1"></li>
 	<li><a href="/logout"><i class="material-icons purple-text">power_settings_new</i>Sign out</a></li>
 </ul>
@@ -47,12 +50,13 @@
 			nav
 		</a>
 	</h4>
+	<li><a href="/">Home</a></li>
 	<% if (!user) { %>
 		<li><a href="/login">Sign in</a></li>
 	<% } else { %>
-		<li><a href="/account/preferences"><%-username%></a></li>
+		<li><a href="/account/preferences">Settings</a></li>
+		<li><a href="/account/inbox">Inbox</a></li>
 	<% } %>
-	<li><a href="/">Home</a></li>
 	<li><a href="/board">Leaderboard</a></li>
 	<% if (user) { %>
 		<li><a href="/logout">Logout</a></li>

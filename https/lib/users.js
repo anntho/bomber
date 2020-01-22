@@ -46,8 +46,8 @@ module.exports = {
                 const message = data.message.trim().replace(/[|&;$%@"<>()+,]/g, '');
                 const proc = 'CALL sp_InsertMessage(?, ?, ?, ?)';
                 const inputs = [userId, data.recipientId, sid, message];
-                await procHandler(usersLibPool, proc, inputs);
-                socket.emit('message');
+                const result = await procHandler(usersLibPool, proc, inputs);
+                socket.emit('message', result);
             } catch (err) {
                 socket.emit('err');
                 reportError(file, '53', err, false);
@@ -100,6 +100,7 @@ module.exports = {
         }
     },
     getMessages: async (data, socket) => {
+        console.log(data);
         if (socket.request.session.user) {
             try {
                 const userId = socket.request.session.user.id;

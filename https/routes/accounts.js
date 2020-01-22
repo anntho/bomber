@@ -21,7 +21,7 @@ router.get('/inbox/:id', [authenticated, setUser], async (req, res) => {
 		let sid = req.params.id;
 		await users.markRead(res.locals.userId, sid);
 		res.locals.sid = sid;
-		res.locals.file = 'convo';
+		res.locals.file = 'chat';
 		res.render(res.locals.file);
 	} catch (err) {
 		reportError(file, '27', err, false);
@@ -38,6 +38,13 @@ router.get('/inbox', [authenticated, setUser], async (req, res) => {
 		for (const i of uniqueSIDS) {
 			let newest = inbox[0].find(m => m.sid == i);
 			newest.new = false;
+			if (newest && (newest.sender != res.locals.userId)) {
+				newest.friendUsername = newest.senderUsername;
+				newest.friendId = newest.sender;
+			} else {
+				newest.friendUsername = newest.recipientUsername;
+				newest.friendId = newest.recipient;
+			}
 			if (newest && newest.read == 0) {
 				if (newest.sender != res.locals.userId) {
 					newest.new = true;

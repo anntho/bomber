@@ -17,14 +17,14 @@
     width: 100%;
     max-height: 400px;
     word-break: break-word;
-    overflow: overlay;
+    overflow: auto;
 
 }
 
 .message-wrapper {
     display: flex;
-    padding: 2%;
-    border-bottom: 1px solid lightgrey;
+    padding: 1%;
+    border-bottom: 1px solid #313131;
     background-color: #212121;
 }
 
@@ -50,20 +50,23 @@
     text-align: right;
 }
 
+/* 
+
 .message-wrapper.primary span.text {
-    border: 2px solid cyan;
+    border: 1px solid cyan;
     background-color: #0e5454;
 }
 
 .message-wrapper.secondary span.text {
-    border: 2px solid purple;
+    border: 1px solid purple;
     background-color: #430643;
 }
 
+*/
+
 span.text {
     display: inline-table;
-    padding: 2%;
-    border-radius: 5px;
+    padding: 1%;
 }
 
 .label {
@@ -71,5 +74,9 @@ span.text {
     color: #9e9e9e;
 }
 
+.friend {
+    font-weight: 700;
+    font-size: .9rem;
+}
 
 
