@@ -17,17 +17,17 @@
 					<div class="row profile-header mb-0">
 						<div class="col s6 mt-1">
 							<h5 id="username" class="cyan-text">
-								{ <span class="grey-text">Inbox</span> }
+								{ <span class="grey-text">inbox</span> }
 							</h5>
 						</div>
                         <div class="col s12 mt-2 profile-action-buttons">
-                            <span class="grey-text">Messages</span>
+                            <span class="grey-text">Your messages</span>
                         </div>
                     </div>
                     
 					<% if (typeof inbox != 'undefined') { %>
 						<% inbox.forEach(m => { %>
-							<div class="row valign-wrapper line mb-0">
+							<div id="<%-m.sid%>" class="row valign-wrapper line mb-0">
 								<div class="col s8 m2">
 									<a class="point" href="/@/<%-m.friendUsername%>" data-sender="<%-m.friendId%>"><%-m.friendUsername%></a>
 								</div>

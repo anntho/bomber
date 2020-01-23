@@ -18,7 +18,7 @@
     max-height: 400px;
     word-break: break-word;
     overflow: auto;
-
+    background-color: #212121;
 }
 
 .message-wrapper {

@@ -3,7 +3,6 @@ $(document).ready(async function() {
 
     $('.delete').on('click', function() {
         let sid = $(this).attr('id');
-        console.log(sid);
         socket.emit('deleteConversation', {
             sid: sid
         });

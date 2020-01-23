@@ -14,6 +14,8 @@ $(document).ready(async function() {
 
 	socket.on('message', function(data) {
 		appendMessage(data[0]);
+		let obj = document.getElementById('container');
+		obj.scrollTop = obj.scrollHeight;
 	});
 	
 	socket.emit('getMessages', {sid: sid});
@@ -33,7 +35,7 @@ $(document).ready(async function() {
 		let message = $('#message').val();
 		$('#message').val('');
 		socket.emit('message', {
-			message: message, 
+			message: message,
 			recipientId: $('#friend').attr('data-friendId')
 		});
 	}
