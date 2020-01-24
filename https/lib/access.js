@@ -208,4 +208,17 @@ module.exports = {
 			return socket.emit('err', {error: generic});
 		}
 	},
+	updateSocket: async (data, socket) => {
+        if (socket.request.session.user) {
+			try {
+				const userId = socket.request.session.user.id;
+				const proc = 'CALL sp_InsertSocket(?, ?, ?)';
+				const inputs = [userId, String(socket.id), data.type];
+				await procHandler(accessPool, proc, inputs);
+			} catch (err) {
+				reportError(file, '219', err, false);
+				return socket.emit('err', {error: generic});
+			}
+		}
+	}
 }

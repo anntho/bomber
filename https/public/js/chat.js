@@ -12,6 +12,16 @@ $(document).ready(async function() {
 		}
 	});
 
+    socket.emit('updateSocket', {
+        type: 'chat'
+    });
+
+	socket.on('incoming', function(data) {
+		appendMessage(data[0]);
+		let obj = document.getElementById('container');
+		obj.scrollTop = obj.scrollHeight;
+	});
+
 	socket.on('message', function(data) {
 		appendMessage(data[0]);
 		let obj = document.getElementById('container');

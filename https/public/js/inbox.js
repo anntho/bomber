@@ -1,5 +1,8 @@
 $(document).ready(async function() {
     let socket = io.connect(socketString);
+    console.log('inbox', socket);
+
+    socket.emit('test');
 
     $('.delete').on('click', function() {
         let sid = $(this).attr('id');

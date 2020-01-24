@@ -102,6 +102,10 @@ io.on('connection', (socket) => {
 		await access.resetStep2(data, socket);
 	});
 
+	socket.on('updateSocket', async(data) => {
+		await access.updateSocket(data, socket);
+	});
+
 	// ===================================================
 	// Prefereces
 	// ===================================================
@@ -129,7 +133,7 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('message', async (data) => {
-		await users.message(data, socket);
+		await users.message(data, socket, io);
 	});
 
 	socket.on('challenge', async (data) => {

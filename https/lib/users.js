@@ -38,7 +38,7 @@ module.exports = {
             }
         }
     },
-    message: async (data, socket) => {
+    message: async (data, socket, io) => {
         if (socket.request.session.user) {
             try {
                 const sid = randomString({length: 8, type: 'url-safe'});
@@ -48,9 +48,28 @@ module.exports = {
                 const inputs = [userId, data.recipientId, sid, message];
                 const result = await procHandler(usersLibPool, proc, inputs);
                 socket.emit('message', result);
+
+                // send notification
+                let proc2 = 'CALL sp_GetSockets(?)';
+                let inputs2 = [data.recipientId];
+                let result2 = await procHandler(usersLibPool, proc2, inputs2);
+                if (result2 && result2.length) {
+                    let recipientNotificationSocket = result2.find(s => s.type == 'notification');
+                    let recipientChatSocket = result2.find(s => s.type == 'chat');
+                    if (recipientNotificationSocket) {
+                        let recipientNotificationSocketId = recipientNotificationSocket.socketId; 
+                        console.log('notifying', recipientNotificationSocketId);
+                        io.to(recipientNotificationSocketId).emit('notify');
+                    }
+                    if (recipientChatSocket) {
+                        let recipientChatSocketId = recipientChatSocket.socketId;
+                        console.log('new message', recipientChatSocketId);
+                        io.to(recipientChatSocketId).emit('incoming', result);
+                    }
+                }
             } catch (err) {
                 socket.emit('err');
-                reportError(file, '53', err, false);
+                reportError(file, '72', err, false);
             }
         }
     },
@@ -110,7 +129,7 @@ module.exports = {
                 socket.emit('getMessages', messages);
             } catch (err) {
                 socket.emit('err');
-                reportError(file, '109', err, false);
+                reportError(file, '121', err, false);
             }
         }
     },
@@ -171,7 +190,7 @@ module.exports = {
                 socket.emit('block');
             } catch (err) {
                 socket.emit('err');
-                reportError(file, '159', err, false);
+                reportError(file, '182', err, false);
             }
         }
     },
@@ -185,7 +204,7 @@ module.exports = {
                 socket.emit('unblock');
             } catch (err) {
                 socket.emit('err');
-                reportError(file, '173', err, false);
+                reportError(file, '196', err, false);
             }
         }
     },
