@@ -136,10 +136,6 @@ io.on('connection', (socket) => {
 		await users.message(data, socket, io);
 	});
 
-	socket.on('challenge', async (data) => {
-		await users.challenge(data, socket);
-	});
-
 	socket.on('block', async (data) => {
 		await users.block(data, socket);
 	});
@@ -154,6 +150,10 @@ io.on('connection', (socket) => {
 
 	socket.on('deleteConversation', async (data) => {
 		await users.deleteConversation(data, socket);
+	});
+
+	socket.on('findOpenChallenge', async (data) => {
+		await users.findOpenChallenge(socket);
 	});
 
 	// ===================================================
@@ -197,6 +197,14 @@ io.on('connection', (socket) => {
 
 	socket.on('lobby', async (data) => {
 		await games.lobby(data, socket);
+	});
+
+	socket.on('challenge', async (data) => {
+		await games.challenge(io, socket, data);
+	});
+
+	socket.on('accept', async (data) => {
+		await games.accept(io, socket, data);
 	});
 });
 

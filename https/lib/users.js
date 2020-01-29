@@ -5,7 +5,9 @@ const { procHandler, procHandler2 } = require('../lib/sql');
 const { Game } = require('../models/models');
 const { reportError } = require('./errors');
 const randomString = require('crypto-random-string');
+
 const file = 'lib/users.js';
+const env = process.env.NODE_ENV || 'development';
 
 module.exports = {
     follow: async (data, socket) => {
@@ -49,28 +51,32 @@ module.exports = {
                 const result = await procHandler(usersLibPool, proc, inputs);
                 socket.emit('message', result);
 
-                // send notification
-                let proc2 = 'CALL sp_GetSockets(?)';
-                let inputs2 = [data.recipientId];
-                let result2 = await procHandler(usersLibPool, proc2, inputs2);
-                if (result2 && result2.length) {
-                    let recipientNotificationSocket = result2.find(s => s.type == 'notification');
-                    let recipientChatSocket = result2.find(s => s.type == 'chat');
-                    if (recipientNotificationSocket) {
-                        let recipientNotificationSocketId = recipientNotificationSocket.socketId; 
-                        console.log('notifying', recipientNotificationSocketId);
-                        io.to(recipientNotificationSocketId).emit('notify');
+                let sockets = await module.exports.getSockets(data.recipientId);
+                if (sockets && sockets.length) {
+                    let notificationSocket = sockets.find(s => s.type == 'notification');
+                    let chatSocket = sockets.find(s => s.type == 'chat');
+                    if (notificationSocket) {
+                        let socketId = notificationSocket.socketId;
+                        io.to(socketId).emit('notify:message');
                     }
-                    if (recipientChatSocket) {
-                        let recipientChatSocketId = recipientChatSocket.socketId;
-                        console.log('new message', recipientChatSocketId);
-                        io.to(recipientChatSocketId).emit('incoming', result);
+                    if (chatSocket) {
+                        let socketId = chatSocket.socketId;
+                        io.to(socketId).emit('incoming', result);
                     }
                 }
             } catch (err) {
                 socket.emit('err');
                 reportError(file, '72', err, false);
             }
+        }
+    },
+    getSockets: async (userId) => {
+        try {
+            const proc = 'CALL sp_GetSockets(?)';
+            const inputs = [userId];
+            return await procHandler(usersLibPool, proc, inputs);
+        } catch (err) {
+            throw err;
         }
     },
     getUser: async (username) => {
@@ -241,5 +247,20 @@ module.exports = {
                 reportError(file, '205', err, false);
             }
         }
-    }
+    },
+    findOpenChallenge: async (socket) => {
+		if (socket.request.session.user) {
+			try {
+                const userId = socket.request.session.user.id;
+                const challenges = await Game.find({type: 'challenge', status: 'open', env: env}).exec();
+                if (challenges && challenges.length) {
+                    let challenge = challenges.find(c => c.challenge.toId == userId);
+                    socket.emit('findOpenChallenge', challenge);
+                }
+			} catch (err) {
+				reportError(file, '260', err, false);
+				return socket.emit('err', err);
+			}	
+		}
+	},
 }

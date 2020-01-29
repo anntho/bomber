@@ -23,6 +23,13 @@ let gameSchema = new mongoose.Schema({
 	room: String,
 	env: String,
 	status: String,
+	type: String,
+	challenge: {
+		toId: Number,
+		toUsername: String,
+		fromId: Number,
+		fromUsername: String 
+	},
 	created: { type: Date, default: Date.now },
 	parameters: {
 		mode: String,

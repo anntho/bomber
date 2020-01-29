@@ -4,12 +4,13 @@ const gamesPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
 const { sendEmail } = require('./email');
 const { shuffle } = require('./helpers');
+const { getSockets } = require('./users');
 const { Game, Movie } = require('../models/models');
 const { reportError } = require('./errors');
 const cryptoRandomString = require('crypto-random-string');
 
-const line = '---------------------------------';
 const file = 'lib/games.js';
+const env = process.env.NODE_ENV || 'development';
 
 module.exports = {
 	checkExpired: async (game) => {
@@ -29,8 +30,11 @@ module.exports = {
 	},
 	lobby: async (data, socket) => {
 		try {
-			let env = process.env.NODE_ENV || 'development';
-			let games = await Game.find({status: 'open', env: env});
+			let games = await Game.find({
+				status: 'open',
+				env: env,
+				type: 'search'
+			});
 			if (games) {
 				for (const game of games) {
 					await module.exports.checkExpired(game);
@@ -39,7 +43,7 @@ module.exports = {
 				socket.emit('lobby', openGames);
 			}
 		} catch (err) {
-			console.log(err);
+			reportError(file, '40', err, false);
 			return socket.emit('err', err);
 		}
 	},
@@ -65,7 +69,7 @@ module.exports = {
 					});
 				}
 			} catch (err) {
-				console.log(err);
+				reportError(file, '66', err, false);
 				return socket.emit('err', err);
 			}
 		}
@@ -78,7 +82,8 @@ module.exports = {
 				socket.request.session.game = null;
 				socket.request.session.save();
 			} catch (err) {
-				console.log(err);
+				reportError(file, '79', err, true);
+				return socket.emit('err', err);
 			}
 		}
 	},
@@ -97,7 +102,8 @@ module.exports = {
 				socket.request.session.game = null;
 				socket.request.session.save();
 			} catch (err) {
-				console.log(err);
+				reportError(file, '99', err, false);
+				return socket.emit('err', err);
 			}
 		}
 	},
@@ -131,7 +137,7 @@ module.exports = {
 					game: game
 				});
 			} catch (err) {
-				console.log(err);
+				reportError(file, '134', err, true);
 				return socket.emit('err', err);
 			}
 		}
@@ -150,7 +156,6 @@ module.exports = {
 			let game = await Game.findOne({room: data.room});
 			
 			if (game && game.status == 'open') {
-				console.log('game found')
 				game.status = 'active';
 				game.players.push({
 					username: username,
@@ -175,8 +180,82 @@ module.exports = {
 				});
 			}
 		} catch (err) {
-			console.log(err);
+			reportError(file, '177', err, true);
 			return socket.emit('err', err);
+		}
+	},
+	accept: async (io, socket, data) => {
+		console.log('accept')
+		console.log(data)
+		if (socket.request.session.user) {
+			try {
+				let username = socket.request.session.user.username;
+				let userId = socket.request.session.user.id;
+				let rank = socket.request.session.user.rank;
+				let elo = socket.request.session.user.elo;
+	
+				let game = await Game.findOne({room: data.roomId});
+				
+				if (game && game.status == 'open') {
+					game.status = 'active';
+					game.players.push({
+						username: username,
+						userId: userId,
+						socketId: socket.id,
+						rank: rank,
+						elo: elo,
+						score: 0
+					});
+					game.save();
+		
+					socket.join(game.room);
+					socket.request.session.game = game;
+					socket.request.session.save(function(err) {
+						if (err) {
+							return socket.emit('err', err);
+						}
+					});
+	
+					io.to(game.room).emit('connected', {
+						room: game.room
+					});
+				}
+			} catch (err) {
+				reportError(file, '222', err, false);
+				return socket.emit('err', err);
+			}
+		}
+	},
+	challenge: async (io, socket, data) => {
+		if (socket.request.session.user) {
+			try {
+				let user = socket.request.session.user;
+				let mode = data.mode;
+				let count = data.count;
+				let listId = getListId(mode);
+				if (!socket.request.session.user.game) {
+					let roomId = cryptoRandomString({length: 10});
+					let idList = await makeIdList(listId);
+					let participants = { 
+						toId: data.userId,
+						toUsername: data.username,
+						fromId: user.id,
+						fromUsername: user.username
+					};
+					let newGame = createNewGame(socket, 'challenge', participants, roomId, mode, count, listId, idList);
+					let doc = new Game(newGame);
+					await doc.save();
+					saveToSocket(socket, newGame);
+					socket.emit('challenge:created');
+					let sockets = await getSockets(data.userId);
+					if (sockets && sockets.length) {
+						sendChallenge(io, sockets, roomId, data.username);
+					}
+				}
+			} catch (err) {
+				reportError(file, '185', err, false);
+				return socket.emit('err', err);
+			}
 		}
 	},
 	search: async (io, socket, data) => {
@@ -186,35 +265,27 @@ module.exports = {
 			} else {
 				socket.emit('liveCheckUser', true);
 			}
-
-			let env = process.env.NODE_ENV || 'development';
+			console.log(`searching for a game in ${env}`);
 			let userId = socket.request.session.user.id;
 			let mode = data.mode;
 			let count = data.count;
 			let listId = getListId(mode);
-			let open = await findOpenGame(mode, count, env);
+			let open = await findOpenGame(env, mode, count);
 
 			if (!open) {
+				console.log(`creating new game in ${env}`);
 				let roomId = cryptoRandomString({length: 10});
 				let idList = await makeIdList(listId);
-				let newGame = createNewGame(
-					socket,
-					roomId,
-					mode,
-					count,
-					listId,
-					idList
-				);
-
+				let newGame = createNewGame(socket, 'search', null, roomId, mode, count, listId, idList);
 				let doc = new Game(newGame);
 				await doc.save();
-
 				saveToSocket(socket, newGame);
+
 			} else {
+				console.log(`joining new game in ${env}`);
 				let myGame = open.players.find(p => p.userId == userId);
 				if (!myGame) {
-					console.log('joining a game')
-					console.log(line)
+					//console.log('joining a game')
 					await joinGame(socket, open);
 					saveToSocket(socket, open);
 
@@ -228,7 +299,7 @@ module.exports = {
 				}
 			}
 		} catch (err) {
-			console.log(err);
+			reportError(file, '229', err, false);
 			return socket.emit('err', err);
 		}
 	},
@@ -267,7 +338,7 @@ module.exports = {
 				}
 			}
 		} catch (err) {
-			console.log(err);
+			reportError(file, '268', err, false);
 			return socket.emit('err', err);
 		}
 	}
@@ -289,13 +360,22 @@ function getListId(mode) {
 	return listId;
 }
 
-async function findOpenGame(mode, count, env) {
-	return await Game.findOne({
-		'status': 'open',
-		'env': env,
-		'parameters.mode': mode,
-		'parameters.count': count
-	});
+async function findOpenGame(env, mode, count) {
+	if (mode && count) {
+		return await Game.findOne({
+			'status': 'open',
+			'env': env,
+			'type': 'search',
+			'parameters.mode': mode,
+			'parameters.count': count
+		});
+	} else {
+		return await Game.findOne({
+			'status': 'open',
+			'env': env,
+			'type': 'search'
+		});
+	}
 }
 
 async function makeIdList(listId) {
@@ -305,13 +385,14 @@ async function makeIdList(listId) {
 	return idList.slice(0, 50);
 }
 
-function createNewGame(socket, roomId, mode, count, listId, idList) {
+function createNewGame(socket, type, challenge, roomId, mode, count, listId, idList) {
 	let user = socket.request.session.user;
-	let env = process.env.NODE_ENV || 'development';
 	return {
 		room: roomId,
 		env: env,
 		status: 'open',
+		type: type,
+		challenge: challenge,
 		parameters: {
 			mode: String(mode),
 			count: parseInt(count),
@@ -346,10 +427,30 @@ function createNewGame(socket, roomId, mode, count, listId, idList) {
 }
 
 function saveToSocket(socket, game) {
-	console.log('saving socket', game);
+	//console.log('saving socket', game);
 	socket.join(game.room);
 	socket.request.session.game = game;
 	socket.request.session.save();
+}
+
+function sendChallenge(io, sockets, roomId, username) {
+	console.log('sending challenge');
+	let notificationSocket = sockets.find(s => s.type == 'notification');
+	let profileSocket = sockets.find(s => s.type == 'profile');
+	if (notificationSocket) {
+		let socketId = notificationSocket.socketId;
+		io.to(socketId).emit('notify:challenge', {
+			roomId: roomId,
+			username: username
+		});
+	}
+	if (profileSocket) {
+		let socketId = profileSocket.socketId;
+		io.to(socketId).emit('challenge:incoming', {
+			roomId: roomId,
+			username: username
+		});
+	}
 }
 
 async function joinGame(socket, game) {
@@ -365,7 +466,7 @@ async function joinGame(socket, game) {
 			score: 0,
 			new: null
 		});
-		console.log(game)
+		//console.log(game)
 		await game.save();
 	} catch (err) {
 		throw err;

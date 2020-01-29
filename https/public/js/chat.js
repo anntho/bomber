@@ -12,9 +12,7 @@ $(document).ready(async function() {
 		}
 	});
 
-    socket.emit('updateSocket', {
-        type: 'chat'
-    });
+    socket.emit('updateSocket', 'chat');
 
 	socket.on('incoming', function(data) {
 		appendMessage(data[0]);

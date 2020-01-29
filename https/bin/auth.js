@@ -1,5 +1,4 @@
 const { updateSessionHTTP } = require('../lib/updateSession');
-const config = require('./config');
 
 module.exports = {
 	authenticated: async (req, res, next) => {

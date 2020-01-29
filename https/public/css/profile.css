@@ -8,23 +8,14 @@
     padding-left: 5px;
 }
 
-.progress {
-    background-color: #444444;
-}
-
-.progress .determinate {
-    background-color: #01d277;
-}
-
-.progress-data {
-    font-size: .8rem;
-    font-weight: 500;
-}
-
 .active-game {
-    color: #01d277;
+    background-color: #01d277;
     font-weight: 500;
     font-size: 15px;
+}
+
+.active-game.btn:hover {
+    background-color: #4cffb1;
 }
 
 .active-game i.material-icons {
@@ -37,6 +28,19 @@
 
 .incorrect {
     color: #f44336;
+}
+
+.progress {
+    background-color: #444444;
+}
+
+.progress .determinate {
+    background-color: #01d277;
+}
+
+.progress-data {
+    font-size: .8rem;
+    font-weight: 500;
 }
 
 th {
@@ -59,9 +63,22 @@ tbody tr:hover {
     background-color: #212121;
 }
 
+.profile-container {
+    background-color: #2f2f2f;
+}
+
 .profile-header {
     height: 100px;
-    background-color: #2f2f2f;
+}
+
+.sub-buttons {
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.sub-buttons a {
+    margin-right: 2%;
 }
 
 .profile-action-buttons a {
@@ -90,5 +107,3 @@ tbody tr:hover {
 .modal .modal-footer {
     background-color: #131313;
 }
-
-

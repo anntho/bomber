@@ -1,6 +1,11 @@
 $(document).ready(async function() {
     let socket = io.connect(socketString);
 
+    if (thisUserId == userId) {
+        socket.emit('updateSocket', 'profile');
+        socket.emit('findOpenChallenge');
+    }
+
     $('#games').on('click', 'tr', function() {
         let id = $(this).attr('id');
         location.href = `/live/${id}`;
@@ -57,6 +62,30 @@ $(document).ready(async function() {
         });
     });
 
+    $('#challenge').on('click', function() {
+        $('#modes').toggle();
+    });
+
+    $('.search').on('click', function() {
+        $('#searchModal').modal('open');
+        socket.emit('challenge', {
+            userId: thisUserId,
+            username: thisUsername,
+            count: $(this).attr('data-count'),
+            mode: $(this).attr('data-mode')
+        });
+    });
+
+    $('#cancel').click(function() {
+        socket.emit('cancel');
+    });
+
+    $('a.challenge').click(function() {
+        console.log('accpeting')
+        let roomId = $('#challengeContainer a').attr('data-roomId');
+        socket.emit('accept', {roomId: roomId});
+    });
+
     socket.on('follow', function() {
         $('#follow').text('unfollow');
         $('#follow').attr('id', 'unfollow');
@@ -84,6 +113,27 @@ $(document).ready(async function() {
         $('#unblock').attr('id', 'block');
         feedback('success', 'Success!', null);
     });
+
+    socket.on('findOpenChallenge', function(data) {
+        showChallenge(data.room, data.challenge.fromUsername);
+    });
+
+    socket.on('challenge:incoming', function(data) {
+        showChallenge(data.roomId, data.username);
+    });
+
+    socket.on('connected', function(data) {
+        $('#searchModal').modal('close');
+        let url = `/live/${data.room}`;
+        location.href = url;
+    });
+
+    function showChallenge(roomId, username) {
+        let text = `Play ${username} (accept challenge)`;
+        $('#challengeContainer').show();
+        $('#challengeContainer a').attr('data-roomId', roomId);
+        $('#challengeContainer a span').text(text);
+    }
 
     function feedback(icon, title, text) {
 		swal({

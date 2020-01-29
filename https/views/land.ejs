@@ -14,24 +14,13 @@
 	<% include ./nav %>
 
 	<main>
-		<div class="top-wrapper row mt-3">
-			<div class="content-wrapper col s12 m8 offset-m2 xl6 offset-xl3">
-				<div id="searchModal" class="modal mt-2">
-					<div class="modal-content">
-						<h5 class="mb-2">Searching for a game...</h5>
-						<div class="progress">
-      						<div class="indeterminate"></div>
-  						</div>
-					</div>
-					<div class="modal-footer">
-						<a id="cancel" class="modal-close waves-effect waves-green btn-flat purple-text">Cancel</a>
-					</div>
-				</div>
-
+		<div class="top-wrapper mt-3">
+			<div class="content-wrapper col s12">
+				<% include ./search %>
 				<div class="row mb-3">
 					<div class="col s12">
 						<h5 id="username" class="cyan-text">
-							{ <span class="grey-text">blitz</span> }
+							{ <span class="grey-text">Blitz</span> }
 						</h5>
 						<p style="font-size: .8rem">* Number indicates the amount of correct answers needed to win</p>
 						<div class="button-container">
@@ -90,7 +79,7 @@
 				<div class="row">
 					<div class="col s12">
 						<h5 id="username" class="amber-text">
-							{ <span class="grey-text">lobby</span> }
+							{ <span class="grey-text">Lobby</span> }
 						</h5>
 						<div class="lobby-container">
 							<table>
@@ -111,7 +100,7 @@
 				<div class="row">
 					<div class="col s12">
 						<h5 id="username" class="purple-text">
-							{ <span class="grey-text">new users</span> }
+							{ <span class="grey-text">New Users</span> }
 						</h5>
 						<div class="new-users-container">
 							<% if (metrics && metrics.newUsers) { %>

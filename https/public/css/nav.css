@@ -49,6 +49,7 @@ ul.sidenav:not(.browser-default) {
 
 .dropdown-content li > a {
 	color: #fafafa;
+	font-size: 14px;
 }
 
 .dropdown-content li:hover {

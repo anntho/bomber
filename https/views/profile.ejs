@@ -10,10 +10,11 @@
 </head>
 <body>
 	<% include ./nav %>
+	<% include ./search %>
 	<main>
 		<div class="top-wrapper row">
 			<div class="content-wrapper">
-				<div class="col s12">
+				<div class="col s12 profile-container">
 					<div class="row profile-header mb-0">
 						<div class="col s6 mt-1">
 							<h5 id="username" class="cyan-text" data-id="<%-thisUser.id%>">
@@ -23,18 +24,18 @@
 						<% if (userId != thisUser.id) { %>
 							<div class="col s12 mt-2 profile-action-buttons">
 								<% if (isFollowing) { %>
-									<a id="unfollow" class="point mr-1">unfollow</a>
+									<a id="unfollow" class="point mr-1">Unfollow</a>
 								<% } else { %>
-									<a id="follow" class="point mr-1">follow</a>
+									<a id="follow" class="point mr-1">Follow</a>
 								<% } %>
 								<% if (!restricted && !blocked) { %>
-									<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">message</a>
-									<!-- <a id="challenge" class="point mr-1">challenge</a> -->
+									<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">Message</a>
+									<a id="challenge" class="point mr-1">Challenge</a>
 								<% } %>
 								<% if (blocked) { %>
-									<a id="unblock" class="point mr-1">unblock</a>
+									<a id="unblock" class="point mr-1">Unblock</a>
 								<% } else { %>
-									<a id="block" class="point mr-1">block</a>
+									<a id="block" class="point mr-1">Block</a>
 								<% } %>
 							</div>
 						<% } else { %>
@@ -42,6 +43,14 @@
 								<span class="grey-text">Welcome back, <%-username%></span>
 							</div>
 						<% } %>
+					</div>
+					<div id="modes" class="profile-action-buttons sub-buttons pt-2 pb-2" style="display: none;">
+						<a data-count="10" data-mode="popular" class="search point">10 - Popular</a>
+						<a data-count="10" data-mode="horror" class="search point">10 - Horror</a>
+						<a data-count="10" data-mode="90s" class="search point">10 - 90s</a>
+						<a data-count="30" data-mode="popular" class="search point">30 - Popular</a>
+						<a data-count="30" data-mode="horror" class="search point">30 - Horror</a>
+						<a data-count="30" data-mode="90s" class="search point">30 - 90s</a>
 					</div>
 					<div id="messageModal" class="modal mt-2">
 						<div class="modal-content">
@@ -119,20 +128,28 @@
 						</div>
 					</div>
 
-					<div class="row valign-wrapper profile-header mb-0">
+					<div class="row valign-wrapper mb-1">
 						<div class="col s12">
 							<h5 class="amber-text">
 								{ <span class="grey-text">games</span> }
 							</h5>
 						</div>
 					</div>
+					<div id="challengeContainer" class="row valign-wrapper line mb-0" style="display: none;">
+						<div class="col s12">
+							<a class="btn active-game valign-wrapper challenge">
+								<i class="material-icons left">alarm_on</i>
+								<span></span>
+							</a>
+						</div>
+					</div>
 					<% if (thisUser.activeGame) { %>
 						<div class="row valign-wrapper line mb-0">
 							<div class="col s12">
 								<% if (user && username == thisUser.username) { %>
-									<a class="active-game valign-wrapper" href="/live/<%-thisUser.activeGame.room%>">
-										<i class="material-icons left">brightness_1</i>
-										Join Active Game
+									<a class="btn active-game valign-wrapper" href="/live/<%-thisUser.activeGame.room%>">
+										<i class="material-icons left">alarm</i>
+										Re-join active game
 									</a>
 								<% } else { %>
 									<a class="active-game">1 Active Game</a>
@@ -175,14 +192,18 @@
 
 	<script>
 		const socketString = <%-JSON.stringify(socket)%>;
+		const userId = <%-JSON.stringify(userId)%>;
+		const thisUserId = <%-JSON.stringify(thisUser.id)%>;
+		const thisUsername = <%-JSON.stringify(thisUser.username)%>;
 	</script>
 	<script src="/js/jquery.min.js"></script>
+	<script src="/js/init.js"></script>
 	<script src="/js/Chart.bundle.min.js"></script>
 	<script src="<%-socket%>/socket.io/socket.io.js"></script>
 	<script src="/js/nav.js"></script>
+	<script src="/js/notify.js"></script>
 	<script src="/js/profile.js"></script>
 	<script src="/js/materialize.min.js"></script>
-	<script src="/js/init.js"></script>
 	<script src="/js/sweetalert.min.js"></script>
 </body>
 </html>

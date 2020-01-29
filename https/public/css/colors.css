@@ -2,6 +2,10 @@
     color: #f44336;
 }
 
+.mb-green-text {
+    color: #01d277;
+}
+
 .dark-light {
     background-color: rgba(255, 255, 255, 0.07);
 }
