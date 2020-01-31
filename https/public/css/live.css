@@ -111,6 +111,7 @@ img {
 .visor-wrapper {
     display: flex;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .visor-icon-box {

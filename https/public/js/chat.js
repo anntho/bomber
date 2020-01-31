@@ -22,8 +22,7 @@ $(document).ready(async function() {
 
 	socket.on('message', function(data) {
 		appendMessage(data[0]);
-		let obj = document.getElementById('container');
-		obj.scrollTop = obj.scrollHeight;
+		scrollDown();
 	});
 	
 	socket.emit('getMessages', {sid: sid});
@@ -68,6 +67,12 @@ $(document).ready(async function() {
 		for (const message of messages) {
 			appendMessage(message);
 		}
+		scrollDown();
+	}
+
+	function scrollDown() {
+		let obj = document.getElementById('container');
+		obj.scrollTop = obj.scrollHeight;
 	}
 
 	function appendMessage(data) {

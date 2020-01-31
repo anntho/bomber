@@ -149,6 +149,7 @@ main {
 	height: 100%;
 	max-width: 850px;
 	margin: 0 auto;
+	padding: 0 .75rem;
 }
 
 .sub-wrapper {
