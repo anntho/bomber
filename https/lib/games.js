@@ -47,11 +47,16 @@ module.exports = {
 			return socket.emit('err', err);
 		}
 	},
-	cancel: async (socket) => {
+	cancel: async (io, socket) => {
 		if (socket.request.session.game) {
 			try {
 				let game = socket.request.session.game;
 				if (game.status == 'open') {
+					if (game.type == 'challenge') {
+						let opponentUserId = game.challenge.toId;
+						sendNotification(io, opponentUserId, 'cancel', null);
+					}
+
 					socket.emit('removeFromLobby', {
 						room: game.room
 					});
@@ -184,9 +189,27 @@ module.exports = {
 			return socket.emit('err', err);
 		}
 	},
+	decline: async (io, socket, data) => {
+		if (socket.request.session.user) {
+			try {
+				let userId = socket.request.session.user.id;
+				let game = await Game.findOne({room: data.roomId});
+				if (game) {
+					let opponentUserId = game.players[0].userId;
+					await game.deleteOne({room: data.roomId});
+					sendNotification(io, opponentUserId, 'decline', null);
+					sendNotification(io, userId, 'cancel', null);
+					socket.emit('decline');
+				}
+			} catch (err) {
+				reportError(file, '197', err, false);
+				return socket.emit('err', err);
+			}
+		}
+	},
 	accept: async (io, socket, data) => {
-		console.log('accept')
-		console.log(data)
+		console.log('accepting challenge');
+		console.log(data);
 		if (socket.request.session.user) {
 			try {
 				let username = socket.request.session.user.username;
@@ -206,6 +229,7 @@ module.exports = {
 						elo: elo,
 						score: 0
 					});
+
 					game.save();
 		
 					socket.join(game.room);
@@ -215,10 +239,14 @@ module.exports = {
 							return socket.emit('err', err);
 						}
 					});
-	
-					io.to(game.room).emit('connected', {
-						room: game.room
-					});
+
+					let socketData = { room: game.room };
+					let opponentUserId = game.players[0].userId;
+					sendNotification(io, opponentUserId, 'connected', socketData);
+					sendNotification(io, userId, 'connected', socketData);
+					//socket.emit('notify:connected', socketData);
+				} else {
+					socket.emit('err');
 				}
 			} catch (err) {
 				reportError(file, '222', err, false);
@@ -552,4 +580,20 @@ async function endGame(io, game, winner, loser, resigned) {
 		winner: winner.userId,
 		ids: [winner.userId, loser.userId]
 	});
+}
+
+async function sendNotification(io, userId, event, data) {
+	try {
+		let sockets = await getSockets(userId);
+		let socket = sockets.find(s => s.type == 'notification');
+		if (socket) {
+			if (data) {
+				io.to(socket.socketId).emit(`notify:${event}`, data);
+			} else {
+				io.to(socket.socketId).emit(`notify:${event}`);
+			}
+		}
+	} catch (err) {
+		throw err;
+	}
 }

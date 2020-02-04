@@ -151,7 +151,7 @@ module.exports = {
 
             for (const game of closed) {
                 let date = new Date(game._id.getTimestamp());
-                let str = date.toString().split('T')[0];
+                let str = date.toString().split('GMT')[0].trim();
                 let mode = `${game.parameters.count} ${game.parameters.mode}`;
                 let gameUser = game.players.find(p => p.userId == userId);
                 let gameOpponent = game.players.find(p => p.userId != userId);

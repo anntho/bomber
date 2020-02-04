@@ -57,7 +57,7 @@ ul.sidenav:not(.browser-default) {
 }
 
 .dropdown-trigger i.material-icons {
-	color: #01d277;
+	color: violet;
 	font-size: 14px;
 	display: none;
 }

@@ -8,16 +8,6 @@
     padding-left: 5px;
 }
 
-.active-game {
-    background-color: #01d277;
-    font-weight: 500;
-    font-size: 15px;
-}
-
-.active-game.btn:hover {
-    background-color: #4cffb1;
-}
-
 .active-game i.material-icons {
     font-size: 15px;
 }
@@ -106,4 +96,10 @@ tbody tr:hover {
 
 .modal .modal-footer {
     background-color: #131313;
+}
+
+#challengeContainer {
+    border: 2px solid cyan;
+    border-radius: 5px;
+    background-color: #196363;
 }

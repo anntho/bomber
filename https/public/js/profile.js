@@ -80,10 +80,16 @@ $(document).ready(async function() {
         socket.emit('cancel');
     });
 
-    $('a.challenge').click(function() {
-        console.log('accpeting')
-        let roomId = $('#challengeContainer a').attr('data-roomId');
+    $('a.challenge.accept').click(function() {
+        console.log('accepted')
+        let roomId = $('#challengeContainer').attr('data-roomId');
         socket.emit('accept', {roomId: roomId});
+    });
+
+    $('a.challenge.decline').click(function() {
+        console.log('declined')
+        let roomId = $('#challengeContainer').attr('data-roomId');
+        socket.emit('decline', {roomId: roomId});
     });
 
     socket.on('follow', function() {
@@ -128,15 +134,19 @@ $(document).ready(async function() {
         location.href = url;
     });
 
+    socket.on('decline', function() {
+        $('#challengeContainer').hide();
+    });
+
     function showChallenge(roomId, username) {
-        let text = `Play ${username} (accept challenge)`;
+        let message = `New request from ${username}`;
         $('#challengeContainer').show();
-        $('#challengeContainer a').attr('data-roomId', roomId);
-        $('#challengeContainer a span').text(text);
+        $('#challengeContainer span.message').text(message);
+        $('#challengeContainer').attr('data-roomId', roomId);
     }
 
     function feedback(icon, title, text) {
-		swal({
+		return swal({
 			icon: icon,
             title: title,
             text: text

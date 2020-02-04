@@ -164,7 +164,7 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('cancel', async () => {
-		await games.cancel(socket);
+		await games.cancel(io, socket);
 	});
 
 	socket.on('close', async () => {
@@ -205,6 +205,10 @@ io.on('connection', (socket) => {
 
 	socket.on('accept', async (data) => {
 		await games.accept(io, socket, data);
+	});
+
+	socket.on('decline', async (data) => {
+		await games.decline(io, socket, data);
 	});
 });
 
