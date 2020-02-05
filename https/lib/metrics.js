@@ -2,10 +2,8 @@ const mysql = require('mysql');
 const config = require('../bin/config');
 const metricsPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
-const { sendEmail } = require('./email');
 const { reportError } = require('./errors');
 
-const line = '---------------------------------';
 const file = 'lib/metrics.js';
 
 module.exports = {

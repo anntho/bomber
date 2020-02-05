@@ -3,6 +3,6 @@
 <link rel="stylesheet" href="/css/nav.css">
 <link rel="stylesheet" href="/css/footer.css">
 <link rel="stylesheet" href="/css/colors.css">
-<% if (file) { %>
+<% if (typeof file != 'undefined') { %>
     <link rel="stylesheet" href="/css/<%-file%>.css">
 <% } %>

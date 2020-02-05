@@ -29,7 +29,6 @@ router.get('/board', setUser, async (req, res) => {
 });
 
 router.get('/live/:id', [update, setUser], async (req, res) => {
-	console.log('live route');
 	try {
 		let room = req.params.id;
 		let game = await Game.findOne({room: room});
@@ -101,7 +100,6 @@ router.get('/password/reset/verified/:code', async (req, res) => {
 		try {
 			let code = req.params.code;
 			let result = await pages.lookupCode(code);
-			console.log(result);
 			if (result && result[0] && result[0].used == 0) {
 				res.locals.verified = true;
 				res.locals.code = result[0].code;
@@ -118,7 +116,6 @@ router.get('/password/reset/verified/:code', async (req, res) => {
 });
 
 router.get('/password/reset', (req, res) => {
-	console.log('plain route')
 	if (req.session.user) {
 		res.redirect('/');
 	} else {
@@ -146,10 +143,6 @@ router.get('/verify', setUser, async (req, res) => {
 	} else {
 		res.redirect('/');
 	}
-});
-
-router.get('/broken', (req, res) => {
-	throw new Error('BROKEN');
 });
 
 module.exports = router;

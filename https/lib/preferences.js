@@ -18,6 +18,7 @@ async function emailAlertHTML(ip, username, code, description) {
     const geo = geoip.lookup(ip);
     const location = `${geo.city}, ${geo.region}`;
     const resetLink = '/reset';
+    const image = 'https://dev.moviebomber.org/images/logo.png';
 
     let content = `<p><h5>moviebomber.org | Automated Account Alerts</h5></p>`;
     content += `<p><h4>Hey there ${username},</h4></p>`;
@@ -34,6 +35,10 @@ async function emailAlertHTML(ip, username, code, description) {
     if (code === 4) {
         content += `<p><h2>We're sorry to see you go!</h2></p>`;
     }
+
+    content += `<div style="margin-top: 25px;">`;
+    content += `<img style="width: 300px; height: 100px" src="${image}">`
+    content += `</div>`;
 
     return content;
 }

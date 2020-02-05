@@ -19,6 +19,7 @@ async function emailAlertHTML(ip, username, verification) {
     const geo = geoip.lookup(ip);
 	const location = `${geo.city}, ${geo.region}`;
 	const link = config.socket.host + '/verify?v=' + verification;
+	const image = 'https://dev.moviebomber.org/images/logo.png';
 
     let content = `<p><h5>moviebomber.org | Automated Account Alerts</h5></p>`;
     content += `<p><h4>Hey there ${username},</h4></p>`;
@@ -28,6 +29,10 @@ async function emailAlertHTML(ip, username, verification) {
 	content += `<ul style="font-size: 10px;"><li>Date/Time: ${dateString}</li>`;
 	content += `<li>IP Address (Location): ${ip} (${location})</li>`;
 	content += `</ul>`;
+
+	content += `<div style="margin-top: 25px;">`;
+    content += `<img style="width: 300px; height: 100px" src="${image}">`
+    content += `</div>`;
 
     return content;
 }

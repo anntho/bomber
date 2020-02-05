@@ -1,26 +1,17 @@
 const createError = require('http-errors');
 const { sendEmail } = require('./email');
-const fs = require('fs');
 
 module.exports = {
 	catch404: (req, res, next) => {
 		next(createError(404));
 	},
-	defender: (req, res, next) => {
-		let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-		if (ip.includes('41.250.89.73')) {
-			console.log('IP Blocked', ip);
-			res.end();
-		}
-	},
 	errorHandler: (err, req, res, next) => {
 		res.locals.message = err.message;
 		res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-		// console.log('error handler');
-		// console.log(1, res.locals.message);
-		// console.log(2, res.locals.error.status);
-		// console.log(3, res.locals.error.stack);
+		console.log(1, res.locals.message);
+		console.log(2, res.locals.error.status);
+		console.log(3, res.locals.error.stack);
 
 		if (err.status == 404) {
 			res.render('404');

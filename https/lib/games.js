@@ -2,7 +2,6 @@ const mysql = require('mysql');
 const config = require('../bin/config');
 const gamesPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
-const { sendEmail } = require('./email');
 const { shuffle } = require('./helpers');
 const { getSockets } = require('./users');
 const { Game, Movie } = require('../models/models');
