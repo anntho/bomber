@@ -21,27 +21,29 @@
 								{ <span class="grey-text"><%-thisUser.username%></span> }
 							</h5>
 						</div>
-						<% if (userId != thisUser.id) { %>
-							<div class="col s12 mt-2 profile-action-buttons">
-								<% if (isFollowing) { %>
-									<a id="unfollow" class="point mr-1">Unfollow</a>
-								<% } else { %>
-									<a id="follow" class="point mr-1">Follow</a>
-								<% } %>
-								<% if (!restricted && !blocked) { %>
-									<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">Message</a>
-									<a id="challenge" class="point mr-1">Challenge</a>
-								<% } %>
-								<% if (blocked) { %>
-									<a id="unblock" class="point mr-1">Unblock</a>
-								<% } else { %>
-									<a id="block" class="point mr-1">Block</a>
-								<% } %>
-							</div>
-						<% } else { %>
-							<div class="col s12 mt-2 profile-action-buttons">
-								<span class="grey-text">Welcome back, <%-username%></span>
-							</div>
+						<% if (userId) { %>
+							<% if (userId != thisUser.id) { %>
+								<div class="col s12 mt-2 profile-action-buttons">
+									<% if (isFollowing) { %>
+										<a id="unfollow" class="point mr-1">Unfollow</a>
+									<% } else { %>
+										<a id="follow" class="point mr-1">Follow</a>
+									<% } %>
+									<% if (!restricted && !blocked) { %>
+										<a id="message" class="point mr-1 modal-trigger" data-target="messageModal">Message</a>
+										<a id="challenge" class="point mr-1">Challenge</a>
+									<% } %>
+									<% if (blocked) { %>
+										<a id="unblock" class="point mr-1">Unblock</a>
+									<% } else { %>
+										<a id="block" class="point mr-1">Block</a>
+									<% } %>
+								</div>
+							<% } else { %>
+								<div class="col s12 mt-2 profile-action-buttons">
+									<span class="grey-text">Welcome back, <%-username%></span>
+								</div>
+							<% } %>
 						<% } %>
 					</div>
 					<div id="modes" class="profile-action-buttons sub-buttons pt-2 pb-2" style="display: none;">

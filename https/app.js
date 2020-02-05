@@ -58,6 +58,8 @@ app.use(function(req, res, next) {
 	res.locals.username = '';
 	res.locals.userId = '';
 	res.locals.email = '';
+	res.locals.restricted = false;
+	res.locals.blocked = false;
 	next();
 });
 
