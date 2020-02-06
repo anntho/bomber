@@ -2,7 +2,11 @@ $(document).ready(async function() {
 	let socket = io.connect(socketString);
 
 	$('#send').click(function() {
-		sendMessage();
+		if ($('#message').val()) {
+			sendMessage();
+		} else {
+			feedback('info', 'Please type a message..');
+		}
 	});
 
 	$('input#message').keypress(function(e) {
