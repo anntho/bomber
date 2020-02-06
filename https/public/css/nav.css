@@ -11,6 +11,10 @@ nav .brand-logo {
 	color: #fafafa;
 }
 
+nav .brand-logo img {
+	height: 64px;
+}
+
 nav a {
 	color: #cccccc;
 }
