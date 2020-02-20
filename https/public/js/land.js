@@ -11,6 +11,10 @@ $(document).ready(function() {
         clearInterval(refreshInterval);
     }
 
+    $('.toggle-instructions').click(function() {
+        $('.instructions').toggle();
+    });
+
     $('.search').click(function() {
         socket.emit('search', {
             count: $(this).attr('data-count'),

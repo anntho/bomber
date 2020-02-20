@@ -80,3 +80,16 @@ td, th {
     font-weight: 700;
     text-transform: uppercase;
 }
+
+.instructions {
+    display: none;
+    background-color: #242424;
+    padding: 2%;
+    border-radius: 2px;
+    border: 1px dotted violet;
+    font-size: .9rem;
+}
+
+span.toggle-instructions:hover {
+    color: cyan;
+}

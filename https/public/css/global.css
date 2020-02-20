@@ -135,6 +135,14 @@ main {
 	margin-right: 3%;
 }
 
+.mr-4 {
+	margin-right: 4%;
+}
+
+.mr-5 {
+	margin-right: 5%;
+}
+
 .flex {
 	display: flex;
     justify-content: center;
