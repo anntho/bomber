@@ -3,14 +3,12 @@ const fetch = require('node-fetch');
 const config = require('../bin/config');
 const dataPool = mysql.createPool(config.mysql);
 const { procHandler } = require('../lib/sql');
-const { sendEmail } = require('./email');
 const { reportError } = require('./errors');
-const { Game, Movie } = require('../models/models');
+const { Movie } = require('../models/models');
 
 const TMDB_KEY = `?api_key=${config.tmdb.key}`;
 const URL_BASE = 'https://api.themoviedb.org/3';
 
-const line = '---------------------------------';
 const file = 'lib/data.js';
 
 module.exports = {
@@ -100,6 +98,19 @@ module.exports = {
 		} catch (err) {
 			reportError(file, '101', err, true);
 			socket.emit('err', {error: err});
+		}
+	},
+	getAllMovies: async (socket) => {
+		try {
+			let movies = await Movie.find();
+			if (movies && movies.length) {
+				socket.emit('getAllMovies', movies);
+			}
+		} catch (err) {
+			reportError(file, '110', err, false);
+			socket.emit('err', { 
+				error: err
+			});
 		}
 	}
 }

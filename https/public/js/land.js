@@ -34,11 +34,17 @@ $(document).ready(function() {
     });
 
     socket.on('liveCheckUser', (user) => {
+        let a = document.createElement("a");
+        a.textContent = 'or try training mode by clicking here';
+        a.href = '/solo'
         if (!user) {
             swal({
                 icon: 'warning',
                 title: 'Not logged in',
-                text: 'Please login to try this game mode'
+                text: 'Please login to try this game mode',
+                content: {
+                    element: a 
+                }
             });
         } else {
             $('#searchModal').modal('open');

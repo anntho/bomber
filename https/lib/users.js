@@ -88,10 +88,24 @@ module.exports = {
             throw err;
         }
     },
-    getRank: async (gamesPlayed) => {
+    getRankStandalone: async (userId) => {
         try {
-			let proc = 'CALL sp_GetRank(?)';
-			let inputs = [gamesPlayed];
+            let playerQuery = {'players': {$elemMatch: {userId: userId}}};
+            let games = await Game.find(playerQuery).exec();
+            let closed = games.filter(g => g.status == 'closed');
+            let total = (games && closed) ? closed.length : 0;
+            
+			let proc = 'CALL sp_GetRank(?, ?)';
+			let inputs = [total, userId];
+			return await procHandler(usersLibPool, proc, inputs);
+        } catch (err) {
+            throw err;
+        }
+    },
+    getRank: async (gamesPlayed, userId) => {
+        try {
+			let proc = 'CALL sp_GetRank(?, ?)';
+			let inputs = [gamesPlayed, userId];
 			return await procHandler(usersLibPool, proc, inputs);
         } catch (err) {
             throw err;

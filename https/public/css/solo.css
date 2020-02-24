@@ -62,7 +62,7 @@
     font-weight: 500;
 }
 
-#faceLoader {
+.faceload {
     animation: spinPulse 1s infinite ease-in-out;
     -moz-animation: spinPulse 1s infinite ease-in-out;
     -webkit-animation: spinPulse 1s infinite ease-in-out;
@@ -113,6 +113,7 @@
 .visor-icon img {
     height: 50px;
     width: 50px;
+    border-radius: 25px;
 }
 
 .visor-wrapper {
@@ -121,56 +122,34 @@
     width: 100%;
 }
 
-.visor-icon-box {
-    flex-basis: 45%;
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.visor-icon-box div {
-    flex-basis: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.visor-clock {
-    flex-basis: 10%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    font-size: 2rem;
-    font-weight: 700;
-    min-width: 50px;
-    opacity: .1; /* until timer is setup */
-}
-
-.visor-text {
-    flex-wrap: wrap;
-}
-
 .visor-row {
     display: flex;
     width: 100%;
 }
 
-.visor-text div {
-    margin-top: 3px;
+.visor-row.top {
+    background-color: #292929;
+    border: 1px solid #545454;
+    border-radius: 5px;
+    padding: 2%;
 }
 
-.visor-rank {
-    font-size: .8rem;
+.visor-col {
+    display: flex;
+    margin-right: 10%;
+    align-items: center;
+}
+
+.visor-col.end {
+    justify-content: flex-end;
+    display: flex;
+    flex: 1;
     font-weight: 500;
-    text-transform: capitalize;
 }
 
-.visor-rank span {
-    margin-right: 5px;
-}
-
-.visor-username {
+.big {
     font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 1.2rem;
 }
 
 .progress {
@@ -183,7 +162,7 @@
 }
 
 .progress.user .determinate {
-    background-color: #00bcd4;
+    background-color: #f44336;
 }
 
 .progress.opponent {
@@ -198,3 +177,21 @@
 .resign {
     text-decoration: underline;
 }
+
+.gameover-container {
+    background-color: #292929;
+    border: 1px solid #545454;
+    border-radius: 5px;
+    padding: 2%;
+}
+
+.gameover-header {
+    color: #9E9E9E;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+[v-cloak] > * { display:none; }
+[v-cloak]::before { content: "loading..."; }
+

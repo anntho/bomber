@@ -76,6 +76,10 @@ io.on('connection', (socket) => {
 		await data.getMovieDocs(socket, id);
 	});
 
+	socket.on('getAllMovies', async () => {
+		await data.getAllMovies(socket);
+	});
+
 	// ===================================================
 	// Site Metrics
 	// ===================================================

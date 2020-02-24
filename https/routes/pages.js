@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const config = require('../bin/config');
 const { reportError } = require('../lib/errors');
 const pages = require('../lib/pages');
 const { update, setUser } = require('../bin/auth');
 const { Game } = require('../models/models');
+const users = require('../lib/users');
 const file = 'routes/pages.js';
 
 router.get('/', setUser, async (req, res) => {
@@ -27,6 +29,16 @@ router.get('/board', setUser, async (req, res) => {
 		res.sendStatus(500);
 	}
 });
+
+router.get('/training', setUser, async (req, res) => {
+	try {
+		res.locals.file = 'solo';
+		res.locals.vue = config.vue.cdn;
+		res.render('solo');
+	} catch (err) {
+		res.send(err);
+	}
+})
 
 router.get('/live/:id', [update, setUser], async (req, res) => {
 	try {

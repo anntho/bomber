@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>moviebomber.org | Training</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="Movies, Trivia, Free Trivia, Free Movie Trivia">
+	<meta name="description" content="Practice your skills in training mode.">
+	<% include ./robots %>
+	<% include ./styles %>
+	<% include ./fonts %>
+	<script>
+		let socketString = <%-JSON.stringify(socket)%>;
+    </script>
+	<script src="<%-vue%>"></script>
+</head>
+<body>
+	<% include ./nav %>
+	<main>
+		<div class="top-wrapper row">
+			<div class="content-wrapper">
+				<div id="board" class="gcontainer z-index-4 mt-2" v-cloak>
+					<div id="visor" class="row scontainer visor-wrapper mb-0">
+                        <div class="visor-row top">
+                            <div class="visor-col visor-icon hide-on-small-only">
+								<img 
+									id="userIcon" 
+									src="/images/user_2.png" 
+									alt="user_icon"
+									class="z-depth-2"
+								>
+                            </div>
+                            <div class="visor-col visor-user">
+                                <div>
+									<% if (user) { %>
+										<span class="big"><%- username %> </span>
+										<span ><%- elo %> </span>
+									<% } else { %>
+										<span class="big">Guest </span>
+										<span>[1500]</span>
+									<% } %>	
+								</div>
+                            </div>
+                            <div class="visor-col visor-stats">
+                                <div class="big">Score: <span>{{ correct }}</span></div>
+							</div>
+							<div class="visor-col visor-stats end">
+								<span>{{ current }} / {{ movies.length }}</span>
+							</div>
+                        </div>
+
+                        <div class="visor-row mt-2">
+                            <div class="progress user col s12">
+                                <div :style="{width: progress}" id="userProgress" class="determinate"></div>
+                            </div>
+                        </div>
+					</div>
+					<div v-if="gameover" class="gameover-container">
+						<div class="gameover-header">
+							<span>Gameover</span>
+						</div>
+						<div>
+							<a @click="restart()" class="btn grey center">Play again</a>
+						</div>
+
+					</div>
+					<div v-if="!gameover" id="prompts" class="row z-depth-2 active-display">
+						<div class="prompts-container">
+							<div class="icon">
+                                <i id="face" class="material-icons">data_usage</i>
+							</div>
+							<div class="text">
+								<div 
+									class="prompt slide" 
+									id="prompt">
+									<span>Name an actor in the movie..</span>
+								</div>
+								<div
+									v-if="!loading" 
+									class="prompt slide"
+								>
+									<span class="title">{{ movie.title }}</span>
+								</div
+								>
+								<div v-if="loading" class="prompt slide">
+									<div class="preloader-wrapper small active">
+										<div class="spinner-layer spinner-green-only">
+											<div class="circle-clipper left">
+												<div class="circle"></div>
+											</div>
+											<div class="gap-patch">
+												<div class="circle"></div>
+											 </div>
+											<div class="circle-clipper right">
+												<div class="circle"></div>
+										  	</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div v-if="!gameover" class="row buttons-container active-display">
+						<div class="buttons">
+							<div
+                                @click="check(movie.opts[0].correct)" 
+                                class="button-wrapper z-depth-2 mb-20"
+							>
+								<div class="icon">A</div>
+								<div class="text button waves-effect point">
+									<span>{{ movie.opts[0].text }}</span>
+									<div v-if="loading">
+										<%include ./loader %>
+									</div>
+								</div>
+							</div>
+
+                            <div 
+                                @click="check(movie.opts[1].correct)" 
+                                class="button-wrapper z-depth-2 mb-20"
+                            >
+								<div class="icon">B</div>
+								<div class="text button waves-effect point">
+									<span>{{ movie.opts[1].text }}</span>
+									<div v-if="loading">
+										<%include ./loader %>
+									</div>
+								</div>
+							</div>
+
+                            <div 
+                                @click="check(movie.opts[2].correct)" 
+                                class="button-wrapper z-depth-2 mb-20"
+                            >
+								<div class="icon">C</div>
+								<div class="text button waves-effect point">
+									<span>{{ movie.opts[2].text }}</span>
+									<div v-if="loading">
+										<%include ./loader %>
+									</div>
+								</div>
+							</div>
+
+                            <div 
+                                @click="check(movie.opts[3].correct)" 
+                                class="button-wrapper z-depth-2"
+                            >
+								<div class="icon">D</div>
+								<div class="text button waves-effect point">
+									<span>{{ movie.opts[3].text }}</span>
+									<div v-if="loading">
+										<%include ./loader %>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<% include ./footer %>
+
+	<script src="<%-socket%>/socket.io/socket.io.js"></script>
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/nav.js"></script>
+	<script src="/js/materialize.min.js"></script>
+	<script src="/js/init.js"></script>
+	<script src="/js/solo.js"></script>
+    <script src="/js/sweetalert.min.js"></script>
+    
+</body>
+</html>

@@ -83,13 +83,22 @@ td, th {
 
 .instructions {
     display: none;
-    background-color: #242424;
     padding: 2%;
     border-radius: 2px;
-    border: 1px dotted violet;
+    background-color: #292929;
+    border: 1px solid #545454;
     font-size: .9rem;
 }
 
 span.toggle-instructions:hover {
-    color: cyan;
+    color: grey;
+}
+
+.swal-content {
+    margin-top: 10px;
+}
+
+.swal-content a {
+    color: #555555;
+    font-size: .8rem;
 }

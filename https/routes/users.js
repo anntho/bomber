@@ -59,7 +59,7 @@ router.get('/:id', [setUser], async (req, res) => {
 			let userId = user[0].id;
 			let { active, total, slim } = await users.getGames(userId);
 
-			let rank = await users.getRank(total);
+			let rank = await users.getRank(total, userId);
 			let followers = await users.getFollowers(userId);
 			let following = await users.getFollowing(userId);
 			let restrictions = await users.getRestrictions(userId);
