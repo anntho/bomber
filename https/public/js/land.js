@@ -36,7 +36,7 @@ $(document).ready(function() {
     socket.on('liveCheckUser', (user) => {
         let a = document.createElement("a");
         a.textContent = 'or try training mode by clicking here';
-        a.href = '/solo'
+        a.href = '/training';
         if (!user) {
             swal({
                 icon: 'warning',
